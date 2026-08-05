@@ -50,11 +50,14 @@ class UnlockService : Service() {
     private fun ensureReceiver() {
         if (registered) return
         try {
+            // USER_PRESENT 가 오지 않는 기기가 있어 SCREEN_ON 도 함께 받습니다.
+            // (UnlockReceiver 가 키가드 해제를 직접 감시하는 대체 경로)
+            val filter = IntentFilter().apply {
+                addAction(Intent.ACTION_USER_PRESENT)
+                addAction(Intent.ACTION_SCREEN_ON)
+            }
             ContextCompat.registerReceiver(
-                this,
-                receiver,
-                IntentFilter(Intent.ACTION_USER_PRESENT),
-                ContextCompat.RECEIVER_NOT_EXPORTED
+                this, receiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED
             )
             registered = true
         } catch (e: Exception) {

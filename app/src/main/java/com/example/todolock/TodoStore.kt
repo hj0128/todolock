@@ -27,6 +27,10 @@ object TodoStore {
     private const val KEY_SVC_ERROR = "svc_error"
     private const val KEY_LAST_UNLOCK_MS = "last_unlock_ms"
     private const val KEY_LAST_RESULT = "last_result"
+ㅗ    private const val KEY_LAST_BCAST_MS = "last_bcast_ms"
+    private const val KEY_LAST_BCAST = "last_bcast"
+    private const val KEY_EVENT_LOG = "event_log"
+    private const val KEY_LAST_HANDLED_MS = "last_handled_ms"
 
     const val MODE_ALWAYS = 0
     const val MODE_HOURLY = 1
@@ -181,4 +185,42 @@ object TodoStore {
     fun lastUnlockMs(ctx: Context): Long = prefs(ctx).getLong(KEY_LAST_UNLOCK_MS, 0L)
 
     fun lastResult(ctx: Context): String = prefs(ctx).getString(KEY_LAST_RESULT, "") ?: ""
+
+    /**
+     * 리시버가 브로드캐스트를 '받았다'는 사실 자체를 기록합니다.
+     * 잠금해제 처리로 이어지지 않은 것(SCREEN_ON 등)까지 남기므로,
+     * 이 값이 비어 있으면 리시버 자체가 죽은 것으로 판단할 수 있습니다.
+     */
+    fun markBroadcast(ctx: Context, action: String) {
+        prefs(ctx).edit()
+            .putLong(KEY_LAST_BCAST_MS, System.currentTimeMillis())
+            .putString(KEY_LAST_BCAST, action)
+            .apply()
+    }
+
+    fun lastBroadcastMs(ctx: Context): Long = prefs(ctx).getLong(KEY_LAST_BCAST_MS, 0L)
+
+    fun lastBroadcast(ctx: Context): String = prefs(ctx).getString(KEY_LAST_BCAST, "") ?: ""
+
+    /** 최근 이벤트 6건만 유지하는 간단한 로그. 원인 추적용. */
+    fun appendLog(ctx: Context, line: String) {
+        val stamp = SimpleDateFormat("HH:mm:ss", Locale.KOREA).format(Date())
+        val prev = eventLog(ctx)
+        val merged = (stamp + " " + line + (if (prev.isEmpty()) "" else "\n" + prev))
+            .lines().take(6).joinToString("\n")
+        prefs(ctx).edit().putString(KEY_EVENT_LOG, merged).apply()
+    }
+
+    fun eventLog(ctx: Context): String = prefs(ctx).getString(KEY_EVENT_LOG, "") ?: ""
+
+    fun clearLog(ctx: Context) = prefs(ctx).edit().remove(KEY_EVENT_LOG).apply()
+
+    /** 같은 잠금해제를 두 경로(USER_PRESENT / SCREEN_ON+키가드)에서 중복 처리하지 않도록. */
+    fun claimHandling(ctx: Context, withinMs: Long = 4000L): Boolean {
+        val p = prefs(ctx)
+        val now = System.currentTimeMillis()
+        if (now - p.getLong(KEY_LAST_HANDLED_MS, 0L) < withinMs) return false
+        p.edit().putLong(KEY_LAST_HANDLED_MS, now).apply()
+        return true
+    }
 }

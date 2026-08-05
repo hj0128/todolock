@@ -46,6 +46,11 @@
                 android:value="Listens for device unlock to surface the user's todo list for today" />
         </service>
 
+        <!-- 프로세스가 죽어도 알람으로 깨어나 감지 서비스를 되살립니다 -->
+        <receiver
+            android:name=".Watchdog"
+            android:exported="false" />
+
         <receiver
             android:name=".BootReceiver"
             android:exported="true">

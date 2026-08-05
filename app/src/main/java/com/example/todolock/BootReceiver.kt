@@ -13,7 +13,10 @@ class BootReceiver : BroadcastReceiver() {
             action == "android.intent.action.QUICKBOOT_POWERON"
         ) {
             if (TodoStore.isEnabled(context)) {
-                UnlockService.start(context.applicationContext)
+                val ctx = context.applicationContext
+                UnlockService.start(ctx)
+                Watchdog.arm(ctx)
+                TodoStore.appendLog(ctx, "재부팅/업데이트 → 서비스 시작")
             }
         }
     }

@@ -53,7 +53,13 @@ class MainActivity : AppCompatActivity() {
         b.swEnabled.isChecked = TodoStore.isEnabled(this)
         b.swEnabled.setOnCheckedChangeListener { _, checked ->
             TodoStore.setEnabled(this, checked)
-            if (checked) UnlockService.start(this) else UnlockService.stop(this)
+            if (checked) {
+                UnlockService.start(this)
+                Watchdog.arm(this)
+            } else {
+                UnlockService.stop(this)
+                Watchdog.cancel(this)
+            }
         }
 
         b.rgMode.check(
@@ -113,8 +119,9 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         // 절전으로 서비스가 종료된 경우 앱을 열 때마다 스스로 되살립니다.
-        if (TodoStore.isEnabled(this) && !UnlockService.isRunning(this)) {
-            UnlockService.start(this)
+        if (TodoStore.isEnabled(this)) {
+            if (!UnlockService.isRunning(this)) UnlockService.start(this)
+            Watchdog.arm(this)
         }
         refresh()
     }
@@ -194,6 +201,13 @@ class MainActivity : AppCompatActivity() {
         sb.append(mark(notifOk)).append(" 알림 허용 (대체 표시용)\n")
         sb.append(mark(batteryOk)).append(" 배터리 최적화 예외\n")
 
+        // 리시버가 살아 있었는지 판별하는 핵심 줄.
+        // 브로드캐스트가 하나도 없으면 잠금해제 시점에 리시버가 없었다는 뜻입니다.
+        val bcast = TodoStore.lastBroadcastMs(this)
+        sb.append(mark(bcast > 0L)).append(" 마지막 브로드캐스트: ")
+            .append(if (bcast > 0L) TodoStore.lastBroadcast(this) + " " + stamp(bcast) else "아직 없음")
+            .append('\n')
+
         val unlock = TodoStore.lastUnlockMs(this)
         sb.append(mark(unlock > 0L)).append(" 마지막 잠금해제 감지: ")
             .append(if (unlock > 0L) stamp(unlock) else "아직 없음").append('\n')
@@ -212,12 +226,15 @@ class MainActivity : AppCompatActivity() {
         sb.append("Android ").append(Build.VERSION.SDK_INT)
             .append(" · ").append(Build.MANUFACTURER).append(' ').append(Build.MODEL)
 
-        if (unlock == 0L && running) {
-            sb.append("\n\n잠금을 완전히 풀어야 감지됩니다(화면만 켜는 것은 제외). ")
-                .append("잠금 방식이 '없음/스와이프'면 감지가 안 되는 기기도 있습니다.")
-        }
+        val log = TodoStore.eventLog(this)
+        if (log.isNotEmpty()) sb.append("\n─── 최근 기록 ───\n").append(log)
+
         if (!running) {
             sb.append("\n\n서비스가 죽어 있습니다 → 배터리 예외를 켜고 '감지 서비스 다시 시작'을 누르세요.")
+        } else if (bcast == 0L) {
+            sb.append("\n\n서비스는 살아 있는데 브로드캐스트가 하나도 없습니다. ")
+                .append("화면이 꺼진 동안 앱이 재워진 것이므로 배터리 예외 설정이 필수입니다. ")
+                .append("워치독이 15분마다 서비스를 되살립니다.")
         }
         return sb.toString()
     }
