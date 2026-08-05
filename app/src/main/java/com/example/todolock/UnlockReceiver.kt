@@ -24,13 +24,6 @@ class UnlockReceiver : BroadcastReceiver() {
         val action = intent.action ?: return
         val ctx = context.applicationContext
 
-        // TIME_TICK 은 1분마다 오는 심장박동. 의미 있는 브로드캐스트 기록을 덮지 않도록
-        // 별도 키에만 남기고 바로 끝냅니다.
-        if (action == Intent.ACTION_TIME_TICK) {
-            TodoStore.markHeartbeat(ctx)
-            return
-        }
-
         // 브로드캐스트가 도달했다는 사실 자체를 먼저 남깁니다.
         // 이 값이 갱신되지 않으면 리시버(=서비스)가 죽어 있었던 것입니다.
         TodoStore.markBroadcast(ctx, action)

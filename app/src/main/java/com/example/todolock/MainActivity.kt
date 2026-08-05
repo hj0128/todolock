@@ -1,6 +1,7 @@
 package com.example.todolock
 
 import android.Manifest
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -24,7 +25,10 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var b: ActivityMainBinding
     private lateinit var adapter: TodoAdapter
-    private val cal: Calendar = Calendar.getInstance()
+
+    /** 새로 추가할 항목의 날짜/중요 여부. 목록 자체는 날짜와 무관하게 전부 보여줍니다. */
+    private val addDate: Calendar = Calendar.getInstance()
+    private var addImportant = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +38,8 @@ class MainActivity : AppCompatActivity() {
         adapter = TodoAdapter(
             mutableListOf(),
             onToggle = { TodoStore.update(this, it); refresh() },
-            onDelete = { TodoStore.delete(this, it.id); refresh() }
+            onDelete = { TodoStore.delete(this, it.id); refresh() },
+            onStar = { TodoStore.update(this, it); refresh() }
         )
         b.recycler.layoutManager = LinearLayoutManager(this)
         b.recycler.adapter = adapter
@@ -42,11 +47,10 @@ class MainActivity : AppCompatActivity() {
         b.btnAdd.setOnClickListener { addTodo() }
         b.etInput.setOnEditorActionListener { _, _, _ -> addTodo(); true }
 
-        b.btnPrev.setOnClickListener { cal.add(Calendar.DAY_OF_YEAR, -1); refresh() }
-        b.btnNext.setOnClickListener { cal.add(Calendar.DAY_OF_YEAR, 1); refresh() }
-        b.tvDate.setOnClickListener {
-            cal.timeInMillis = System.currentTimeMillis()
-            refresh()
+        b.btnPickDate.setOnClickListener { pickDate() }
+        b.btnAddStar.setOnClickListener {
+            addImportant = !addImportant
+            syncAddBar()
         }
 
         // 초기 상태를 먼저 반영한 뒤 리스너를 붙입니다 (리스너 오작동 방지)
@@ -112,8 +116,29 @@ class MainActivity : AppCompatActivity() {
             }, 400L)
         }
 
+        syncAddBar()
         askNotificationPermission()
         if (TodoStore.isEnabled(this)) UnlockService.start(this)
+    }
+
+    /** 추가 바(날짜 버튼 · 별표 버튼)의 표시를 현재 선택 상태와 맞춥니다. */
+    private fun syncAddBar() {
+        b.btnPickDate.text = TodoStore.prettyDate(TodoStore.format(addDate))
+        b.btnAddStar.text = if (addImportant) "★ 중요" else "☆ 중요"
+        b.btnAddStar.alpha = if (addImportant) 1f else 0.6f
+    }
+
+    private fun pickDate() {
+        DatePickerDialog(
+            this,
+            { _, year, month, day ->
+                addDate.set(year, month, day)
+                syncAddBar()
+            },
+            addDate.get(Calendar.YEAR),
+            addDate.get(Calendar.MONTH),
+            addDate.get(Calendar.DAY_OF_MONTH)
+        ).show()
     }
 
     override fun onResume() {
@@ -156,19 +181,33 @@ class MainActivity : AppCompatActivity() {
     private fun addTodo() {
         val text = b.etInput.text.toString().trim()
         if (text.isEmpty()) return
-        TodoStore.add(this, text, TodoStore.format(cal))
+        TodoStore.add(this, text, TodoStore.format(addDate), addImportant)
         b.etInput.setText("")
+        // 날짜는 연속 입력을 위해 유지하고, 중요 표시만 초기화합니다.
+        addImportant = false
+        syncAddBar()
         refresh()
     }
 
     private fun refresh() {
-        val dateKey = TodoStore.format(cal)
-        val pretty = SimpleDateFormat("M월 d일 (E)", Locale.KOREA).format(cal.time)
-        b.tvDate.text = if (dateKey == TodoStore.today()) "오늘 · " + pretty else pretty
+        b.tvToday.text = TodoStore.prettyDate(TodoStore.today())
 
-        val items = TodoStore.forDate(this, dateKey).sortedBy { it.done }
-        adapter.submit(items)
-        b.tvEmpty.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
+        // 날짜별로 갈아타지 않고 전부 한 목록에 보여주고, 완료는 아래 섹션으로 내립니다.
+        val pending = TodoStore.pendingSorted(this)
+        val done = TodoStore.doneSorted(this)
+
+        val rows = mutableListOf<Row>()
+        if (pending.isNotEmpty()) {
+            rows.add(Row.Header("할 일 " + pending.size + "개"))
+            pending.forEach { rows.add(Row.Item(it)) }
+        }
+        if (done.isNotEmpty()) {
+            rows.add(Row.Header("완료 " + done.size + "개"))
+            done.forEach { rows.add(Row.Item(it)) }
+        }
+
+        adapter.submit(rows)
+        b.tvEmpty.visibility = if (rows.isEmpty()) View.VISIBLE else View.GONE
 
         val overlayOk = Settings.canDrawOverlays(this)
         b.tvPermWarn.visibility = if (overlayOk) View.GONE else View.VISIBLE
@@ -201,22 +240,22 @@ class MainActivity : AppCompatActivity() {
         sb.append(mark(notifOk)).append(" 알림 허용 (대체 표시용)\n")
         sb.append(mark(batteryOk)).append(" 배터리 최적화 예외\n")
 
-        // 리시버가 실제로 브로드캐스트를 받고 있는지 증명하는 줄.
-        // TIME_TICK 은 1분마다 오므로, 이 값이 최신이면 리시버는 확실히 살아 있습니다.
-        val beat = TodoStore.heartbeatMs(this)
-        val beatFresh = beat > 0L && System.currentTimeMillis() - beat < 3L * 60L * 1000L
-        sb.append(mark(beatFresh)).append(" 리시버 심장박동: ")
-            .append(if (beat > 0L) stamp(beat) + " (" + ago(beat) + ")" else "아직 없음")
-            .append('\n')
-        if (TodoStore.regMode(this).isNotEmpty()) {
-            sb.append("    └ 등록 방식: ").append(TodoStore.regMode(this)).append('\n')
-        }
-
         // 잠금해제 계열 브로드캐스트 수신 여부.
+        // RECEIVER_NOT_EXPORTED 로 등록하면 예외 없이 한 건도 안 오는 기기가 있어서,
+        // 등록 방식까지 함께 보여줍니다.
         val bcast = TodoStore.lastBroadcastMs(this)
         sb.append(mark(bcast > 0L)).append(" 마지막 브로드캐스트: ")
-            .append(if (bcast > 0L) TodoStore.lastBroadcast(this) + " " + stamp(bcast) else "아직 없음")
+            .append(
+                if (bcast > 0L) {
+                    TodoStore.lastBroadcast(this) + " " + stamp(bcast) + " (" + ago(bcast) + ")"
+                } else {
+                    "아직 없음"
+                }
+            )
             .append('\n')
+        if (TodoStore.regMode(this).isNotEmpty()) {
+            sb.append("    └ 리시버 등록: ").append(TodoStore.regMode(this)).append('\n')
+        }
 
         val unlock = TodoStore.lastUnlockMs(this)
         sb.append(mark(unlock > 0L)).append(" 마지막 잠금해제 감지: ")
@@ -241,12 +280,9 @@ class MainActivity : AppCompatActivity() {
 
         if (!running) {
             sb.append("\n\n서비스가 죽어 있습니다 → 배터리 예외를 켜고 '감지 서비스 다시 시작'을 누르세요.")
-        } else if (!beatFresh) {
-            sb.append("\n\n서비스는 '실행 중'인데 심장박동이 멈춰 있습니다. ")
-                .append("리시버가 브로드캐스트를 전혀 못 받는 상태입니다.")
         } else if (bcast == 0L) {
-            sb.append("\n\n리시버는 살아 있습니다(심장박동 정상). ")
-                .append("화면을 껐다 켜면 SCREEN_ON 이 기록되어야 합니다.")
+            sb.append("\n\n화면을 껐다 켜면 SCREEN_ON 이 기록되어야 합니다. ")
+                .append("계속 비어 있으면 잠금해제 시점에 서비스가 재워진 것입니다.")
         }
         return sb.toString()
     }

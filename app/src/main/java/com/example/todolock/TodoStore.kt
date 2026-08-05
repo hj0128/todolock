@@ -31,7 +31,6 @@ object TodoStore {
     private const val KEY_LAST_BCAST = "last_bcast"
     private const val KEY_EVENT_LOG = "event_log"
     private const val KEY_LAST_HANDLED_MS = "last_handled_ms"
-    private const val KEY_HEARTBEAT_MS = "heartbeat_ms"
     private const val KEY_REG_MODE = "reg_mode"
 
     const val MODE_ALWAYS = 0
@@ -67,7 +66,8 @@ object TodoStore {
                         o.optLong("id", System.nanoTime()),
                         o.optString("text", ""),
                         o.optString("date", today()),
-                        o.optBoolean("done", false)
+                        o.optBoolean("done", false),
+                        o.optBoolean("important", false)
                     )
                 )
             }
@@ -86,6 +86,7 @@ object TodoStore {
                     .put("text", t.text)
                     .put("date", t.date)
                     .put("done", t.done)
+                    .put("important", t.important)
             )
         }
         prefs(ctx).edit().putString(KEY_TODOS, arr.toString()).apply()
@@ -97,10 +98,46 @@ object TodoStore {
     fun pendingToday(ctx: Context): List<Todo> =
         load(ctx).filter { it.date == today() && !it.done }
 
-    fun add(ctx: Context, text: String, date: String) {
+    fun add(ctx: Context, text: String, date: String, important: Boolean = false) {
         val list = load(ctx)
-        list.add(Todo(System.currentTimeMillis(), text, date, false))
+        list.add(Todo(System.currentTimeMillis(), text, date, false, important))
         save(ctx, list)
+    }
+
+    /** 미완료: 중요 먼저 → 날짜 이른 순. 한 화면에 전부 보여주기 위한 정렬. */
+    fun pendingSorted(ctx: Context): List<Todo> =
+        load(ctx).filter { !it.done }.sortedWith(
+            compareByDescending<Todo> { it.important }.thenBy { it.date }.thenBy { it.id }
+        )
+
+    /** 완료: 최근 완료된 것이 위로. */
+    fun doneSorted(ctx: Context): List<Todo> =
+        load(ctx).filter { it.done }.sortedWith(
+            compareByDescending<Todo> { it.date }.thenByDescending { it.id }
+        )
+
+    /** "오늘 · 8월 5일 (수)" 처럼 사람이 읽는 날짜. 목록에서 날짜를 행마다 보여주므로 필요합니다. */
+    fun prettyDate(dateKey: String): String {
+        val cal = Calendar.getInstance()
+        val today = format(cal)
+        cal.add(Calendar.DAY_OF_YEAR, 1)
+        val tomorrow = format(cal)
+        cal.add(Calendar.DAY_OF_YEAR, -2)
+        val yesterday = format(cal)
+
+        val base = try {
+            val d = keyFormat().parse(dateKey)
+            if (d != null) SimpleDateFormat("M월 d일 (E)", Locale.KOREA).format(d) else dateKey
+        } catch (e: Exception) {
+            dateKey
+        }
+
+        return when (dateKey) {
+            today -> "오늘 · " + base
+            tomorrow -> "내일 · " + base
+            yesterday -> "어제 · " + base
+            else -> base
+        }
     }
 
     fun update(ctx: Context, todo: Todo) {
@@ -216,16 +253,6 @@ object TodoStore {
     fun eventLog(ctx: Context): String = prefs(ctx).getString(KEY_EVENT_LOG, "") ?: ""
 
     fun clearLog(ctx: Context) = prefs(ctx).edit().remove(KEY_EVENT_LOG).apply()
-
-    /**
-     * 리시버 심장박동. ACTION_TIME_TICK(1분 주기, 런타임 등록만 가능)을 받을 때마다 갱신합니다.
-     * 이 값이 최신이면 리시버는 확실히 살아서 브로드캐스트를 받고 있다는 증거이고,
-     * 멈춰 있으면 프로세스가 재워졌거나 등록이 실효 상태라는 뜻입니다.
-     */
-    fun markHeartbeat(ctx: Context) =
-        prefs(ctx).edit().putLong(KEY_HEARTBEAT_MS, System.currentTimeMillis()).apply()
-
-    fun heartbeatMs(ctx: Context): Long = prefs(ctx).getLong(KEY_HEARTBEAT_MS, 0L)
 
     /** 어떤 방식으로 리시버 등록이 성공했는지 (플래그 문제 진단용). */
     fun setRegMode(ctx: Context, mode: String) =

@@ -51,11 +51,12 @@ class UnlockService : Service() {
      * 리시버 등록.
      *
      * 필터에 시스템 보호 브로드캐스트만 들어 있으면 targetSdk 34+ 에서도 플래그 없이
-     * 등록할 수 있습니다. RECEIVER_NOT_EXPORTED 로 등록했을 때 시스템 브로드캐스트가
-     * 배달되지 않는 기기가 있어서, 플래그 없는 등록을 1순위로 시도합니다.
-     * 어느 방식으로 성공했는지는 진단에 남깁니다.
+     * 등록할 수 있습니다.
      *
-     * TIME_TICK(1분 주기)은 리시버가 실제로 살아 있는지 확인하는 심장박동용입니다.
+     * RECEIVER_NOT_EXPORTED 로 등록하면 등록 자체는 성공하는데 USER_PRESENT/SCREEN_ON 이
+     * 한 건도 배달되지 않는 기기가 있습니다(Galaxy S24+ / Android 16 에서 확인).
+     * 예외도 나지 않아 원인 파악이 어려우므로, 플래그 없는 등록을 1순위로 씁니다.
+     * 어느 방식으로 성공했는지는 진단에 남깁니다.
      */
     private fun ensureReceiver() {
         if (registered) return
@@ -63,7 +64,6 @@ class UnlockService : Service() {
         val filter = IntentFilter().apply {
             addAction(Intent.ACTION_USER_PRESENT)
             addAction(Intent.ACTION_SCREEN_ON)
-            addAction(Intent.ACTION_TIME_TICK)
         }
 
         try {

@@ -30,7 +30,9 @@
 | 잠금해제 시 자동 표시 | 잠금을 푼 직후 오늘의 할 일 팝업이 뜨고, 팝업에서 바로 체크 가능 |
 | 조용한 기본 동작 | 오늘 할 일이 없으면 표시 안 함. 다 끝내면 축하 문구 후 1초 뒤 자동 닫힘 |
 | 표시 빈도 3단계 | 매번 / 1시간마다 / 하루 1번 — 잠금해제가 잦아도 피곤하지 않게 ([4번 항목](#4-표시-빈도-설정)) |
-| 날짜별 할 일 관리 | 이전·다음 날로 이동, 날짜를 누르면 오늘로 복귀 |
+| 한 화면에 전부 | 날짜별로 갈아타지 않고 모든 할 일이 한 목록에. 메모 아래 작은 날짜가 붙고, 지난 날짜는 `지남` 으로 표시 |
+| 날짜 선택 · 중요 표시 | 추가할 때 달력으로 날짜를 고르고 별표를 켤 수 있음. 중요 항목은 날짜와 무관하게 맨 위로 |
+| 완료 섹션 분리 | 체크하면 아래 `완료` 섹션으로 내려감 |
 | 권한 없어도 동작 | 오버레이 권한이 없으면 전체화면/헤드업 알림으로 대체 표시 |
 | 껐다 켜기 | 스위치 하나로 감지 서비스 전체를 중단 |
 | 재부팅 복구 | 재부팅·앱 업데이트 후에도 `BootReceiver` 가 서비스를 자동 재시작 |
@@ -150,14 +152,16 @@ Watchdog (AlarmManager, 15분 간격) ─→ 서비스가 죽어 있으면 다�
 
 ```
 app/src/main/java/com/example/todolock/
-├── MainActivity.kt          할 일 목록/추가/삭제, 날짜 이동, 설정
+├── MainActivity.kt          할 일 목록/추가/삭제, 날짜 선택, 중요 표시, 설정, 진단
 ├── TodayPopupActivity.kt    잠금해제 시 뜨는 팝업
 ├── UnlockService.kt         잠금해제 감지용 포그라운드 서비스
 ├── UnlockReceiver.kt        ACTION_USER_PRESENT 처리 + 팝업 실행
 ├── BootReceiver.kt          재부팅 후 서비스 복구
+├── Watchdog.kt              알람으로 프로세스를 깨워 서비스 부활 (절전 대응)
 ├── Notifications.kt         알림 채널 / 대체 알림
-├── TodoStore.kt             SharedPreferences + JSON 저장소
-├── TodoAdapter.kt / TodoRow.kt / Todo.kt
+├── TodoStore.kt             SharedPreferences + JSON 저장소, 정렬, 진단 기록
+├── TodoAdapter.kt           '할 일 / 완료' 섹션 헤더 + 행 (뷰 타입 2종)
+├── TodoRow.kt / Todo.kt
 ```
 
 데이터는 SharedPreferences에 JSON으로 저장합니다 (Room·애노테이션 프로세서 없음 → 빌드가 단순하고 빠릅니다).

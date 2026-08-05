@@ -40,16 +40,24 @@ class TodayPopupActivity : AppCompatActivity() {
     }
 
     private fun render() {
-        val items = TodoStore.forDate(this, TodoStore.today()).sortedBy { it.done }
+        // 팝업은 오늘 것만 보여주므로 날짜는 감추고, 중요 항목을 위로 올립니다.
+        val items = TodoStore.forDate(this, TodoStore.today())
+            .sortedWith(compareBy<Todo> { it.done }.thenByDescending { it.important })
         val remaining = items.count { !it.done }
 
         b.container.removeAllViews()
         for (todo in items) {
             val row = ItemTodoBinding.inflate(layoutInflater, b.container, false)
-            TodoRow.bind(row, todo, onToggle = {
-                TodoStore.update(this, it)
-                b.root.post { if (!isFinishing) render() }
-            }, onDelete = null)
+            TodoRow.bind(
+                row, todo,
+                onToggle = {
+                    TodoStore.update(this, it)
+                    b.root.post { if (!isFinishing) render() }
+                },
+                onDelete = null,
+                onStar = null,
+                showDate = false
+            )
             b.container.addView(row.root)
         }
 
