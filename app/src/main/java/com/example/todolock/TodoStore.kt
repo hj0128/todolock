@@ -31,6 +31,8 @@ object TodoStore {
     private const val KEY_LAST_BCAST = "last_bcast"
     private const val KEY_EVENT_LOG = "event_log"
     private const val KEY_LAST_HANDLED_MS = "last_handled_ms"
+    private const val KEY_HEARTBEAT_MS = "heartbeat_ms"
+    private const val KEY_REG_MODE = "reg_mode"
 
     const val MODE_ALWAYS = 0
     const val MODE_HOURLY = 1
@@ -214,6 +216,22 @@ object TodoStore {
     fun eventLog(ctx: Context): String = prefs(ctx).getString(KEY_EVENT_LOG, "") ?: ""
 
     fun clearLog(ctx: Context) = prefs(ctx).edit().remove(KEY_EVENT_LOG).apply()
+
+    /**
+     * 리시버 심장박동. ACTION_TIME_TICK(1분 주기, 런타임 등록만 가능)을 받을 때마다 갱신합니다.
+     * 이 값이 최신이면 리시버는 확실히 살아서 브로드캐스트를 받고 있다는 증거이고,
+     * 멈춰 있으면 프로세스가 재워졌거나 등록이 실효 상태라는 뜻입니다.
+     */
+    fun markHeartbeat(ctx: Context) =
+        prefs(ctx).edit().putLong(KEY_HEARTBEAT_MS, System.currentTimeMillis()).apply()
+
+    fun heartbeatMs(ctx: Context): Long = prefs(ctx).getLong(KEY_HEARTBEAT_MS, 0L)
+
+    /** 어떤 방식으로 리시버 등록이 성공했는지 (플래그 문제 진단용). */
+    fun setRegMode(ctx: Context, mode: String) =
+        prefs(ctx).edit().putString(KEY_REG_MODE, mode).apply()
+
+    fun regMode(ctx: Context): String = prefs(ctx).getString(KEY_REG_MODE, "") ?: ""
 
     /** 같은 잠금해제를 두 경로(USER_PRESENT / SCREEN_ON+키가드)에서 중복 처리하지 않도록. */
     fun claimHandling(ctx: Context, withinMs: Long = 4000L): Boolean {

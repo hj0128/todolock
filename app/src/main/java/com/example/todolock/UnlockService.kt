@@ -47,20 +47,43 @@ class UnlockService : Service() {
         }
     }
 
+    /**
+     * 리시버 등록.
+     *
+     * 필터에 시스템 보호 브로드캐스트만 들어 있으면 targetSdk 34+ 에서도 플래그 없이
+     * 등록할 수 있습니다. RECEIVER_NOT_EXPORTED 로 등록했을 때 시스템 브로드캐스트가
+     * 배달되지 않는 기기가 있어서, 플래그 없는 등록을 1순위로 시도합니다.
+     * 어느 방식으로 성공했는지는 진단에 남깁니다.
+     *
+     * TIME_TICK(1분 주기)은 리시버가 실제로 살아 있는지 확인하는 심장박동용입니다.
+     */
     private fun ensureReceiver() {
         if (registered) return
+
+        val filter = IntentFilter().apply {
+            addAction(Intent.ACTION_USER_PRESENT)
+            addAction(Intent.ACTION_SCREEN_ON)
+            addAction(Intent.ACTION_TIME_TICK)
+        }
+
         try {
-            // USER_PRESENT 가 오지 않는 기기가 있어 SCREEN_ON 도 함께 받습니다.
-            // (UnlockReceiver 가 키가드 해제를 직접 감시하는 대체 경로)
-            val filter = IntentFilter().apply {
-                addAction(Intent.ACTION_USER_PRESENT)
-                addAction(Intent.ACTION_SCREEN_ON)
-            }
+            @Suppress("UnspecifiedRegisterReceiverFlag")
+            registerReceiver(receiver, filter)
+            registered = true
+            TodoStore.setRegMode(this, "플래그 없음")
+            return
+        } catch (e: Exception) {
+            // 아래에서 플래그를 붙여 재시도
+        }
+
+        try {
             ContextCompat.registerReceiver(
-                this, receiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED
+                this, receiver, filter, ContextCompat.RECEIVER_EXPORTED
             )
             registered = true
+            TodoStore.setRegMode(this, "EXPORTED")
         } catch (e: Exception) {
+            TodoStore.setRegMode(this, "등록 실패")
             TodoStore.setServiceError(this, "리시버 등록 실패 " + e.javaClass.simpleName)
         }
     }

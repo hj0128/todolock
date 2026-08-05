@@ -201,8 +201,18 @@ class MainActivity : AppCompatActivity() {
         sb.append(mark(notifOk)).append(" 알림 허용 (대체 표시용)\n")
         sb.append(mark(batteryOk)).append(" 배터리 최적화 예외\n")
 
-        // 리시버가 살아 있었는지 판별하는 핵심 줄.
-        // 브로드캐스트가 하나도 없으면 잠금해제 시점에 리시버가 없었다는 뜻입니다.
+        // 리시버가 실제로 브로드캐스트를 받고 있는지 증명하는 줄.
+        // TIME_TICK 은 1분마다 오므로, 이 값이 최신이면 리시버는 확실히 살아 있습니다.
+        val beat = TodoStore.heartbeatMs(this)
+        val beatFresh = beat > 0L && System.currentTimeMillis() - beat < 3L * 60L * 1000L
+        sb.append(mark(beatFresh)).append(" 리시버 심장박동: ")
+            .append(if (beat > 0L) stamp(beat) + " (" + ago(beat) + ")" else "아직 없음")
+            .append('\n')
+        if (TodoStore.regMode(this).isNotEmpty()) {
+            sb.append("    └ 등록 방식: ").append(TodoStore.regMode(this)).append('\n')
+        }
+
+        // 잠금해제 계열 브로드캐스트 수신 여부.
         val bcast = TodoStore.lastBroadcastMs(this)
         sb.append(mark(bcast > 0L)).append(" 마지막 브로드캐스트: ")
             .append(if (bcast > 0L) TodoStore.lastBroadcast(this) + " " + stamp(bcast) else "아직 없음")
@@ -231,10 +241,12 @@ class MainActivity : AppCompatActivity() {
 
         if (!running) {
             sb.append("\n\n서비스가 죽어 있습니다 → 배터리 예외를 켜고 '감지 서비스 다시 시작'을 누르세요.")
+        } else if (!beatFresh) {
+            sb.append("\n\n서비스는 '실행 중'인데 심장박동이 멈춰 있습니다. ")
+                .append("리시버가 브로드캐스트를 전혀 못 받는 상태입니다.")
         } else if (bcast == 0L) {
-            sb.append("\n\n서비스는 살아 있는데 브로드캐스트가 하나도 없습니다. ")
-                .append("화면이 꺼진 동안 앱이 재워진 것이므로 배터리 예외 설정이 필수입니다. ")
-                .append("워치독이 15분마다 서비스를 되살립니다.")
+            sb.append("\n\n리시버는 살아 있습니다(심장박동 정상). ")
+                .append("화면을 껐다 켜면 SCREEN_ON 이 기록되어야 합니다.")
         }
         return sb.toString()
     }
@@ -243,6 +255,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun stamp(ms: Long): String =
         SimpleDateFormat("M/d HH:mm:ss", Locale.KOREA).format(Date(ms))
+
+    private fun ago(ms: Long): String {
+        val sec = (System.currentTimeMillis() - ms) / 1000L
+        return when {
+            sec < 60L -> sec.toString() + "초 전"
+            sec < 3600L -> (sec / 60L).toString() + "분 전"
+            else -> (sec / 3600L).toString() + "시간 전"
+        }
+    }
 
     private fun askNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
