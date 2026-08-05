@@ -21,9 +21,22 @@ object TodoStore {
     private const val KEY_LAST_SHOWN_MS = "last_shown_ms"
     private const val KEY_LAST_SHOWN_DAY = "last_shown_day"
 
+    // ---------- 진단용 (어느 단계에서 막혔는지 앱에서 바로 보이게) ----------
+    private const val KEY_SVC_STARTED_MS = "svc_started_ms"
+    private const val KEY_SVC_STOPPED_MS = "svc_stopped_ms"
+    private const val KEY_SVC_ERROR = "svc_error"
+    private const val KEY_LAST_UNLOCK_MS = "last_unlock_ms"
+    private const val KEY_LAST_RESULT = "last_result"
+
     const val MODE_ALWAYS = 0
     const val MODE_HOURLY = 1
     const val MODE_ONCE_A_DAY = 2
+
+    /** shouldShowNow 가 false 를 반환한 '이유'. 진단 표시에 씁니다. */
+    const val DECIDE_SHOW = 0
+    const val DECIDE_DISABLED = 1
+    const val DECIDE_NO_TODOS = 2
+    const val DECIDE_FREQUENCY = 3
 
     private fun keyFormat() = SimpleDateFormat("yyyy-MM-dd", Locale.US)
 
@@ -110,13 +123,16 @@ object TodoStore {
 
     fun setMode(ctx: Context, m: Int) = prefs(ctx).edit().putInt(KEY_MODE, m).apply()
 
-    /** 잠금해제 시점에 팝업을 띄워야 하는지 판단. 오늘 남은 할 일이 없으면 항상 false. */
-    fun shouldShowNow(ctx: Context): Boolean {
-        if (!isEnabled(ctx)) return false
-        if (pendingToday(ctx).isEmpty()) return false
+    /**
+     * 팝업을 띄울지, 아니면 왜 안 띄우는지를 판단합니다.
+     * shouldShowNow 와 달리 '이유'를 돌려주므로 진단 화면에 그대로 쓸 수 있습니다.
+     */
+    fun decide(ctx: Context): Int {
+        if (!isEnabled(ctx)) return DECIDE_DISABLED
+        if (pendingToday(ctx).isEmpty()) return DECIDE_NO_TODOS
 
         val p = prefs(ctx)
-        return when (getMode(ctx)) {
+        val ok = when (getMode(ctx)) {
             MODE_HOURLY -> {
                 val last = p.getLong(KEY_LAST_SHOWN_MS, 0L)
                 System.currentTimeMillis() - last >= 60L * 60L * 1000L
@@ -124,7 +140,11 @@ object TodoStore {
             MODE_ONCE_A_DAY -> p.getString(KEY_LAST_SHOWN_DAY, "") != today()
             else -> true
         }
+        return if (ok) DECIDE_SHOW else DECIDE_FREQUENCY
     }
+
+    /** 잠금해제 시점에 팝업을 띄워야 하는지 판단. 오늘 남은 할 일이 없으면 항상 false. */
+    fun shouldShowNow(ctx: Context): Boolean = decide(ctx) == DECIDE_SHOW
 
     fun markShown(ctx: Context) {
         prefs(ctx).edit()
@@ -132,4 +152,33 @@ object TodoStore {
             .putString(KEY_LAST_SHOWN_DAY, today())
             .apply()
     }
+
+    // ---------- 진단 기록 ----------
+
+    fun markServiceStarted(ctx: Context) =
+        prefs(ctx).edit().putLong(KEY_SVC_STARTED_MS, System.currentTimeMillis()).apply()
+
+    fun markServiceStopped(ctx: Context) =
+        prefs(ctx).edit().putLong(KEY_SVC_STOPPED_MS, System.currentTimeMillis()).apply()
+
+    fun serviceStartedMs(ctx: Context): Long = prefs(ctx).getLong(KEY_SVC_STARTED_MS, 0L)
+
+    fun serviceStoppedMs(ctx: Context): Long = prefs(ctx).getLong(KEY_SVC_STOPPED_MS, 0L)
+
+    fun setServiceError(ctx: Context, msg: String?) =
+        prefs(ctx).edit().putString(KEY_SVC_ERROR, msg ?: "").apply()
+
+    fun serviceError(ctx: Context): String = prefs(ctx).getString(KEY_SVC_ERROR, "") ?: ""
+
+    /** 잠금해제 브로드캐스트를 실제로 받은 시각 + 그때 어떻게 처리했는지. */
+    fun markUnlock(ctx: Context, result: String) {
+        prefs(ctx).edit()
+            .putLong(KEY_LAST_UNLOCK_MS, System.currentTimeMillis())
+            .putString(KEY_LAST_RESULT, result)
+            .apply()
+    }
+
+    fun lastUnlockMs(ctx: Context): Long = prefs(ctx).getLong(KEY_LAST_UNLOCK_MS, 0L)
+
+    fun lastResult(ctx: Context): String = prefs(ctx).getString(KEY_LAST_RESULT, "") ?: ""
 }

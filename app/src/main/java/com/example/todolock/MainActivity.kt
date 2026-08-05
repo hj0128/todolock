@@ -6,15 +6,18 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
 import android.provider.Settings
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todolock.databinding.ActivityMainBinding
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
@@ -84,13 +87,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        b.btnBattery.setOnClickListener {
-            try {
-                startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
-            } catch (e: Exception) {
-                startActivity(Intent(Settings.ACTION_SETTINGS))
-            }
-        }
+        b.btnBattery.setOnClickListener { requestBatteryExemption() }
 
         b.btnTest.setOnClickListener {
             if (TodoStore.pendingToday(this).isEmpty()) {
@@ -100,13 +97,53 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        b.btnRestart.setOnClickListener {
+            UnlockService.stop(this)
+            b.root.postDelayed({
+                UnlockService.start(this)
+                refresh()
+                Toast.makeText(this, "감지 서비스를 다시 시작했습니다", Toast.LENGTH_SHORT).show()
+            }, 400L)
+        }
+
         askNotificationPermission()
         if (TodoStore.isEnabled(this)) UnlockService.start(this)
     }
 
     override fun onResume() {
         super.onResume()
+        // 절전으로 서비스가 종료된 경우 앱을 열 때마다 스스로 되살립니다.
+        if (TodoStore.isEnabled(this) && !UnlockService.isRunning(this)) {
+            UnlockService.start(this)
+        }
         refresh()
+    }
+
+    /**
+     * 배터리 최적화 예외.
+     * 시스템 앱 목록으로 보내면 사용자가 앱을 찾아 헤매게 되므로
+     * 우리 패키지를 지정해 '허용' 팝업을 바로 띄웁니다. 막히면 목록으로 대체합니다.
+     */
+    private fun requestBatteryExemption() {
+        val pm = getSystemService(PowerManager::class.java)
+        if (pm != null && pm.isIgnoringBatteryOptimizations(packageName)) {
+            Toast.makeText(this, "이미 배터리 최적화 예외 상태입니다", Toast.LENGTH_SHORT).show()
+            return
+        }
+        try {
+            startActivity(
+                Intent(
+                    Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                    Uri.parse("package:" + packageName)
+                )
+            )
+        } catch (e: Exception) {
+            try {
+                startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+            } catch (e2: Exception) {
+                startActivity(Intent(Settings.ACTION_SETTINGS))
+            }
+        }
     }
 
     private fun addTodo() {
@@ -129,7 +166,66 @@ class MainActivity : AppCompatActivity() {
         val overlayOk = Settings.canDrawOverlays(this)
         b.tvPermWarn.visibility = if (overlayOk) View.GONE else View.VISIBLE
         b.btnOverlay.text = if (overlayOk) "다른 앱 위에 표시 · 허용됨" else "다른 앱 위에 표시 권한 주기"
+        b.btnBattery.text = if (isBatteryExempt()) "배터리 예외 · 완료" else "배터리 예외"
+
+        b.tvDiag.text = buildDiagnostics(overlayOk)
     }
+
+    private fun isBatteryExempt(): Boolean = try {
+        val pm = getSystemService(PowerManager::class.java)
+        pm != null && pm.isIgnoringBatteryOptimizations(packageName)
+    } catch (e: Exception) {
+        false
+    }
+
+    /**
+     * 잠금해제 → 팝업까지의 각 관문 상태를 그대로 보여줍니다.
+     * 조용히 실패하는 단계를 눈으로 찾을 수 있어야 해서 넣었습니다.
+     */
+    private fun buildDiagnostics(overlayOk: Boolean): String {
+        val running = UnlockService.isRunning(this)
+        val notifOk = NotificationManagerCompat.from(this).areNotificationsEnabled()
+        val batteryOk = isBatteryExempt()
+
+        val sb = StringBuilder("─── 진단 ───\n")
+        sb.append(mark(TodoStore.isEnabled(this))).append(" 스위치 켜짐\n")
+        sb.append(mark(running)).append(" 감지 서비스 실행 중\n")
+        sb.append(mark(overlayOk)).append(" 다른 앱 위에 표시\n")
+        sb.append(mark(notifOk)).append(" 알림 허용 (대체 표시용)\n")
+        sb.append(mark(batteryOk)).append(" 배터리 최적화 예외\n")
+
+        val unlock = TodoStore.lastUnlockMs(this)
+        sb.append(mark(unlock > 0L)).append(" 마지막 잠금해제 감지: ")
+            .append(if (unlock > 0L) stamp(unlock) else "아직 없음").append('\n')
+        if (TodoStore.lastResult(this).isNotEmpty()) {
+            sb.append("    └ 처리: ").append(TodoStore.lastResult(this)).append('\n')
+        }
+
+        val started = TodoStore.serviceStartedMs(this)
+        if (started > 0L) sb.append("서비스 시작: ").append(stamp(started)).append('\n')
+        val stopped = TodoStore.serviceStoppedMs(this)
+        if (stopped > 0L) sb.append("서비스 종료: ").append(stamp(stopped)).append('\n')
+
+        val err = TodoStore.serviceError(this)
+        if (err.isNotEmpty()) sb.append("⚠ 오류: ").append(err).append('\n')
+
+        sb.append("Android ").append(Build.VERSION.SDK_INT)
+            .append(" · ").append(Build.MANUFACTURER).append(' ').append(Build.MODEL)
+
+        if (unlock == 0L && running) {
+            sb.append("\n\n잠금을 완전히 풀어야 감지됩니다(화면만 켜는 것은 제외). ")
+                .append("잠금 방식이 '없음/스와이프'면 감지가 안 되는 기기도 있습니다.")
+        }
+        if (!running) {
+            sb.append("\n\n서비스가 죽어 있습니다 → 배터리 예외를 켜고 '감지 서비스 다시 시작'을 누르세요.")
+        }
+        return sb.toString()
+    }
+
+    private fun mark(ok: Boolean) = if (ok) "✔" else "✘"
+
+    private fun stamp(ms: Long): String =
+        SimpleDateFormat("M/d HH:mm:ss", Locale.KOREA).format(Date(ms))
 
     private fun askNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
