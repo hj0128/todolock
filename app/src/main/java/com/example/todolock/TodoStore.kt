@@ -27,7 +27,7 @@ object TodoStore {
     private const val KEY_SVC_ERROR = "svc_error"
     private const val KEY_LAST_UNLOCK_MS = "last_unlock_ms"
     private const val KEY_LAST_RESULT = "last_result"
-ㅗ    private const val KEY_LAST_BCAST_MS = "last_bcast_ms"
+    private const val KEY_LAST_BCAST_MS = "last_bcast_ms"
     private const val KEY_LAST_BCAST = "last_bcast"
     private const val KEY_EVENT_LOG = "event_log"
     private const val KEY_LAST_HANDLED_MS = "last_handled_ms"
