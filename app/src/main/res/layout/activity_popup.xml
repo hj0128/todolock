@@ -30,8 +30,17 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="오늘의 할 일"
-                android:textSize="22sp"
+                android:text="잠깐!"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="@color/sky_heading" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:text="오늘 할 일 확인하셨나요?"
+                android:textSize="19sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -42,17 +51,20 @@
                 android:textSize="14sp"
                 android:alpha="0.6" />
 
-            <ScrollView
+            <!-- 항목이 많아도 버튼이 잘리지 않도록 높이 상한을 두고 스크롤합니다 -->
+            <com.example.todolock.MaxHeightScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp">
+                android:layout_marginTop="12dp"
+                android:scrollbars="vertical"
+                android:fadeScrollbars="false">
 
                 <LinearLayout
                     android:id="@+id/container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical" />
-            </ScrollView>
+            </com.example.todolock.MaxHeightScrollView>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -70,6 +82,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnClose"
+                    style="@style/Widget.TodoLock.Button.Sky"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

@@ -40,24 +40,22 @@ class TodayPopupActivity : AppCompatActivity() {
     }
 
     private fun render() {
-        // 팝업은 오늘 것만 보여주므로 날짜는 감추고, 중요 항목을 위로 올립니다.
+        // 팝업은 오늘 것만 보여주므로 날짜는 감춥니다.
+        // 목록 화면과 같은 우선순위: 미완료 먼저 → 중요 → 미리 알림 이른 순 → 등록순.
         val items = TodoStore.forDate(this, TodoStore.today())
-            .sortedWith(compareBy<Todo> { it.done }.thenByDescending { it.important })
+            .sortedWith(
+                compareBy<Todo> { it.done }
+                    .thenByDescending { it.important }
+                    .thenBy { if (it.hasReminder) it.remindAt else Long.MAX_VALUE }
+                    .thenBy { it.id }
+            )
         val remaining = items.count { !it.done }
 
         b.container.removeAllViews()
         for (todo in items) {
             val row = ItemTodoBinding.inflate(layoutInflater, b.container, false)
-            TodoRow.bind(
-                row, todo,
-                onToggle = {
-                    TodoStore.update(this, it)
-                    b.root.post { if (!isFinishing) render() }
-                },
-                onDelete = null,
-                onStar = null,
-                showDate = false
-            )
+            // 이 화면은 '확인' 전용입니다. 체크·별표·삭제 없이 보여주기만 합니다.
+            TodoRow.bind(row, todo, showDate = false)
             b.container.addView(row.root)
         }
 

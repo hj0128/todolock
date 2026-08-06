@@ -10,6 +10,8 @@
     <!-- 시스템 목록에서 앱을 찾아 헤매지 않고 바로 허용 팝업을 띄우기 위해 필요합니다.
          (Play 스토어 배포용이 아닌 사이드로드 전용) -->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <!-- 미리 알림을 제 시각에 울리기 위한 권한. 없으면 몇 분 늦는 부정확 알람으로 대체됩니다. -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <application
         android:allowBackup="true"
@@ -49,6 +51,11 @@
         <!-- 프로세스가 죽어도 알람으로 깨어나 감지 서비스를 되살립니다 -->
         <receiver
             android:name=".Watchdog"
+            android:exported="false" />
+
+        <!-- 할 일별 미리 알림 알람과, 그 알림의 '완료' 버튼 -->
+        <receiver
+            android:name=".ReminderReceiver"
             android:exported="false" />
 
         <receiver

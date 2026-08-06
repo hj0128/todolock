@@ -49,6 +49,18 @@ object TodoStore {
 
     fun format(cal: Calendar): String = keyFormat().format(cal.time)
 
+    /** "yyyy-MM-dd" → Calendar. 값이 깨져 있으면 오늘로 둡니다. (수정 시트 초기값용) */
+    fun parseDate(dateKey: String): Calendar {
+        val cal = Calendar.getInstance()
+        try {
+            val d = keyFormat().parse(dateKey)
+            if (d != null) cal.time = d
+        } catch (e: Exception) {
+            // 오늘 기준 유지
+        }
+        return cal
+    }
+
     private fun prefs(ctx: Context) =
         ctx.applicationContext.getSharedPreferences(PREF, Context.MODE_PRIVATE)
 
@@ -67,7 +79,9 @@ object TodoStore {
                         o.optString("text", ""),
                         o.optString("date", today()),
                         o.optBoolean("done", false),
-                        o.optBoolean("important", false)
+                        o.optBoolean("important", false),
+                        // 알림이 없던 옛 데이터는 '알림 없음' 으로 읽힙니다.
+                        o.optLong("remindAt", Todo.NO_REMIND)
                     )
                 )
             }
@@ -87,6 +101,7 @@ object TodoStore {
                     .put("date", t.date)
                     .put("done", t.done)
                     .put("important", t.important)
+                    .put("remindAt", t.remindAt)
             )
         }
         prefs(ctx).edit().putString(KEY_TODOS, arr.toString()).apply()
@@ -98,17 +113,49 @@ object TodoStore {
     fun pendingToday(ctx: Context): List<Todo> =
         load(ctx).filter { it.date == today() && !it.done }
 
-    fun add(ctx: Context, text: String, date: String, important: Boolean = false) {
+    /** 방금 만든 항목을 돌려줍니다. 호출한 쪽에서 곧바로 미리 알림을 예약할 수 있게. */
+    fun add(
+        ctx: Context,
+        text: String,
+        date: String,
+        important: Boolean = false,
+        remindAt: Long = Todo.NO_REMIND
+    ): Todo {
+        val todo = Todo(System.currentTimeMillis(), text, date, false, important, remindAt)
         val list = load(ctx)
-        list.add(Todo(System.currentTimeMillis(), text, date, false, important))
+        list.add(todo)
         save(ctx, list)
+        return todo
     }
 
-    /** 미완료: 중요 먼저 → 날짜 이른 순. 한 화면에 전부 보여주기 위한 정렬. */
+    /**
+     * 미완료 정렬 우선순위: 날짜(오래된 것 먼저) → 중요 → 미리 알림(이른 것 먼저) → 등록순.
+     *
+     * 날짜는 여전히 최우선이라 중요 표시로도 날짜 경계를 넘지 못합니다.
+     * 알림을 걸지 않은 항목은 remindAt 이 0 이라 그대로 두면 맨 앞으로 오므로,
+     * 정렬 키에서만 가장 큰 값으로 바꿔 뒤로 보냅니다.
+     */
     fun pendingSorted(ctx: Context): List<Todo> =
         load(ctx).filter { !it.done }.sortedWith(
-            compareByDescending<Todo> { it.important }.thenBy { it.date }.thenBy { it.id }
+            compareBy<Todo> { it.date }
+                .thenByDescending { it.important }
+                .thenBy { if (it.hasReminder) it.remindAt else Long.MAX_VALUE }
+                .thenBy { it.id }
         )
+
+    // ---------- 기한 / 미리 알림 ----------
+
+    /** 기한 날짜가 이미 지났는지. */
+    fun isOverdue(t: Todo): Boolean = !t.done && t.date < today()
+
+    /** "내일 · 8월 6일 (목) 09:00" 처럼 알림 시각을 사람이 읽는 형태로. */
+    fun prettyDateTime(ms: Long): String {
+        if (ms <= 0L) return ""
+        val cal = Calendar.getInstance()
+        cal.timeInMillis = ms
+        return prettyDate(format(cal)) + " " +
+            SimpleDateFormat("HH:mm", Locale.KOREA).format(Date(ms))
+    }
 
     /** 완료: 최근 완료된 것이 위로. */
     fun doneSorted(ctx: Context): List<Todo> =

@@ -14,12 +14,13 @@
         android:paddingEnd="4dp"
         android:background="?attr/selectableItemBackground">
 
+        <!-- 행 본문 탭은 '수정' 이므로 완료 처리는 체크박스가 직접 받습니다 -->
         <CheckBox
             android:id="@+id/cbDone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clickable="false"
-            android:focusable="false" />
+            android:minWidth="48dp"
+            android:minHeight="48dp" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -49,7 +50,8 @@
             android:id="@+id/btnStar"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@android:drawable/btn_star_big_off"
+            android:src="@drawable/ic_star_border"
+            android:tint="@color/sky_heading"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="중요 표시" />
 
@@ -57,9 +59,10 @@
             android:id="@+id/btnDelete"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:src="@drawable/ic_close"
+            android:tint="?attr/colorOutline"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="삭제"
-            android:alpha="0.5" />
+            android:alpha="0.7" />
     </LinearLayout>
 </LinearLayout>

@@ -10,76 +10,12 @@
     android:paddingTop="12dp"
     android:paddingBottom="12dp">
 
-    <TextView
-        android:id="@+id/tvToday"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnOpenAdd"
+        style="@style/Widget.TodoLock.Button.Sky"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:paddingTop="4dp"
-        android:paddingBottom="6dp"
-        android:text="오늘" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
-
-        <EditText
-            android:id="@+id/etInput"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="할 일 입력"
-            android:inputType="text"
-            android:imeOptions="actionDone"
-            android:maxLines="1"
-            android:importantForAutofill="no" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnAdd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="추가" />
-    </LinearLayout>
-
-    <!-- 추가할 항목의 날짜와 중요 표시를 미리 정합니다 -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginTop="2dp">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnPickDate"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:minHeight="0dp"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp"
-            android:text="오늘" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnAddStar"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:textSize="12sp"
-            android:minHeight="0dp"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp"
-            android:text="☆ 중요" />
-    </LinearLayout>
+        android:text="＋ 할 일 추가" />
 
     <TextView
         android:id="@+id/tvEmpty"
@@ -159,7 +95,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
-                android:textColor="#D32F2F"
+                android:textColor="?attr/colorError"
                 android:layout_marginTop="4dp"
                 android:text="⚠ '다른 앱 위에 표시' 권한이 없으면 팝업 대신 알림으로만 표시됩니다."
                 android:visibility="gone" />
@@ -210,24 +146,6 @@
                     android:text="미리보기" />
             </LinearLayout>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnRestart"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="11sp"
-                android:text="감지 서비스 다시 시작" />
-
-            <TextView
-                android:id="@+id/tvDiag"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:textSize="11sp"
-                android:fontFamily="monospace"
-                android:lineSpacingExtra="2dp"
-                android:alpha="0.75"
-                android:textIsSelectable="true" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </LinearLayout>

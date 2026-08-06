@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  하늘색(시안 계열 블루, 색상각 ~200) 기반 Material 3 색 역할.
+  라이트/다크 두 벌을 두고 themes.xml / values-night/themes.xml 에서 각각 씁니다.
+-->
+<resources>
+
+    <!-- ========== 라이트 ==========
+         링크·라디오·스위치에 쓰이는 강조색. 버튼과 톤을 맞추려 연하게 낮췄습니다. -->
+    <color name="md_primary">#2489B8</color>
+    <color name="md_on_primary">#FFFFFF</color>
+    <color name="md_primary_container">#DCF2FE</color>
+    <color name="md_on_primary_container">#1B5673</color>
+
+    <color name="md_secondary">#4E616D</color>
+    <color name="md_on_secondary">#FFFFFF</color>
+    <color name="md_secondary_container">#D1E5F4</color>
+    <color name="md_on_secondary_container">#0A1E28</color>
+
+    <color name="md_tertiary">#5F5B7D</color>
+    <color name="md_on_tertiary">#FFFFFF</color>
+    <color name="md_tertiary_container">#E5DEFF</color>
+    <color name="md_on_tertiary_container">#1B1736</color>
+
+    <color name="md_error">#BA1A1A</color>
+    <color name="md_on_error">#FFFFFF</color>
+    <color name="md_error_container">#FFDAD6</color>
+    <color name="md_on_error_container">#410002</color>
+
+    <color name="md_background">#F4FBFF</color>
+    <color name="md_on_background">#2C3A42</color>
+    <color name="md_surface">#F4FBFF</color>
+    <color name="md_on_surface">#2C3A42</color>
+    <color name="md_surface_variant">#E3EEF5</color>
+    <color name="md_on_surface_variant">#5A6B75</color>
+    <color name="md_outline">#9BB0BC</color>
+    <color name="md_outline_variant">#D3E2EB</color>
+    <color name="md_inverse_surface">#2E3133</color>
+    <color name="md_inverse_on_surface">#EFF1F3</color>
+    <color name="md_inverse_primary">#83CFFF</color>
+
+    <!-- 시트·카드 배경에 쓰이는 표면 단계 -->
+    <color name="md_surface_dim">#DDEBF4</color>
+    <color name="md_surface_bright">#FBFDFF</color>
+    <color name="md_surface_container_lowest">#FFFFFF</color>
+    <color name="md_surface_container_low">#F9FCFF</color>
+    <color name="md_surface_container">#EFF8FE</color>
+    <color name="md_surface_container_high">#E7F4FD</color>
+    <color name="md_surface_container_highest">#DEEFFB</color>
+
+    <!-- ========== 다크 ==========
+         라이트와 같은 정도로 대비를 낮춘 값입니다. 강조색은 채도를 눕혀
+         어두운 배경에서 형광처럼 튀지 않게 했습니다. -->
+    <color name="md_primary_dark">#7FC2E0</color>
+    <color name="md_on_primary_dark">#0E2C3A</color>
+    <color name="md_primary_container_dark">#2A4E60</color>
+    <color name="md_on_primary_container_dark">#C6E6F5</color>
+
+    <color name="md_secondary_dark">#B5C9D7</color>
+    <color name="md_on_secondary_dark">#20333D</color>
+    <color name="md_secondary_container_dark">#364954</color>
+    <color name="md_on_secondary_container_dark">#D1E5F4</color>
+
+    <color name="md_tertiary_dark">#C8C2EA</color>
+    <color name="md_on_tertiary_dark">#302D4C</color>
+    <color name="md_tertiary_container_dark">#474364</color>
+    <color name="md_on_tertiary_container_dark">#E5DEFF</color>
+
+    <color name="md_error_dark">#FFB4AB</color>
+    <color name="md_on_error_dark">#690005</color>
+    <color name="md_error_container_dark">#93000A</color>
+    <color name="md_on_error_container_dark">#FFDAD6</color>
+
+    <color name="md_background_dark">#151B1F</color>
+    <color name="md_on_background_dark">#C9D4DA</color>
+    <color name="md_surface_dark">#151B1F</color>
+    <color name="md_on_surface_dark">#C9D4DA</color>
+    <color name="md_surface_variant_dark">#39454C</color>
+    <color name="md_on_surface_variant_dark">#9FB0B9</color>
+    <color name="md_outline_dark">#6E7F88</color>
+    <color name="md_outline_variant_dark">#33404A</color>
+    <color name="md_inverse_surface_dark">#DFE3E6</color>
+    <color name="md_inverse_on_surface_dark">#2E3133</color>
+    <color name="md_inverse_primary_dark">#00658E</color>
+
+    <color name="md_surface_dim_dark">#151B1F</color>
+    <color name="md_surface_bright_dark">#333F45</color>
+    <color name="md_surface_container_lowest_dark">#10161A</color>
+    <color name="md_surface_container_low_dark">#1A2226</color>
+    <color name="md_surface_container_dark">#1E272B</color>
+    <color name="md_surface_container_high_dark">#263135</color>
+    <color name="md_surface_container_highest_dark">#2E3B41</color>
+
+    <!--
+      큰 면적(채워진 버튼 · 상태바)에 쓰는 파스텔 하늘색.
+      글자색도 진한 남색이 아니라 중간 톤 블루로 두어 대비를 3.4:1 로 낮췄습니다.
+      (부드러운 느낌을 위한 의도된 선택이며, WCAG AA 본문 기준 4.5:1 아래입니다)
+    -->
+    <!--
+      진한 하늘파랑. 파스텔(#B3E5FC)은 흰 배경과 구분이 안 돼 버튼이 작아 보였습니다.
+      글자는 중간 톤 남청색으로 얹어 대비를 3.3:1 로 낮게 유지합니다.
+    -->
+    <color name="sky_bright">#4FBDE8</color>
+    <color name="on_sky_bright">#1B5D7A</color>
+
+    <!-- 외곽선 버튼(기한 설정 · 미리 알림)의 선 색. 회색이 아닌 하늘색 계열. -->
+    <color name="sky_stroke">#7FC9EC</color>
+
+    <!--
+      팝업의 '잠깐!' 강조 문구. 같은 하늘색 계열이면서 28sp 큰 글자로 읽히는 선입니다.
+      파스텔(#B3E5FC)을 그대로 쓰면 연한 카드 배경에 묻혀 거의 안 보입니다.
+    -->
+    <color name="sky_heading">#2E8FBF</color>
+
+    <!-- 기한 지난 항목 표시색. 파스텔 팔레트에 맞춰 톤을 낮춘 붉은 계열. -->
+    <color name="overdue">#D2726B</color>
+</resources>

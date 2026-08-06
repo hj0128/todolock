@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  다크 모드 대체값. 이름이 같으므로 values/themes.xml 의 스타일이 그대로 이걸 씁니다.
+  어두운 배경에서는 파스텔 하늘색(#B3E5FC)이 그대로 쓰이면 눈부시므로,
+  같은 계열의 깊은 하늘색으로 낮추고 글자를 연한 하늘색으로 얹습니다.
+-->
+<resources>
+    <color name="sky_bright">#31768F</color>
+    <color name="on_sky_bright">#C4E8F7</color>
+
+    <color name="sky_stroke">#568DA6</color>
+
+    <!-- '잠깐!' — 어두운 카드 위에서 과하지 않게 밝은 하늘색 -->
+    <color name="sky_heading">#79C6E9</color>
+
+    <!-- 어두운 배경에서는 붉은색이 더 강하게 보여 한 톤 더 눕힙니다 -->
+    <color name="overdue">#E0928C</color>
+</resources>

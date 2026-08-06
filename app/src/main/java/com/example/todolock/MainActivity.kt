@@ -1,7 +1,6 @@
 package com.example.todolock
 
 import android.Manifest
-import android.app.DatePickerDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -12,23 +11,14 @@ import android.provider.Settings
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todolock.databinding.ActivityMainBinding
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var b: ActivityMainBinding
     private lateinit var adapter: TodoAdapter
-
-    /** 새로 추가할 항목의 날짜/중요 여부. 목록 자체는 날짜와 무관하게 전부 보여줍니다. */
-    private val addDate: Calendar = Calendar.getInstance()
-    private var addImportant = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,21 +27,17 @@ class MainActivity : AppCompatActivity() {
 
         adapter = TodoAdapter(
             mutableListOf(),
-            onToggle = { TodoStore.update(this, it); refresh() },
-            onDelete = { TodoStore.delete(this, it.id); refresh() },
-            onStar = { TodoStore.update(this, it); refresh() }
+            // 완료로 바뀌면 예약을 지우고, 완료를 해제하면 다시 걸어야 하므로
+            // 양쪽 다 schedule 을 통과시킵니다 (내부에서 취소를 먼저 합니다).
+            onToggle = { TodoStore.update(this, it); Reminders.schedule(this, it); refresh() },
+            onDelete = { Reminders.cancel(this, it.id); TodoStore.delete(this, it.id); refresh() },
+            onStar = { TodoStore.update(this, it); refresh() },
+            onEdit = { openEditSheet(it) }
         )
         b.recycler.layoutManager = LinearLayoutManager(this)
         b.recycler.adapter = adapter
 
-        b.btnAdd.setOnClickListener { addTodo() }
-        b.etInput.setOnEditorActionListener { _, _, _ -> addTodo(); true }
-
-        b.btnPickDate.setOnClickListener { pickDate() }
-        b.btnAddStar.setOnClickListener {
-            addImportant = !addImportant
-            syncAddBar()
-        }
+        b.btnOpenAdd.setOnClickListener { openAddSheet() }
 
         // 초기 상태를 먼저 반영한 뒤 리스너를 붙입니다 (리스너 오작동 방지)
         b.swEnabled.isChecked = TodoStore.isEnabled(this)
@@ -107,38 +93,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        b.btnRestart.setOnClickListener {
-            UnlockService.stop(this)
-            b.root.postDelayed({
-                UnlockService.start(this)
-                refresh()
-                Toast.makeText(this, "감지 서비스를 다시 시작했습니다", Toast.LENGTH_SHORT).show()
-            }, 400L)
-        }
-
-        syncAddBar()
         askNotificationPermission()
         if (TodoStore.isEnabled(this)) UnlockService.start(this)
-    }
-
-    /** 추가 바(날짜 버튼 · 별표 버튼)의 표시를 현재 선택 상태와 맞춥니다. */
-    private fun syncAddBar() {
-        b.btnPickDate.text = TodoStore.prettyDate(TodoStore.format(addDate))
-        b.btnAddStar.text = if (addImportant) "★ 중요" else "☆ 중요"
-        b.btnAddStar.alpha = if (addImportant) 1f else 0.6f
-    }
-
-    private fun pickDate() {
-        DatePickerDialog(
-            this,
-            { _, year, month, day ->
-                addDate.set(year, month, day)
-                syncAddBar()
-            },
-            addDate.get(Calendar.YEAR),
-            addDate.get(Calendar.MONTH),
-            addDate.get(Calendar.DAY_OF_MONTH)
-        ).show()
     }
 
     override fun onResume() {
@@ -148,6 +104,8 @@ class MainActivity : AppCompatActivity() {
             if (!UnlockService.isRunning(this)) UnlockService.start(this)
             Watchdog.arm(this)
         }
+        // 재부팅·강제 종료로 알람이 날아갔을 수 있으므로 앱을 열 때마다 다시 세웁니다.
+        Reminders.rescheduleAll(this)
         refresh()
     }
 
@@ -178,20 +136,44 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun addTodo() {
-        val text = b.etInput.text.toString().trim()
-        if (text.isEmpty()) return
-        TodoStore.add(this, text, TodoStore.format(addDate), addImportant)
-        b.etInput.setText("")
-        // 날짜는 연속 입력을 위해 유지하고, 중요 표시만 초기화합니다.
-        addImportant = false
-        syncAddBar()
-        refresh()
+    private fun openAddSheet() {
+        AddTodoSheet(this) { text, date, remindAt, important ->
+            val todo = TodoStore.add(this, text, date, important, remindAt)
+            announceReminder(todo, Reminders.schedule(this, todo))
+            refresh()
+        }.show()
+    }
+
+    /** 목록에서 행 본문을 탭했을 때. 같은 시트를 기존 값으로 채워 엽니다. */
+    private fun openEditSheet(todo: Todo) {
+        AddTodoSheet(this, todo) { text, date, remindAt, important ->
+            todo.text = text
+            todo.date = date
+            todo.remindAt = remindAt
+            todo.important = important
+            TodoStore.update(this, todo)
+            // 기한·알림이 바뀌었을 수 있으므로 예약을 다시 세웁니다(내부에서 취소 먼저).
+            announceReminder(todo, Reminders.schedule(this, todo))
+            refresh()
+        }.show()
+    }
+
+    /** 실제로 알람이 걸렸을 때만 알려준다고 말합니다. 지난 시각은 예약되지 않습니다. */
+    private fun announceReminder(todo: Todo, scheduled: Boolean) {
+        if (!todo.hasReminder) return
+
+        val at = TodoStore.prettyDateTime(todo.remindAt)
+        val msg = if (!scheduled) {
+            at + " — 이미 지난 시각이라 알림을 걸지 않았습니다"
+        } else {
+            // 정확 알람 권한이 없으면 몇 분 늦으므로 그 사실을 같이 알려줍니다.
+            at + "에 알려드립니다" +
+                (if (Reminders.canBeExact(this)) "" else " (권한이 없어 몇 분 늦을 수 있음)")
+        }
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
     }
 
     private fun refresh() {
-        b.tvToday.text = TodoStore.prettyDate(TodoStore.today())
-
         // 날짜별로 갈아타지 않고 전부 한 목록에 보여주고, 완료는 아래 섹션으로 내립니다.
         val pending = TodoStore.pendingSorted(this)
         val done = TodoStore.doneSorted(this)
@@ -213,8 +195,6 @@ class MainActivity : AppCompatActivity() {
         b.tvPermWarn.visibility = if (overlayOk) View.GONE else View.VISIBLE
         b.btnOverlay.text = if (overlayOk) "다른 앱 위에 표시 · 허용됨" else "다른 앱 위에 표시 권한 주기"
         b.btnBattery.text = if (isBatteryExempt()) "배터리 예외 · 완료" else "배터리 예외"
-
-        b.tvDiag.text = buildDiagnostics(overlayOk)
     }
 
     private fun isBatteryExempt(): Boolean = try {
@@ -222,83 +202,6 @@ class MainActivity : AppCompatActivity() {
         pm != null && pm.isIgnoringBatteryOptimizations(packageName)
     } catch (e: Exception) {
         false
-    }
-
-    /**
-     * 잠금해제 → 팝업까지의 각 관문 상태를 그대로 보여줍니다.
-     * 조용히 실패하는 단계를 눈으로 찾을 수 있어야 해서 넣었습니다.
-     */
-    private fun buildDiagnostics(overlayOk: Boolean): String {
-        val running = UnlockService.isRunning(this)
-        val notifOk = NotificationManagerCompat.from(this).areNotificationsEnabled()
-        val batteryOk = isBatteryExempt()
-
-        val sb = StringBuilder("─── 진단 ───\n")
-        sb.append(mark(TodoStore.isEnabled(this))).append(" 스위치 켜짐\n")
-        sb.append(mark(running)).append(" 감지 서비스 실행 중\n")
-        sb.append(mark(overlayOk)).append(" 다른 앱 위에 표시\n")
-        sb.append(mark(notifOk)).append(" 알림 허용 (대체 표시용)\n")
-        sb.append(mark(batteryOk)).append(" 배터리 최적화 예외\n")
-
-        // 잠금해제 계열 브로드캐스트 수신 여부.
-        // RECEIVER_NOT_EXPORTED 로 등록하면 예외 없이 한 건도 안 오는 기기가 있어서,
-        // 등록 방식까지 함께 보여줍니다.
-        val bcast = TodoStore.lastBroadcastMs(this)
-        sb.append(mark(bcast > 0L)).append(" 마지막 브로드캐스트: ")
-            .append(
-                if (bcast > 0L) {
-                    TodoStore.lastBroadcast(this) + " " + stamp(bcast) + " (" + ago(bcast) + ")"
-                } else {
-                    "아직 없음"
-                }
-            )
-            .append('\n')
-        if (TodoStore.regMode(this).isNotEmpty()) {
-            sb.append("    └ 리시버 등록: ").append(TodoStore.regMode(this)).append('\n')
-        }
-
-        val unlock = TodoStore.lastUnlockMs(this)
-        sb.append(mark(unlock > 0L)).append(" 마지막 잠금해제 감지: ")
-            .append(if (unlock > 0L) stamp(unlock) else "아직 없음").append('\n')
-        if (TodoStore.lastResult(this).isNotEmpty()) {
-            sb.append("    └ 처리: ").append(TodoStore.lastResult(this)).append('\n')
-        }
-
-        val started = TodoStore.serviceStartedMs(this)
-        if (started > 0L) sb.append("서비스 시작: ").append(stamp(started)).append('\n')
-        val stopped = TodoStore.serviceStoppedMs(this)
-        if (stopped > 0L) sb.append("서비스 종료: ").append(stamp(stopped)).append('\n')
-
-        val err = TodoStore.serviceError(this)
-        if (err.isNotEmpty()) sb.append("⚠ 오류: ").append(err).append('\n')
-
-        sb.append("Android ").append(Build.VERSION.SDK_INT)
-            .append(" · ").append(Build.MANUFACTURER).append(' ').append(Build.MODEL)
-
-        val log = TodoStore.eventLog(this)
-        if (log.isNotEmpty()) sb.append("\n─── 최근 기록 ───\n").append(log)
-
-        if (!running) {
-            sb.append("\n\n서비스가 죽어 있습니다 → 배터리 예외를 켜고 '감지 서비스 다시 시작'을 누르세요.")
-        } else if (bcast == 0L) {
-            sb.append("\n\n화면을 껐다 켜면 SCREEN_ON 이 기록되어야 합니다. ")
-                .append("계속 비어 있으면 잠금해제 시점에 서비스가 재워진 것입니다.")
-        }
-        return sb.toString()
-    }
-
-    private fun mark(ok: Boolean) = if (ok) "✔" else "✘"
-
-    private fun stamp(ms: Long): String =
-        SimpleDateFormat("M/d HH:mm:ss", Locale.KOREA).format(Date(ms))
-
-    private fun ago(ms: Long): String {
-        val sec = (System.currentTimeMillis() - ms) / 1000L
-        return when {
-            sec < 60L -> sec.toString() + "초 전"
-            sec < 3600L -> (sec / 60L).toString() + "분 전"
-            else -> (sec / 3600L).toString() + "시간 전"
-        }
     }
 
     private fun askNotificationPermission() {

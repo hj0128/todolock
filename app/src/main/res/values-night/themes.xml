@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 하늘색 Material 3 테마 (다크). 색 역할 구성은 values/themes.xml 과 동일합니다. -->
+    <style name="Theme.TodoLock" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/md_primary_dark</item>
+        <item name="colorOnPrimary">@color/md_on_primary_dark</item>
+        <item name="colorPrimaryContainer">@color/md_primary_container_dark</item>
+        <item name="colorOnPrimaryContainer">@color/md_on_primary_container_dark</item>
+
+        <item name="colorSecondary">@color/md_secondary_dark</item>
+        <item name="colorOnSecondary">@color/md_on_secondary_dark</item>
+        <item name="colorSecondaryContainer">@color/md_secondary_container_dark</item>
+        <item name="colorOnSecondaryContainer">@color/md_on_secondary_container_dark</item>
+
+        <item name="colorTertiary">@color/md_tertiary_dark</item>
+        <item name="colorOnTertiary">@color/md_on_tertiary_dark</item>
+        <item name="colorTertiaryContainer">@color/md_tertiary_container_dark</item>
+        <item name="colorOnTertiaryContainer">@color/md_on_tertiary_container_dark</item>
+
+        <item name="colorError">@color/md_error_dark</item>
+        <item name="colorOnError">@color/md_on_error_dark</item>
+        <item name="colorErrorContainer">@color/md_error_container_dark</item>
+        <item name="colorOnErrorContainer">@color/md_on_error_container_dark</item>
+
+        <item name="android:colorBackground">@color/md_background_dark</item>
+        <item name="colorOnBackground">@color/md_on_background_dark</item>
+        <item name="colorSurface">@color/md_surface_dark</item>
+        <item name="colorOnSurface">@color/md_on_surface_dark</item>
+        <item name="colorSurfaceVariant">@color/md_surface_variant_dark</item>
+        <item name="colorOnSurfaceVariant">@color/md_on_surface_variant_dark</item>
+        <item name="colorOutline">@color/md_outline_dark</item>
+        <item name="colorOutlineVariant">@color/md_outline_variant_dark</item>
+        <item name="colorSurfaceInverse">@color/md_inverse_surface_dark</item>
+        <item name="colorOnSurfaceInverse">@color/md_inverse_on_surface_dark</item>
+        <item name="colorPrimaryInverse">@color/md_inverse_primary_dark</item>
+
+        <item name="colorSurfaceDim">@color/md_surface_dim_dark</item>
+        <item name="colorSurfaceBright">@color/md_surface_bright_dark</item>
+        <item name="colorSurfaceContainerLowest">@color/md_surface_container_lowest_dark</item>
+        <item name="colorSurfaceContainerLow">@color/md_surface_container_low_dark</item>
+        <item name="colorSurfaceContainer">@color/md_surface_container_dark</item>
+        <item name="colorSurfaceContainerHigh">@color/md_surface_container_high_dark</item>
+        <item name="colorSurfaceContainerHighest">@color/md_surface_container_highest_dark</item>
+
+        <!-- 다크에서는 밝은 하늘색 상태바가 눈부시므로 표면색으로 둡니다 -->
+        <item name="android:statusBarColor">@color/md_surface_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/md_surface_dark</item>
+    </style>
+
+    <style name="Theme.TodoLock.Popup" parent="Theme.TodoLock">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+</resources>

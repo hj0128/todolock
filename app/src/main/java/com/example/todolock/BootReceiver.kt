@@ -12,8 +12,13 @@ class BootReceiver : BroadcastReceiver() {
             action == Intent.ACTION_MY_PACKAGE_REPLACED ||
             action == "android.intent.action.QUICKBOOT_POWERON"
         ) {
-            if (TodoStore.isEnabled(context)) {
-                val ctx = context.applicationContext
+            val ctx = context.applicationContext
+
+            // 예약된 알람은 재부팅으로 사라집니다.
+            // 잠금해제 팝업 스위치와 무관한 기능이므로 항상 다시 세웁니다.
+            Reminders.rescheduleAll(ctx)
+
+            if (TodoStore.isEnabled(ctx)) {
                 UnlockService.start(ctx)
                 Watchdog.arm(ctx)
                 TodoStore.appendLog(ctx, "재부팅/업데이트 → 서비스 시작")

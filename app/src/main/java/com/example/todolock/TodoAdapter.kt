@@ -16,7 +16,8 @@ class TodoAdapter(
     private val rows: MutableList<Row>,
     private val onToggle: (Todo) -> Unit,
     private val onDelete: ((Todo) -> Unit)? = null,
-    private val onStar: ((Todo) -> Unit)? = null
+    private val onStar: ((Todo) -> Unit)? = null,
+    private val onEdit: ((Todo) -> Unit)? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private class HeaderVH(val b: ItemHeaderBinding) : RecyclerView.ViewHolder(b.root)
@@ -40,7 +41,7 @@ class TodoAdapter(
         when (val row = rows[position]) {
             is Row.Header -> (holder as HeaderVH).b.tvHeader.text = row.title
             is Row.Item -> TodoRow.bind(
-                (holder as ItemVH).b, row.todo, onToggle, onDelete, onStar
+                (holder as ItemVH).b, row.todo, onToggle, onDelete, onStar, onEdit
             )
         }
     }
