@@ -3,6 +3,7 @@ package com.hj0128.todolock
 import android.content.Context
 import android.content.Intent
 import android.util.TypedValue
+import android.view.View
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import androidx.core.content.ContextCompat
@@ -44,19 +45,28 @@ private class TodoWidgetFactory(
         // 글꼴 크기 설정을 행에도 적용합니다.
         rv.setTextViewTextSize(R.id.wTitle, TypedValue.COMPLEX_UNIT_SP, WidgetConfig.titleSp(ctx))
         rv.setTextViewTextSize(R.id.wSub, TypedValue.COMPLEX_UNIT_SP, WidgetConfig.subSp(ctx))
+        rv.setTextViewTextSize(R.id.wRemind, TypedValue.COMPLEX_UNIT_SP, WidgetConfig.subSp(ctx))
 
         // 행은 뒤쪽 목록 판보다 진하게 (헤더와 같은 알파)
         rv.setInt(R.id.wItemBg, "setImageAlpha", WidgetConfig.panelAlpha(ctx))
 
+        // 왼쪽에는 기한만 둡니다. 미리 알림은 오른쪽 끝에 따로 붙어,
+        // 기한 시각과 알림 시각이 한 줄에 나와도 섞여 읽히지 않습니다.
         val overdue = TodoStore.isOverdue(todo)
         val sb = StringBuilder(TodoStore.prettyDue(todo))
         if (overdue) sb.append(" · 지남")
-        if (todo.hasReminder) sb.append(" · 🔔 ").append(TodoStore.prettyRemindShort(todo))
         rv.setTextViewText(R.id.wSub, sb)
         rv.setTextColor(
             R.id.wSub,
             ContextCompat.getColor(ctx, if (overdue) R.color.overdue else R.color.widget_text_dim)
         )
+
+        // 알림 쪽은 기한이 지나도 색을 바꾸지 않습니다. '지남' 은 기한의 사정입니다.
+        rv.setTextViewText(
+            R.id.wRemind,
+            if (todo.hasReminder) "🔔 " + TodoStore.prettyRemindShort(todo) else ""
+        )
+        rv.setViewVisibility(R.id.wRemind, if (todo.hasReminder) View.VISIBLE else View.GONE)
 
         rv.setImageViewResource(
             R.id.wStar,
