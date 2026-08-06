@@ -108,7 +108,9 @@ class TodoWidget : AppWidgetProvider() {
             )
 
             // 겉모습 설정 적용. background 는 알파를 못 바꿔서 배경을 ImageView 로 깔았습니다.
-            rv.setInt(R.id.wBg, "setImageAlpha", WidgetConfig.bgAlpha(ctx))
+            // 뒤쪽 목록 판은 옅게, 헤더는 진하게 해서 두 층이 구분됩니다.
+            rv.setInt(R.id.wBg, "setImageAlpha", WidgetConfig.listAlpha(ctx))
+            rv.setInt(R.id.wHeadBg, "setImageAlpha", WidgetConfig.panelAlpha(ctx))
             rv.setTextViewTextSize(R.id.wCount, TypedValue.COMPLEX_UNIT_SP, WidgetConfig.headerSp(ctx))
             rv.setTextViewTextSize(R.id.wEmpty, TypedValue.COMPLEX_UNIT_SP, WidgetConfig.subSp(ctx))
 

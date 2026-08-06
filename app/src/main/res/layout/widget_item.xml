@@ -1,56 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/wRoot"
+<!--
+  할 일 한 줄. 뒤쪽 목록 판보다 진한 자체 배경을 깔아 층을 구분합니다.
+  FrameLayout 이 wrap_content 라도 match_parent 자식은 크기가 정해진 뒤
+  다시 측정되므로 배경 ImageView 가 행 높이에 맞습니다.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:paddingTop="7dp"
-    android:paddingBottom="7dp">
+    android:layout_marginBottom="4dp">
 
-    <!-- 완료 전용 탭 영역. 손가락으로 누를 만하게 padding 으로 넓혔습니다. -->
     <ImageView
-        android:id="@+id/wCheck"
-        android:layout_width="34dp"
-        android:layout_height="34dp"
-        android:padding="6dp"
-        android:src="@drawable/ic_circle_outline"
-        android:tint="@color/sky_heading"
-        android:contentDescription="완료로 표시" />
+        android:id="@+id/wItemBg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:src="@drawable/widget_panel"
+        android:contentDescription="@null" />
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:id="@+id/wRoot"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_marginStart="9dp"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp">
 
-        <TextView
-            android:id="@+id/wTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="@color/widget_text"
-            android:maxLines="1"
-            android:ellipsize="end" />
+        <!-- 완료 전용 탭 영역. 손가락으로 누를 만하게 padding 으로 넓혔습니다. -->
+        <ImageView
+            android:id="@+id/wCheck"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:padding="6dp"
+            android:src="@drawable/ic_circle_outline"
+            android:tint="@color/sky_heading"
+            android:contentDescription="완료로 표시" />
 
-        <TextView
-            android:id="@+id/wSub"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:textColor="@color/widget_text_dim"
-            android:maxLines="1"
-            android:ellipsize="end" />
+            android:layout_weight="1"
+            android:layout_marginStart="6dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/wTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/widget_text"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/wSub"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                android:textColor="@color/widget_text_dim"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <!-- 중요 토글. 목록 화면처럼 꺼져 있어도 빈 별로 보여야 눌러서 켤 수 있습니다. -->
+        <ImageView
+            android:id="@+id/wStar"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:padding="6dp"
+            android:src="@drawable/ic_star_border"
+            android:tint="@color/sky_heading"
+            android:contentDescription="중요 표시" />
     </LinearLayout>
-
-    <!-- 중요 토글. 목록 화면처럼 꺼져 있어도 빈 별로 보여야 눌러서 켤 수 있습니다. -->
-    <ImageView
-        android:id="@+id/wStar"
-        android:layout_width="34dp"
-        android:layout_height="34dp"
-        android:padding="6dp"
-        android:src="@drawable/ic_star_border"
-        android:tint="@color/sky_heading"
-        android:contentDescription="중요 표시" />
-</LinearLayout>
+</FrameLayout>

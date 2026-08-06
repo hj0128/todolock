@@ -3,33 +3,46 @@
   홈 화면 위젯. RemoteViews 가 지원하는 뷰만 쓸 수 있습니다
   (FrameLayout · LinearLayout · TextView · ImageView · ListView 등. CheckBox 는 불가).
 
-  배경을 ImageView 로 깐 이유: RemoteViews 로는 background 의 알파를 바꿀 수 없지만
-  ImageView 는 setImageAlpha 를 지원해서 불투명도 설정을 적용할 수 있습니다.
-  둥근 모서리도 그대로 유지됩니다.
+  층 구조 — 헤더 판과 목록 판은 형제이고, 항목 판은 목록 판 안에만 들어갑니다.
+
+    [헤더 판]  불투명 (설정값 그대로)
+    [목록 판]  약간 투명
+      [항목 판] 불투명
+      [항목 판] 불투명
+
+  각 판의 배경을 ImageView 로 깐 이유: RemoteViews 로는 background 의 알파를
+  바꿀 수 없지만 ImageView 는 setImageAlpha 를 지원합니다. 둥근 모서리도 유지됩니다.
+  FrameLayout 이 wrap_content 라도 match_parent 자식은 크기가 정해진 뒤 다시
+  측정되므로, 배경 ImageView 가 내용 높이에 정확히 맞습니다.
 -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/wBg"
+    <!-- ───── 헤더 판 ───── -->
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="fitXY"
-        android:src="@drawable/widget_bg"
-        android:contentDescription="@null" />
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="12dp">
+        <ImageView
+            android:id="@+id/wHeadBg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/widget_panel"
+            android:contentDescription="@null" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:paddingStart="12dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp">
 
             <TextView
                 android:id="@+id/wCount"
@@ -62,24 +75,46 @@
                 android:tint="@color/sky_heading"
                 android:contentDescription="위젯 설정" />
         </LinearLayout>
+    </FrameLayout>
 
-        <TextView
-            android:id="@+id/wEmpty"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="13sp"
-            android:textColor="@color/widget_text_dim"
-            android:text="할 일이 없습니다" />
+    <!-- ───── 목록 판 (안에 항목 판만) ───── -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-        <ListView
-            android:id="@+id/wList"
+        <ImageView
+            android:id="@+id/wBg"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginTop="4dp"
-            android:divider="@null"
-            android:dividerHeight="0dp" />
-    </LinearLayout>
-</FrameLayout>
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/widget_bg"
+            android:contentDescription="@null" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+            <!-- 둘 중 하나만 보이므로 weight 를 나눠 갖지 않습니다 (GONE 은 제외됨) -->
+            <TextView
+                android:id="@+id/wEmpty"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="13sp"
+                android:textColor="@color/widget_text_dim"
+                android:text="할 일이 없습니다" />
+
+            <ListView
+                android:id="@+id/wList"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:divider="@null"
+                android:dividerHeight="0dp" />
+        </LinearLayout>
+    </FrameLayout>
+</LinearLayout>

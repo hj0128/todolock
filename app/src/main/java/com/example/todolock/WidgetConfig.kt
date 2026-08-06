@@ -43,8 +43,18 @@ object WidgetConfig {
     fun setFontStep(ctx: Context, step: Int) =
         prefs(ctx).edit().putInt(KEY_FONT, step.coerceIn(0, FONT_STEPS - 1)).apply()
 
-    /** 배경 ImageView 에 넣을 0~255 알파 */
-    fun bgAlpha(ctx: Context): Int = opacity(ctx) * 255 / 100
+    /**
+     * 헤더와 각 할 일 행(앞쪽 판)의 알파. 설정값을 그대로 씁니다.
+     */
+    fun panelAlpha(ctx: Context): Int = opacity(ctx) * 255 / 100
+
+    /**
+     * 뒤쪽 목록 판의 알파. 앞쪽 판보다 옅게 해서 두 층이 구분되도록 합니다.
+     * 설정값에 비례하므로 불투명도를 낮추면 둘 다 함께 옅어집니다.
+     */
+    fun listAlpha(ctx: Context): Int = (panelAlpha(ctx) * LIST_RATIO).toInt()
+
+    private const val LIST_RATIO = 0.45f
 
     fun titleSp(ctx: Context): Float = TITLE_SP[fontStep(ctx)]
 
