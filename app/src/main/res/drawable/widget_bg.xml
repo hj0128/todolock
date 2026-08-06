@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  목록 판. 위로 헤더 판이 맞닿으므로 아래쪽만 둥글게 둡니다.
+  두 판을 합치면 하나의 둥근 카드처럼 보입니다.
+-->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <solid android:color="@color/widget_bg" />
-    <corners android:radius="20dp" />
+    <corners
+        android:topLeftRadius="0dp"
+        android:topRightRadius="0dp"
+        android:bottomLeftRadius="18dp"
+        android:bottomRightRadius="18dp" />
 </shape>

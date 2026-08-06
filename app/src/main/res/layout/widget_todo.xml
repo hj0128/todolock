@@ -3,7 +3,8 @@
   홈 화면 위젯. RemoteViews 가 지원하는 뷰만 쓸 수 있습니다
   (FrameLayout · LinearLayout · TextView · ImageView · ListView 등. CheckBox 는 불가).
 
-  층 구조 — 헤더 판과 목록 판은 형제이고, 항목 판은 목록 판 안에만 들어갑니다.
+  층 구조 — 헤더 판과 목록 판은 맞닿은 형제이고, 항목 판은 목록 판 안에만 들어갑니다.
+  헤더는 위쪽만, 목록은 아래쪽만 둥글게 해서 둘이 하나의 카드처럼 보입니다.
 
     [헤더 판]  불투명 (설정값 그대로)
     [목록 판]  약간 투명
@@ -23,15 +24,14 @@
     <!-- ───── 헤더 판 ───── -->
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="6dp">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/wHeadBg"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
-            android:src="@drawable/widget_panel"
+            android:src="@drawable/widget_head"
             android:contentDescription="@null" />
 
         <LinearLayout
