@@ -41,10 +41,10 @@
             android:gravity="center_vertical"
             android:paddingStart="12dp"
             android:paddingEnd="8dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"><!--
-              헤더는 항목보다 약간 커야 제목처럼 읽힙니다.
-              항목 = padding 5+5dp + 34dp = 44dp, 헤더 = 10+10dp + 30dp = 50dp.
+            android:paddingTop="7dp"
+            android:paddingBottom="7dp"><!--
+              헤더는 항목보다 살짝 커야 제목처럼 읽힙니다.
+              항목 = padding 5+5dp + 34dp = 44dp, 헤더 = 7+7dp + 30dp = 44dp + 글자 차이.
             -->
 
             <TextView

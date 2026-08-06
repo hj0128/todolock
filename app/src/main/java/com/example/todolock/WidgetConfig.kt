@@ -24,8 +24,8 @@ object WidgetConfig {
 
     private val TITLE_SP = floatArrayOf(12f, 14f, 16.5f)
     private val SUB_SP = floatArrayOf(9f, 10f, 11.5f)
-    /** 헤더는 항목 제목보다 반 단계 크게 둬서 층이 구분되게 합니다. */
-    private val HEADER_SP = floatArrayOf(13.5f, 15f, 17f)
+    /** 헤더는 항목 제목보다 반 단계만 크게 둬서 층이 구분되게 합니다. */
+    private val HEADER_SP = floatArrayOf(13f, 14.5f, 17f)
 
     private fun prefs(ctx: Context) =
         ctx.applicationContext.getSharedPreferences(PREF, Context.MODE_PRIVATE)
