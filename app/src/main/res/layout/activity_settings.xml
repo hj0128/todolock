@@ -230,6 +230,19 @@
                     android:textSize="12sp"
                     android:text="배터리 예외" />
 
+                <!--
+                  삼성 One UI 의 앱별 배터리 설정(제한 없음)·절전 목록은 공개 인텐트가
+                  없어 직접 열 수 없습니다. 표준 API 로 앱 정보까지 보내면
+                  거기서 '배터리' 를 한 번 더 누르면 되므로 찾아 헤매지 않습니다.
+                -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAppInfo"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:text="앱 정보 열기 (삼성 절전 설정)" />
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnHideOngoing"
                     style="@style/Widget.Material3.Button.TextButton"

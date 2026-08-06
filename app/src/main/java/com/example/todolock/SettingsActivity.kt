@@ -91,6 +91,7 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         b.btnBattery.setOnClickListener { requestBatteryExemption() }
+        b.btnAppInfo.setOnClickListener { openAppInfo() }
         b.btnHideOngoing.setOnClickListener { openServiceChannelSettings() }
         b.btnRemindSound.setOnClickListener { openRemindChannelSettings() }
 
@@ -148,6 +149,29 @@ class SettingsActivity : AppCompatActivity() {
             } catch (e2: Exception) {
                 startActivity(Intent(Settings.ACTION_SETTINGS))
             }
+        }
+    }
+
+    /**
+     * 앱 정보 화면으로 보냅니다.
+     *
+     * 삼성 One UI 의 앱별 배터리 설정('제한 없음')과 '사용하지 않는 앱 절전' 목록은
+     * 공개 인텐트가 없어 앱에서 직접 열 수 없습니다. 내부 컴포넌트를 지정해 여는
+     * 방법은 One UI 버전마다 달라지고 막히기도 해서 쓰지 않습니다.
+     * 앱 정보까지만 보내면 거기서 '배터리' 를 한 번 더 누르면 됩니다.
+     */
+    private fun openAppInfo() {
+        try {
+            startActivity(
+                Intent(
+                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.parse("package:" + packageName)
+                )
+            )
+            Toast.makeText(this, "'배터리' 로 들어가 '제한 없음' 을 고르세요", Toast.LENGTH_LONG)
+                .show()
+        } catch (e: Exception) {
+            startActivity(Intent(Settings.ACTION_SETTINGS))
         }
     }
 
