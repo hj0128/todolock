@@ -167,7 +167,7 @@ Watchdog (AlarmManager, 15분 간격) ─→ 서비스가 죽어 있으면 다�
 ## 4. 파일 구조
 
 ```
-app/src/main/java/com/example/todolock/
+app/src/main/java/com/hj0128/todolock/
 ├── MainActivity.kt          할 일 목록 (완료 · 중요 · 수정 · 삭제), 추가 시트 호출, 권한 경고
 ├── SettingsActivity.kt      설정 화면 (잠금해제 팝업 / 미리 알림 방식 / 권한 · 도구)
 ├── Permissions.kt           권한 상태 판정 한 곳 — 목록과 설정이 같은 기준을 씁니다

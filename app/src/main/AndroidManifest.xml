@@ -41,7 +41,7 @@
             android:name=".QuickAddActivity"
             android:exported="false"
             android:theme="@style/Theme.TodoLock.Popup"
-            android:taskAffinity="com.example.todolock.quickadd"
+            android:taskAffinity="com.hj0128.todolock.quickadd"
             android:excludeFromRecents="true"
             android:windowSoftInputMode="adjustResize" />
 
@@ -50,7 +50,7 @@
             android:name=".WidgetSettingsActivity"
             android:exported="false"
             android:theme="@style/Theme.TodoLock.Popup"
-            android:taskAffinity="com.example.todolock.widgetsettings"
+            android:taskAffinity="com.hj0128.todolock.widgetsettings"
             android:excludeFromRecents="true" />
 
         <!-- 미리 알림 방식이 '전체 팝업' 일 때 뜨는 창 -->
@@ -59,14 +59,14 @@
             android:exported="false"
             android:theme="@style/Theme.TodoLock.Popup"
             android:launchMode="singleInstance"
-            android:taskAffinity="com.example.todolock.remindpopup"
+            android:taskAffinity="com.hj0128.todolock.remindpopup"
             android:excludeFromRecents="true" />
 
         <activity
             android:name=".TodayPopupActivity"
             android:exported="false"
             android:launchMode="singleInstance"
-            android:taskAffinity="com.example.todolock.popup"
+            android:taskAffinity="com.hj0128.todolock.popup"
             android:excludeFromRecents="true"
             android:theme="@style/Theme.TodoLock.Popup" />
 

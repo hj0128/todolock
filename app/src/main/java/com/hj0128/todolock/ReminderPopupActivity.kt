@@ -1,9 +1,9 @@
-package com.example.todolock
+package com.hj0128.todolock
 
 import android.app.NotificationManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.todolock.databinding.ActivityReminderPopupBinding
+import com.hj0128.todolock.databinding.ActivityReminderPopupBinding
 
 /**
  * 미리 알림 방식이 '전체 팝업' 일 때 화면을 덮는 창.

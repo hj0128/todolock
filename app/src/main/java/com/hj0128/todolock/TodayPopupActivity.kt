@@ -1,11 +1,11 @@
-package com.example.todolock
+package com.hj0128.todolock
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.example.todolock.databinding.ActivityPopupBinding
-import com.example.todolock.databinding.ItemPopupRowBinding
+import com.hj0128.todolock.databinding.ActivityPopupBinding
+import com.hj0128.todolock.databinding.ItemPopupRowBinding
 
 /**
  * 잠금해제 직후 뜨는 '오늘의 할 일' 화면.

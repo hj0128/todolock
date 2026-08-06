@@ -1,10 +1,10 @@
-package com.example.todolock
+package com.hj0128.todolock
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.todolock.databinding.ItemHeaderBinding
-import com.example.todolock.databinding.ItemTodoBinding
+import com.hj0128.todolock.databinding.ItemHeaderBinding
+import com.hj0128.todolock.databinding.ItemTodoBinding
 
 /** 목록 한 줄. 날짜별 화면 대신 '할 일 / 완료' 섹션으로 묶습니다. */
 sealed class Row {

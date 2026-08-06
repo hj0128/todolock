@@ -1,4 +1,4 @@
-package com.example.todolock
+package com.hj0128.todolock
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -15,8 +15,8 @@ import android.os.Build
  */
 object Reminders {
 
-    const val ACTION_FIRE = "com.example.todolock.REMIND"
-    const val ACTION_DONE = "com.example.todolock.REMIND_DONE"
+    const val ACTION_FIRE = "com.hj0128.todolock.REMIND"
+    const val ACTION_DONE = "com.hj0128.todolock.REMIND_DONE"
     const val EXTRA_ID = "todo_id"
 
     private const val REQ_FIRE = 3000

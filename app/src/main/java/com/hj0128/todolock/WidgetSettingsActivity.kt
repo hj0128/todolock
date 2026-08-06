@@ -1,8 +1,8 @@
-package com.example.todolock
+package com.hj0128.todolock
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.todolock.databinding.ActivityWidgetSettingsBinding
+import com.hj0128.todolock.databinding.ActivityWidgetSettingsBinding
 
 /**
  * 위젯의 톱니바퀴로 열리는 겉모습 설정.

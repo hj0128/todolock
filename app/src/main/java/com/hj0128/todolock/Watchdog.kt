@@ -1,4 +1,4 @@
-package com.example.todolock
+package com.hj0128.todolock
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -34,7 +34,7 @@ class Watchdog : BroadcastReceiver() {
     }
 
     companion object {
-        private const val ACTION = "com.example.todolock.WATCHDOG"
+        private const val ACTION = "com.hj0128.todolock.WATCHDOG"
         private const val REQUEST = 2000
         private const val INTERVAL_MS = 15L * 60L * 1000L
 

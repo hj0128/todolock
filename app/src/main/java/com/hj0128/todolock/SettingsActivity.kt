@@ -1,4 +1,4 @@
-package com.example.todolock
+package com.hj0128.todolock
 
 import android.content.Intent
 import android.net.Uri
@@ -9,7 +9,7 @@ import android.provider.Settings
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.todolock.databinding.ActivitySettingsBinding
+import com.hj0128.todolock.databinding.ActivitySettingsBinding
 
 /**
  * 설정 화면.

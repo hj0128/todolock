@@ -1,4 +1,4 @@
-package com.example.todolock
+package com.hj0128.todolock
 
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
@@ -65,7 +65,7 @@ class TodoWidget : AppWidgetProvider() {
     }
 
     companion object {
-        const val ACTION_ITEM = "com.example.todolock.WIDGET_ITEM"
+        const val ACTION_ITEM = "com.hj0128.todolock.WIDGET_ITEM"
         const val EXTRA_ID = "todo_id"
         const val EXTRA_MODE = "mode"
         const val MODE_EDIT = 0

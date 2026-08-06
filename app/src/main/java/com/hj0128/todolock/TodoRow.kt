@@ -1,10 +1,10 @@
-package com.example.todolock
+package com.hj0128.todolock
 
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Paint
 import android.view.View
-import com.example.todolock.databinding.ItemTodoBinding
+import com.hj0128.todolock.databinding.ItemTodoBinding
 
 /** 목록 화면과 팝업 화면이 같은 행 디자인/동작을 공유합니다. */
 object TodoRow {

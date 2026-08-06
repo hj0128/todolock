@@ -1,4 +1,4 @@
-package com.example.todolock
+package com.hj0128.todolock
 
 data class Todo(
     val id: Long,

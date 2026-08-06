@@ -1,4 +1,4 @@
-package com.example.todolock
+package com.hj0128.todolock
 
 import android.app.Notification
 import android.app.NotificationChannel

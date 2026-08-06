@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.todolock"
+    namespace = "com.hj0128.todolock"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.todolock"
+        applicationId = "com.hj0128.todolock"
         minSdk = 24
         targetSdk = 34
         versionCode = 5
