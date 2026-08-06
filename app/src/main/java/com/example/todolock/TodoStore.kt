@@ -257,8 +257,9 @@ object TodoStore {
         val p = prefs(ctx)
         val ok = when (getMode(ctx)) {
             MODE_HOURLY -> {
-                val last = p.getLong(KEY_LAST_SHOWN_MS, 0L)
-                System.currentTimeMillis() - last >= 60L * 60L * 1000L
+                // 음수(저장된 시각이 미래)면 시계가 뒤로 간 것이므로 막지 않습니다.
+                val elapsed = System.currentTimeMillis() - p.getLong(KEY_LAST_SHOWN_MS, 0L)
+                elapsed < 0L || elapsed >= 60L * 60L * 1000L
             }
             MODE_ONCE_A_DAY -> p.getString(KEY_LAST_SHOWN_DAY, "") != today()
             else -> true
@@ -340,11 +341,18 @@ object TodoStore {
 
     fun regMode(ctx: Context): String = prefs(ctx).getString(KEY_REG_MODE, "") ?: ""
 
-    /** 같은 잠금해제를 두 경로(USER_PRESENT / SCREEN_ON+키가드)에서 중복 처리하지 않도록. */
+    /**
+     * 같은 잠금해제를 두 경로(USER_PRESENT / SCREEN_ON+키가드)에서 중복 처리하지 않도록.
+     *
+     * 경과 시간이 음수인 경우(= 저장된 시각이 미래)는 '최근'으로 보지 않습니다.
+     * 시계가 뒤로 가면(시간대 변경·수동 조정·NTP 보정) 그 시각이 미래가 되는데,
+     * 이를 최근으로 판정하면 잠금해제 처리가 영구히 막힙니다.
+     */
     fun claimHandling(ctx: Context, withinMs: Long = 4000L): Boolean {
         val p = prefs(ctx)
         val now = System.currentTimeMillis()
-        if (now - p.getLong(KEY_LAST_HANDLED_MS, 0L) < withinMs) return false
+        val elapsed = now - p.getLong(KEY_LAST_HANDLED_MS, 0L)
+        if (elapsed in 0 until withinMs) return false
         p.edit().putLong(KEY_LAST_HANDLED_MS, now).apply()
         return true
     }
