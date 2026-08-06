@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TodoLock 개인정보처리방침</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    max-width: 44rem; margin: 0 auto; padding: 2.5rem 1.25rem 5rem;
+    font: 16px/1.75 -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+    word-break: keep-all;
+  }
+  h1 { font-size: 1.6rem; margin-bottom: .25rem; }
+  h2 { font-size: 1.15rem; margin-top: 2.5rem; }
+  .meta { opacity: .65; font-size: .875rem; margin-top: 0; }
+  .lead {
+    border-left: 3px solid currentColor; padding-left: 1rem;
+    margin: 1.75rem 0; opacity: .9;
+  }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: .95rem; }
+  th, td { border: 1px solid; border-color: color-mix(in srgb, currentColor 25%, transparent);
+           padding: .5rem .65rem; text-align: left; vertical-align: top; }
+  code { font-size: .9em; }
+  hr { margin: 3.5rem 0; border: 0; border-top: 1px solid;
+       border-color: color-mix(in srgb, currentColor 20%, transparent); }
+  .en { opacity: .95; }
+</style>
+</head>
+<body>
+
+<h1>TodoLock 개인정보처리방침</h1>
+<p class="meta">시행일 2026년 8월 6일 · 최종 수정 2026년 8월 6일</p>
+
+<p class="lead">
+TodoLock 은 <strong>어떤 개인정보도 수집하지 않습니다.</strong>
+앱에 인터넷 통신 기능 자체가 없어서, 입력하신 할 일은 기기를 떠나지 않습니다.
+</p>
+
+<h2>1. 수집하는 정보</h2>
+<p>없습니다. TodoLock 은 다음을 <strong>일절 요구하지도, 저장하지도, 전송하지도 않습니다.</strong></p>
+<ul>
+  <li>이름 · 이메일 · 전화번호 등 신원 정보</li>
+  <li>계정 · 로그인 · 회원가입 (기능 자체가 없습니다)</li>
+  <li>위치 · 연락처 · 사진 · 통화기록 · 기기 식별자</li>
+  <li>광고 식별자, 사용 통계, 분석(analytics), 크래시 리포트</li>
+</ul>
+<p>
+  앱에는 <code>INTERNET</code> 권한이 선언되어 있지 않습니다. 이는 안드로이드가
+  운영체제 수준에서 강제하는 제약으로, 앱이 네트워크로 무엇을 보내는 것이
+  기술적으로 불가능하다는 뜻입니다. 광고 · 분석 · 추적 SDK 도 포함되어 있지 않습니다.
+</p>
+
+<h2>2. 기기 안에 저장되는 것</h2>
+<p>
+  앱이 동작하려면 사용자가 입력한 내용을 기억해야 합니다. 아래 항목은
+  <strong>기기 내부의 앱 전용 저장 영역(SharedPreferences)에만</strong> 저장되며,
+  다른 앱이나 외부에서 읽을 수 없습니다.
+</p>
+<table>
+  <tr><th>저장 항목</th><th>용도</th></tr>
+  <tr><td>할 일 내용, 기한 날짜, 완료 여부, 중요 표시</td><td>목록 · 위젯 · 팝업 표시</td></tr>
+  <tr><td>미리 알림 시각</td><td>지정한 시각에 알림</td></tr>
+  <tr><td>앱 설정값 (표시 빈도, 알림 방식, 위젯 불투명도 · 글꼴 크기)</td><td>설정 유지</td></tr>
+  <tr><td>마지막으로 팝업을 띄운 시각</td><td>‘1시간마다 / 하루 1번’ 빈도 계산</td></tr>
+</table>
+
+<h2>3. 기기 백업에 대하여</h2>
+<p>
+  안드로이드에는 앱 데이터를 사용자의 Google 계정으로 백업하는 <strong>자동 백업</strong>
+  기능이 있고, TodoLock 은 이를 켜 둔 상태입니다(기기를 바꿀 때 할 일이 따라오도록).
+  이 경우 위 2항의 데이터가 사용자 본인의 Google 계정 저장 공간으로 복사될 수 있습니다.
+</p>
+<ul>
+  <li>이 백업은 <strong>안드로이드 운영체제가 수행</strong>하며, 개발자는 그 내용에
+      접근할 수 없고 접근 수단도 없습니다.</li>
+  <li>백업의 보관 · 암호화는 사용자의 Google 계정 정책을 따릅니다.</li>
+  <li>원하지 않으면 기기 <em>설정 → Google → 백업</em> 에서 끌 수 있습니다.</li>
+</ul>
+
+<h2>4. 제3자 제공 · 판매</h2>
+<p>
+  없습니다. 제공할 데이터를 갖고 있지 않고, 데이터를 받는 서버도 존재하지 않습니다.
+  광고 네트워크 · 데이터 브로커 · 분석 업체와의 연동이 전혀 없습니다.
+</p>
+
+<h2>5. 권한을 요구하는 이유</h2>
+<p>
+  아래 권한들은 모두 <strong>기기 안에서 기능을 동작시키기 위한 것</strong>이며,
+  정보를 수집하는 데 쓰이지 않습니다.
+</p>
+<table>
+  <tr><th>권한</th><th>이유</th></tr>
+  <tr><td>알림 (POST_NOTIFICATIONS)</td><td>미리 알림을 표시</td></tr>
+  <tr><td>다른 앱 위에 표시 (SYSTEM_ALERT_WINDOW)</td>
+      <td>잠금해제 직후 할 일 창을 띄우기 위해 필요합니다. 화면 위에 무언가를
+          상시 덮어씌우는 용도로는 쓰지 않습니다</td></tr>
+  <tr><td>전체 화면 알림 (USE_FULL_SCREEN_INTENT)</td>
+      <td>지정한 시각의 미리 알림을 놓치지 않게 표시</td></tr>
+  <tr><td>알람 및 리마인더 (SCHEDULE_EXACT_ALARM)</td>
+      <td>미리 알림을 지정한 시각에 정확히 울리기 위해</td></tr>
+  <tr><td>포그라운드 서비스 (FOREGROUND_SERVICE_SPECIAL_USE)</td>
+      <td>잠금해제 시점을 감지하기 위해. 감지하는 것은 ‘잠금이 해제되었다’는
+          사실 하나뿐이며, 시점을 기록하거나 전송하지 않습니다</td></tr>
+  <tr><td>기기 부팅 완료 (RECEIVE_BOOT_COMPLETED)</td>
+      <td>재부팅 후 예약된 미리 알림을 다시 세우기 위해</td></tr>
+  <tr><td>배터리 최적화 예외 요청</td>
+      <td>절전 기능이 감지를 중단시키지 않도록 사용자에게 허용을 요청하기 위해.
+          허용 여부는 전적으로 사용자 선택입니다</td></tr>
+</table>
+
+<h2>6. 데이터 삭제</h2>
+<ul>
+  <li>개별 할 일 — 목록에서 ✕ 를 눌러 삭제</li>
+  <li>전체 삭제 — 기기 <em>설정 → 애플리케이션 → TodoLock → 저장공간 → 데이터 삭제</em></li>
+  <li><strong>앱을 삭제하면 저장된 모든 데이터가 기기에서 함께 사라집니다.</strong>
+      개발자에게 삭제를 요청할 대상이 없습니다 — 보관하고 있는 데이터가 없기 때문입니다.</li>
+  <li>Google 계정에 백업이 남아 있다면 Google 계정 설정에서 삭제할 수 있습니다.</li>
+</ul>
+
+<h2>7. 아동</h2>
+<p>
+  TodoLock 은 특정 연령대를 대상으로 하지 않으며, 연령 정보를 포함해 어떤 개인정보도
+  수집하지 않습니다.
+</p>
+
+<h2>8. 방침 변경</h2>
+<p>
+  이 방침이 바뀌면 이 페이지를 갱신하고 상단의 최종 수정일을 고칩니다.
+  수집 항목이 생기는 변경이라면 앱 업데이트 시 앱 안에서 함께 알립니다.
+</p>
+
+<h2>9. 문의</h2>
+<p>
+  개인정보 관련 문의: <a href="mailto:contact@hj0128.com">contact@hj0128.com</a>
+</p>
+
+<hr>
+
+<div class="en" lang="en">
+<h1>TodoLock Privacy Policy</h1>
+<p class="meta">Effective 6 August 2026 · Last updated 6 August 2026</p>
+
+<p class="lead">
+TodoLock <strong>collects no personal data.</strong> The app has no networking
+capability at all, so the tasks you enter never leave your device.
+</p>
+
+<h2>1. Data we collect</h2>
+<p>None. TodoLock never requests, stores, or transmits identity information,
+accounts or logins, location, contacts, photos, call logs, device identifiers,
+advertising IDs, usage analytics, or crash reports.</p>
+<p>The app does not declare the <code>INTERNET</code> permission. This is
+enforced by Android at the operating-system level, which means the app is
+technically incapable of sending anything over a network. It contains no
+advertising, analytics, or tracking SDKs.</p>
+
+<h2>2. Data stored on your device</h2>
+<p>To function, the app stores what you enter in its private on-device storage
+(SharedPreferences), which is not readable by other apps: task text, due date,
+completion state, importance flag, reminder time, app settings (display
+frequency, reminder style, widget opacity and font size), and the timestamp of
+the last popup (used to compute the "hourly / once a day" frequency).</p>
+
+<h2>3. Device backup</h2>
+<p>Android's Auto Backup is enabled for this app so your tasks can follow you to
+a new device. When it runs, the data in section 2 may be copied to your own
+Google account storage. This backup is performed by the Android operating
+system; the developer cannot access it and has no means to do so. You can turn
+it off in <em>Settings → Google → Backup</em>.</p>
+
+<h2>4. Sharing and selling</h2>
+<p>None. There is no data to share and no server to receive it. No ad networks,
+data brokers, or analytics providers are integrated.</p>
+
+<h2>5. Why permissions are requested</h2>
+<p>All permissions exist to make features work on the device and are never used
+to collect information: notifications (show reminders); display over other apps
+(show the task window right after unlock — never used to persistently overlay
+the screen); full-screen intent (make sure a timed reminder is not missed);
+exact alarms (fire reminders at the exact time you set); special-use foreground
+service (detect the unlock moment — the only thing detected is the fact that the
+device was unlocked, and it is neither recorded nor transmitted); boot completed
+(re-arm scheduled reminders after a restart); battery optimization exemption
+request (ask for your permission so power saving does not stop detection — the
+choice is entirely yours).</p>
+
+<h2>6. Deleting your data</h2>
+<p>Delete individual tasks with ✕ in the list, or erase everything via
+<em>Settings → Apps → TodoLock → Storage → Clear data</em>. Uninstalling the app
+removes all stored data from the device. There is no deletion request to send to
+the developer, because no data is held. If a backup exists in your Google
+account, you can delete it from your Google account settings.</p>
+
+<h2>7. Children</h2>
+<p>TodoLock is not directed at any particular age group and collects no personal
+information, including age.</p>
+
+<h2>8. Changes to this policy</h2>
+<p>If this policy changes, this page will be updated and the "last updated" date
+above revised. If a change ever introduces data collection, it will also be
+disclosed in the app itself at update time.</p>
+
+<h2>9. Contact</h2>
+<p>Privacy enquiries: <a href="mailto:contact@hj0128.com">contact@hj0128.com</a></p>
+</div>
+
+</body>
+</html>
