@@ -29,12 +29,12 @@ class MainActivity : AppCompatActivity() {
             onToggle = { TodoStore.update(this, it); Reminders.schedule(this, it); refresh() },
             onDelete = { Reminders.cancel(this, it.id); TodoStore.delete(this, it.id); refresh() },
             onStar = { TodoStore.update(this, it); refresh() },
-            onEdit = { openEditSheet(it) }
+            onEdit = { openSheet(it) }
         )
         b.recycler.layoutManager = LinearLayoutManager(this)
         b.recycler.adapter = adapter
 
-        b.btnOpenAdd.setOnClickListener { openAddSheet() }
+        b.btnOpenAdd.setOnClickListener { openSheet() }
         b.btnSettings.setOnClickListener { openSettings() }
         b.cardWarn.setOnClickListener { openSettings() }
 
@@ -56,28 +56,13 @@ class MainActivity : AppCompatActivity() {
         refresh()
     }
 
-    private fun openAddSheet() {
-        AddTodoSheet(this) { text, date, dueMinutes, remindAt, important, memo ->
-            val todo = TodoStore.add(this, text, date, important, remindAt, dueMinutes, memo)
-            announceReminder(todo, Reminders.schedule(this, todo))
-            refresh()
-        }.show()
-    }
-
-    /** 목록에서 행 본문을 탭했을 때. 같은 시트를 기존 값으로 채워 엽니다. */
-    private fun openEditSheet(todo: Todo) {
-        AddTodoSheet(this, todo) { text, date, dueMinutes, remindAt, important, memo ->
-            todo.text = text
-            todo.date = date
-            todo.dueMinutes = dueMinutes
-            todo.memo = memo
-            todo.important = important
-            // 알림 시각이 바뀌었으면 '이미 알렸음' 표시를 지워야 새 시각에 알립니다.
-            if (todo.remindAt != remindAt) {
-                todo.remindAt = remindAt
-                todo.notified = false
-            }
-            TodoStore.update(this, todo)
+    /**
+     * 추가와 수정은 같은 시트입니다. existing 이 있으면 그 값으로 채워져 열립니다.
+     * (목록에서 행 본문을 탭하면 수정)
+     */
+    private fun openSheet(existing: Todo? = null) {
+        AddTodoSheet(this, existing) { todo ->
+            TodoStore.upsert(this, todo)
             // 기한·알림이 바뀌었을 수 있으므로 예약을 다시 세웁니다(내부에서 취소 먼저).
             announceReminder(todo, Reminders.schedule(this, todo))
             refresh()

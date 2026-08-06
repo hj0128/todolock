@@ -26,23 +26,8 @@ class QuickAddActivity : AppCompatActivity() {
             return
         }
 
-        AddTodoSheet(this, existing) { text, date, dueMinutes, remindAt, important, memo ->
-            val todo = if (existing != null) {
-                existing.text = text
-                existing.date = date
-                existing.dueMinutes = dueMinutes
-                existing.memo = memo
-                existing.important = important
-                // 알림 시각이 바뀌었으면 '이미 알렸음' 표시를 지워야 새 시각에 알립니다.
-                if (existing.remindAt != remindAt) {
-                    existing.remindAt = remindAt
-                    existing.notified = false
-                }
-                TodoStore.update(this, existing)
-                existing
-            } else {
-                TodoStore.add(this, text, date, important, remindAt, dueMinutes, memo)
-            }
+        AddTodoSheet(this, existing) { todo ->
+            TodoStore.upsert(this, todo)
             announce(todo, Reminders.schedule(this, todo))
         }.show(onDismiss = { finish() })
     }

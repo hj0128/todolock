@@ -26,14 +26,11 @@ import java.util.Locale
 class AddTodoSheet(
     private val ctx: Context,
     private val existing: Todo? = null,
-    private val onSave: (
-        text: String,
-        date: String,
-        dueMinutes: Int,
-        remindAt: Long,
-        important: Boolean,
-        memo: String
-    ) -> Unit
+    /**
+     * 고른 값을 담은 할 일을 돌려줍니다. 수정이면 넘겨준 그 객체이고, 추가면 새 객체입니다.
+     * 값을 하나씩 넘기면 필드가 늘 때마다 시그니처와 호출부가 같이 바뀌므로 통째로 줍니다.
+     */
+    private val onSave: (Todo) -> Unit
 ) {
     /** 기한. 고르지 않으면 오늘입니다. */
     private val due: Calendar =
@@ -88,10 +85,21 @@ class AddTodoSheet(
             b.etText.error = "할 일을 입력하세요"
             return
         }
-        onSave(
-            text, TodoStore.format(due), dueMinutes, remindAt, important,
-            b.etMemo.text.toString().trim()
-        )
+        // 수정이면 원래 객체를 그대로 고칩니다. id 와 done 처럼 시트가 다루지 않는
+        // 값이 살아 있어야 하고, 호출한 쪽이 들고 있는 참조와도 어긋나지 않습니다.
+        val todo = existing ?: Todo(id = System.currentTimeMillis(), text = "", date = "")
+        todo.text = text
+        todo.date = TodoStore.format(due)
+        todo.dueMinutes = dueMinutes
+        todo.memo = b.etMemo.text.toString().trim()
+        todo.important = important
+        // 알림 시각이 바뀌었으면 '이미 알렸음' 을 지워야 새 시각에 다시 알립니다.
+        if (todo.remindAt != remindAt) {
+            todo.remindAt = remindAt
+            todo.notified = false
+        }
+
+        onSave(todo)
         dialog.dismiss()
     }
 

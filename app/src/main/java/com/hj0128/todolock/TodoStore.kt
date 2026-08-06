@@ -75,6 +75,15 @@ object TodoStore {
 
     // ---------- CRUD ----------
 
+    /**
+     * 목록 전체를 읽습니다.
+     *
+     * 쓰기는 모두 '읽고 → 고치고 → 통째로 저장' 이라, 쓰는 쪽(update·upsert·delete)에
+     * @Synchronized 를 걸어 한 항목의 저장이 끝나기 전에 다른 저장이 끼어들지 못하게
+     * 합니다. 알림의 '완료' 버튼(ReminderReceiver)·위젯 토글(TodoWidget)·화면이
+     * 서로 다른 진입점이라 동시에 들어올 수 있습니다.
+     */
+    @Synchronized
     fun load(ctx: Context): MutableList<Todo> {
         val raw = prefs(ctx).getString(KEY_TODOS, "[]") ?: "[]"
         val out = mutableListOf<Todo>()
@@ -104,6 +113,7 @@ object TodoStore {
         return out
     }
 
+    @Synchronized
     fun save(ctx: Context, list: List<Todo>) {
         val arr = JSONArray()
         for (t in list) {
@@ -132,29 +142,18 @@ object TodoStore {
     fun pendingToday(ctx: Context): List<Todo> =
         load(ctx).filter { it.date == today() && !it.done }
 
-    /** 방금 만든 항목을 돌려줍니다. 호출한 쪽에서 곧바로 미리 알림을 예약할 수 있게. */
-    fun add(
-        ctx: Context,
-        text: String,
-        date: String,
-        important: Boolean = false,
-        remindAt: Long = Todo.NO_REMIND,
-        dueMinutes: Int = Todo.NO_TIME,
-        memo: String = ""
-    ): Todo {
-        val todo = Todo(
-            id = System.currentTimeMillis(),
-            text = text,
-            date = date,
-            dueMinutes = dueMinutes,
-            memo = memo,
-            important = important,
-            remindAt = remindAt
-        )
+    /**
+     * 있으면 갈아 끼우고 없으면 새로 넣습니다. 추가·수정 시트가 쓰는 저장 경로입니다.
+     *
+     * 필드별 인자를 받지 않는 이유: 할 일에 값이 하나 늘 때마다 이 함수와 호출부가
+     * 전부 따라 바뀝니다. 통째로 받으면 늘어나는 값은 Todo 안에서만 삽니다.
+     */
+    @Synchronized
+    fun upsert(ctx: Context, todo: Todo) {
         val list = load(ctx)
-        list.add(todo)
+        val idx = list.indexOfFirst { it.id == todo.id }
+        if (idx >= 0) list[idx] = todo else list.add(todo)
         save(ctx, list)
-        return todo
     }
 
     /**
@@ -277,6 +276,12 @@ object TodoStore {
         }
     }
 
+    /**
+     * 이미 있는 항목만 갈아 끼웁니다. upsert 와 달리 없으면 아무것도 하지 않습니다 —
+     * 알림·위젯처럼 예전에 읽어둔 항목을 나중에 저장하는 경로에서, 그 사이에 지워진
+     * 할 일이 되살아나는 것을 막습니다.
+     */
+    @Synchronized
     fun update(ctx: Context, todo: Todo) {
         val list = load(ctx)
         val idx = list.indexOfFirst { it.id == todo.id }
@@ -286,6 +291,7 @@ object TodoStore {
         }
     }
 
+    @Synchronized
     fun delete(ctx: Context, id: Long) {
         val list = load(ctx)
         list.removeAll { it.id == id }
