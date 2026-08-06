@@ -90,8 +90,7 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
-        b.btnBattery.setOnClickListener { requestBatteryExemption() }
-        b.btnAppInfo.setOnClickListener { openAppInfo() }
+        b.btnBattery.setOnClickListener { openBatterySettings() }
         b.btnHideOngoing.setOnClickListener { openServiceChannelSettings() }
         b.btnRemindSound.setOnClickListener { openRemindChannelSettings() }
 
@@ -119,44 +118,33 @@ class SettingsActivity : AppCompatActivity() {
         // 경고는 아직 허용되지 않았을 때만 띄웁니다. 다 해둔 사람에게는 잔소리가 됩니다.
         val batteryOk = Permissions.isBatteryExempt(this)
         b.tvBatteryWarn.visibility = if (batteryOk) View.GONE else View.VISIBLE
-        b.btnBattery.text = if (batteryOk) "배터리 예외 · 완료" else "배터리 예외"
+        b.btnBattery.text =
+            if (batteryOk) "앱 정보 열기 · 절전 예외 완료" else "앱 정보 열기 (배터리 → 제한 없음)"
     }
 
     /**
-     * 배터리 최적화 예외.
-     * 시스템 앱 목록으로 보내면 사용자가 앱을 찾아 헤매게 되므로
-     * 우리 패키지를 지정해 '허용' 팝업을 바로 띄웁니다. 막히면 목록으로 대체합니다.
-     */
-    private fun requestBatteryExemption() {
-        if (Permissions.isBatteryExempt(this)) {
-            Toast.makeText(this, "이미 배터리 최적화 예외 상태입니다", Toast.LENGTH_SHORT).show()
-            return
-        }
-        try {
-            startActivity(
-                Intent(
-                    Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                    Uri.parse("package:" + packageName)
-                )
-            )
-        } catch (e: Exception) {
-            try {
-                startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
-            } catch (e2: Exception) {
-                startActivity(Intent(Settings.ACTION_SETTINGS))
-            }
-        }
-    }
-
-    /**
-     * 앱 정보 화면으로 보냅니다.
+     * 절전 예외를 사용자가 직접 고르도록 앱 정보 화면으로 보냅니다.
      *
-     * 삼성 One UI 의 앱별 배터리 설정('제한 없음')과 '사용하지 않는 앱 절전' 목록은
-     * 공개 인텐트가 없어 앱에서 직접 열 수 없습니다. 내부 컴포넌트를 지정해 여는
-     * 방법은 One UI 버전마다 달라지고 막히기도 해서 쓰지 않습니다.
-     * 앱 정보까지만 보내면 거기서 '배터리' 를 한 번 더 누르면 됩니다.
+     * ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS 로 허용 팝업을 바로 띄우면 한 번에
+     * 끝나지만, 그러려면 REQUEST_IGNORE_BATTERY_OPTIMIZATIONS 권한을 선언해야 합니다.
+     * 그 권한은 Play 정책상 허용 사례가 좁아 심사 반려 위험이 커서 선언하지 않기로
+     * 했습니다(권한 없이 그 인텐트를 던지면 시스템이 거부합니다).
+     *
+     * 그래서 앱 정보 화면까지만 데려다주고 '배터리 → 제한 없음' 을 사용자가 고릅니다.
+     * 삼성 One UI 의 앱별 배터리 설정도 공개 인텐트가 없어 어차피 이 경로가 유일하고,
+     * 목록형 화면(ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)과 달리 수십 개 앱
+     * 사이에서 우리 앱을 찾아 헤맬 필요가 없습니다.
+     *
+     * 이미 예외 상태여도 화면은 그대로 엽니다. 앱 정보는 '알람 및 리마인더' 등
+     * 다른 설정으로 가는 통로이기도 해서, 여기서 막으면 갈 길이 없어집니다.
      */
-    private fun openAppInfo() {
+    private fun openBatterySettings() {
+        val exempt = Permissions.isBatteryExempt(this)
+        val hint = if (exempt) {
+            "절전 예외는 이미 완료 상태입니다"
+        } else {
+            "'배터리' 로 들어가 '제한 없음' 을 고르세요"
+        }
         try {
             startActivity(
                 Intent(
@@ -164,10 +152,16 @@ class SettingsActivity : AppCompatActivity() {
                     Uri.parse("package:" + packageName)
                 )
             )
-            Toast.makeText(this, "'배터리' 로 들어가 '제한 없음' 을 고르세요", Toast.LENGTH_LONG)
-                .show()
+            Toast.makeText(this, hint, Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
-            startActivity(Intent(Settings.ACTION_SETTINGS))
+            // 앱 정보 화면이 막힌 기기를 위한 대체 경로 (목록에서 직접 찾아야 합니다)
+            try {
+                startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+                Toast.makeText(this, "목록에서 TodoLock 을 찾아 허용하세요", Toast.LENGTH_LONG)
+                    .show()
+            } catch (e2: Exception) {
+                startActivity(Intent(Settings.ACTION_SETTINGS))
+            }
         }
     }
 

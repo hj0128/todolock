@@ -7,10 +7,13 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <!-- 시스템 목록에서 앱을 찾아 헤매지 않고 바로 허용 팝업을 띄우기 위해 필요합니다.
-         ⚠ Play 정책상 이 권한 요청은 허용 사례가 좁아 반려 위험이 있습니다.
-         스토어 제출 전에 유지할지 결정하세요 — docs/play-review.md 5항 -->
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <!--
+      REQUEST_IGNORE_BATTERY_OPTIMIZATIONS 는 의도적으로 선언하지 않습니다.
+      Play 정책상 허용 사례가 좁아 반려 위험이 큰 권한입니다(docs/play-review.md 5항).
+      대신 설정 화면에서 앱 정보로 보내 사용자가 직접 '제한 없음' 을 고르게 합니다.
+      현재 상태를 읽는 PowerManager.isIgnoringBatteryOptimizations 는 권한이 필요 없어
+      경고 표시는 그대로 동작합니다.
+    -->
     <!-- 미리 알림을 제 시각에 울리기 위한 권한. 없으면 몇 분 늦는 부정확 알람으로 대체됩니다. -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 

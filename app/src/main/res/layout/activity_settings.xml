@@ -214,7 +214,7 @@
                     android:textSize="11sp"
                     android:alpha="0.7"
                     android:lineSpacingExtra="2dp"
-                    android:text="잠금해제시 팝업이 뜨려면 아래 두 권한이 필요합니다. 허용되면 버튼에 '허용됨 / 완료' 가 표시됩니다. 삼성 기기는 절전이 감지 서비스를 종료하므로 '앱 정보 열기 → 배터리 → 제한 없음' 도 함께 해주세요." />
+                    android:text="잠금해제시 팝업이 뜨려면 아래 두 가지가 필요합니다. 되어 있으면 버튼에 '허용됨 / 완료' 가 표시됩니다. 절전 예외는 앱이 대신 켤 수 없어, 앱 정보 화면에서 '배터리 → 제한 없음' 을 직접 골라야 합니다 (삼성 기기도 같은 경로입니다)." />
 
                 <TextView
                     android:id="@+id/tvPermWarn"
@@ -242,29 +242,23 @@
                     android:layout_marginTop="4dp"
                     android:textSize="12sp"
                     android:textColor="?attr/colorError"
-                    android:text="⚠ 배터리 예외가 없으면 절전 기능이 감지 서비스를 종료해, 팝업이 안 뜨는 날이 생깁니다."
+                    android:text="⚠ 절전 예외가 없으면 절전 기능이 감지 서비스를 종료해, 팝업이 안 뜨는 날이 생깁니다."
                     android:visibility="gone" />
 
+                <!--
+                  앱 정보 화면으로만 보냅니다.
+                  허용 팝업을 바로 띄우려면 REQUEST_IGNORE_BATTERY_OPTIMIZATIONS 권한이
+                  필요한데, Play 심사 반려 위험이 커서 선언하지 않기로 했습니다
+                  (docs/play-review.md 5항). 삼성 One UI 의 '제한 없음' 과
+                  '알람 및 리마인더' 도 어차피 이 화면을 거칩니다.
+                -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnBattery"
                     style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
-                    android:text="배터리 예외" />
-
-                <!--
-                  삼성 One UI 의 앱별 배터리 설정(제한 없음)·절전 목록은 공개 인텐트가
-                  없어 직접 열 수 없습니다. 표준 API 로 앱 정보까지 보내면
-                  거기서 '배터리' 를 한 번 더 누르면 되므로 찾아 헤매지 않습니다.
-                -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnAppInfo"
-                    style="@style/Widget.Material3.Button.TextButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:text="앱 정보 열기 (삼성 절전 설정)" />
+                    android:text="앱 정보 열기 (배터리 → 제한 없음)" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnHideOngoing"
