@@ -32,21 +32,33 @@
             android:orientation="vertical"
             android:padding="22dp">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="잠깐!"
-                android:textSize="23sp"
-                android:textStyle="bold"
-                android:textColor="@color/sky_heading" />
+                android:orientation="horizontal"><!--
+                  크기가 다른 두 글자를 한 줄에 둡니다.
+                  LinearLayout 은 기본으로 베이스라인을 맞춰주므로 아래선이 나란히 놓입니다.
+                  폭이 모자라면 질문이 잘리지 않고 다음 줄로 넘어가도록
+                  maxLines 를 두지 않고 weight 로 남은 폭을 줍니다.
+                -->
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="1dp"
-                android:text="오늘 할 일 확인하셨나요?"
-                android:textSize="17sp"
-                android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="잠깐!"
+                    android:textSize="23sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/sky_heading" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="오늘 할 일 확인하셨나요?"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/tvCount"
