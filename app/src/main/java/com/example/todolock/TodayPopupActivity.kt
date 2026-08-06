@@ -3,7 +3,6 @@ package com.example.todolock
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.example.todolock.databinding.ActivityPopupBinding
 import com.example.todolock.databinding.ItemPopupRowBinding
@@ -54,12 +53,9 @@ class TodayPopupActivity : AppCompatActivity() {
 
         b.tvCount.text = "남은 할 일 " + items.size + "개"
 
-        // 위젯 항목 간격(widget_item.xml 의 layout_marginBottom)과 같은 값
-        val gap = (2 * resources.displayMetrics.density).toInt()
-
         b.container.removeAllViews()
         for (todo in items) {
-            // 위젯 행과 같은 구조의 전용 레이아웃. 확인 전용이라 누를 것은 없습니다.
+            // 확인 전용 행. 체크박스는 두지 않고 점으로 기준선만 잡습니다.
             val row = ItemPopupRowBinding.inflate(layoutInflater, b.container, false)
             row.pTitle.text = todo.text
 
@@ -71,16 +67,11 @@ class TodayPopupActivity : AppCompatActivity() {
                 row.pSub.visibility = View.GONE
             }
 
-            row.pStar.visibility = if (todo.important) View.VISIBLE else View.GONE
+            // GONE 이 아니라 INVISIBLE 입니다. 자리를 비워 두지 않으면 별표 유무에 따라
+            // 알림 시각이 좌우로 밀려서 세로로 정렬되지 않습니다.
+            row.pStar.visibility = if (todo.important) View.VISIBLE else View.INVISIBLE
 
-            // 위젯과 같은 층 구조: 목록 판 위에 항목 판이 떠 있게 보이도록.
-            row.root.setBackgroundResource(R.drawable.popup_item_panel)
-            val lp = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            lp.bottomMargin = gap
-            b.container.addView(row.root, lp)
+            b.container.addView(row.root)
         }
     }
 }

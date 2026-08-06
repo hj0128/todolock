@@ -4,12 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- 카드가 반투명이라 스크림을 옅게 둬야 뒤 화면이 비쳐 보입니다 -->
     <View
         android:id="@+id/scrim"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#66000000" />
+        android:background="#AA000000" />
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
@@ -21,7 +20,6 @@
         android:layout_marginBottom="48dp"
         app:cardCornerRadius="24dp"
         app:cardElevation="12dp"
-        app:cardBackgroundColor="@color/popup_card_bg"
         app:rippleColor="@android:color/transparent"
         android:clickable="true"
         android:focusable="false"><!--
@@ -34,56 +32,35 @@
             android:orientation="vertical"
             android:padding="22dp">
 
-            <!--
-              헤더 판. 위젯 헤더와 같은 방식입니다.
-              글자가 있는 층은 진하게 둬야 뒤 벽지·아이콘이 글자에 겹치지 않습니다.
-              카드(60%)에 그대로 얹으면 너무 비쳐서 읽기 어렵습니다.
-            -->
-            <LinearLayout
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/popup_item_panel"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp">
+                android:text="잠깐!"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="@color/sky_heading" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="잠깐!"
-                    android:textSize="28sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/sky_heading" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:text="오늘 할 일 확인하셨나요?"
+                android:textSize="19sp"
+                android:textStyle="bold" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="1dp"
-                    android:text="오늘 할 일 확인하셨나요?"
-                    android:textSize="19sp"
-                    android:textStyle="bold" />
+            <TextView
+                android:id="@+id/tvCount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textSize="14sp"
+                android:alpha="0.6" />
 
-                <TextView
-                    android:id="@+id/tvCount"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:textSize="14sp"
-                    android:alpha="0.6" />
-            </LinearLayout>
-
-            <!--
-              항목이 많아도 버튼이 잘리지 않도록 높이 상한을 두고 스크롤합니다.
-              뒤에 판을 깔지 않습니다. 어둡게 깔면 연한 카드 위에서 탁한 회색 띠로 보여
-              위젯(어두운 벽지 위)과 달리 거슬립니다. 항목 카드만으로 층이 충분합니다.
-            -->
+            <!-- 항목이 많아도 버튼이 잘리지 않도록 높이 상한을 두고 스크롤합니다 -->
             <com.example.todolock.MaxHeightScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:clipToPadding="false"
                 android:scrollbars="vertical"
                 android:fadeScrollbars="false">
 

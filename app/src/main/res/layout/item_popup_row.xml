@@ -1,64 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  잠금해제 팝업 전용 행. 위젯 행(widget_item.xml)과 같은 구조입니다.
+  잠금해제 팝업 전용 행.
 
-  메인 목록의 item_todo.xml 을 재활용하면 체크박스를 숨긴 자리가 비어
-  왼쪽에 아무 것도 없는 큰 빈 줄이 됩니다. 팝업은 확인 전용이라
-  누를 것이 없으므로, 동그라미를 표시용으로 두고 높이를 줄였습니다.
+  메인 목록의 item_todo.xml 을 재활용하면 체크박스를 숨긴 자리(56dp 최소 높이)가
+  비어 왼쪽이 텅 빈 큰 줄이 됩니다. 확인 전용 화면이라 누를 것이 없으므로
+  높이를 내용에 맞췄습니다.
+
+  알림 시각을 제목 아래가 아니라 같은 줄에 둡니다. 아래에 두면 알림이 있는 항목만
+  두 줄이 되어 행 높이가 들쭉날쭉해지고, 훑어보기 어려워집니다.
+
+  항목칸과 간격(2dp)은 위젯 항목(widget_item.xml)과 같은 규격입니다.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="2dp"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:paddingStart="4dp"
-    android:paddingEnd="4dp"
-    android:paddingTop="5dp"
-    android:paddingBottom="5dp">
+    android:background="@drawable/popup_item_panel"
+    android:paddingStart="14dp"
+    android:paddingEnd="12dp"
+    android:paddingTop="11dp"
+    android:paddingBottom="11dp">
 
-    <ImageView
-        android:layout_width="34dp"
-        android:layout_height="34dp"
-        android:padding="6dp"
-        android:src="@drawable/ic_circle_outline"
-        app:tint="@color/sky_heading"
-        android:contentDescription="@null" />
-
-    <LinearLayout
+    <TextView
+        android:id="@+id/pTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:layout_marginStart="6dp"
-        android:orientation="vertical">
+        android:textSize="16sp"
+        android:textColor="?android:attr/textColorPrimary"
+        android:maxLines="1"
+        android:ellipsize="end" />
 
-        <TextView
-            android:id="@+id/pTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="?android:attr/textColorPrimary"
-            android:maxLines="1"
-            android:ellipsize="end" />
-
-        <TextView
-            android:id="@+id/pSub"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:textColor="?android:attr/textColorSecondary"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:visibility="gone" />
-    </LinearLayout>
+    <TextView
+        android:id="@+id/pSub"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textSize="12sp"
+        android:textColor="?android:attr/textColorSecondary"
+        android:maxLines="1"
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/pStar"
-        android:layout_width="34dp"
-        android:layout_height="34dp"
-        android:padding="6dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="8dp"
         android:src="@drawable/ic_star"
         app:tint="@color/sky_heading"
         android:contentDescription="중요"
-        android:visibility="gone" />
+        android:visibility="invisible" />
 </LinearLayout>

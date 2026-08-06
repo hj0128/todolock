@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 팝업 항목 판. 모서리는 위젯 항목 판(widget_panel)과 같은 14dp. -->
+<!--
+  팝업 항목칸. 모서리는 위젯 항목 판(widget_panel)과 같은 14dp.
+  카드도 항목칸도 불투명하므로, 앞서 반투명으로 시도했을 때처럼
+  뒤 벽지가 섞여 탁한 회색이 되는 일이 없습니다.
+-->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <solid android:color="@color/popup_item_bg" />
