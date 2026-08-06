@@ -18,10 +18,6 @@ object TodoRow {
      *
      * 완료 처리는 체크박스로만 합니다. 행 본문을 탭하면 onEdit 이 불립니다.
      *
-     * @param showDate 아래 줄에 기한을 넣을지. 팝업은 오늘 것만 보여주므로 끕니다.
-     * @param showReminder 아래 줄에 미리 알림 시각을 넣을지.
-     * @param starIndicator onStar 가 없을 때도 중요 항목에 ★ 를 보여줄지.
-     *   팝업처럼 누를 수는 없지만 중요 여부는 알려야 하는 화면에서 씁니다.
      */
     fun bind(
         b: ItemTodoBinding,
@@ -29,10 +25,7 @@ object TodoRow {
         onToggle: ((Todo) -> Unit)? = null,
         onDelete: ((Todo) -> Unit)? = null,
         onStar: ((Todo) -> Unit)? = null,
-        onEdit: ((Todo) -> Unit)? = null,
-        showDate: Boolean = true,
-        showReminder: Boolean = true,
-        starIndicator: Boolean = false
+        onEdit: ((Todo) -> Unit)? = null
     ) {
         b.cbDone.setOnCheckedChangeListener(null)
         b.cbDone.isChecked = todo.done
@@ -45,28 +38,16 @@ object TodoRow {
         }
         b.tvText.alpha = if (todo.done) 0.4f else 1f
 
-        // 아래 줄은 조각을 모아 만듭니다. 넣을 게 없으면 줄 자체를 감춥니다.
+        // 아래 줄은 기한 · '지남' · 미리 알림을 이어 붙입니다.
         val overdue = TodoStore.isOverdue(todo)
-        val parts = mutableListOf<String>()
-        if (showDate) {
-            parts.add(TodoStore.prettyDate(todo.date))
-            if (overdue) parts.add("지남")
-        }
-        if (showReminder && todo.hasReminder) {
-            parts.add("🔔 " + TodoStore.prettyRemindShort(todo))
-        }
+        val parts = mutableListOf(TodoStore.prettyDate(todo.date))
+        if (overdue) parts.add("지남")
+        if (todo.hasReminder) parts.add("🔔 " + TodoStore.prettyRemindShort(todo))
 
-        if (parts.isEmpty()) {
-            b.tvDate.visibility = View.GONE
-        } else {
-            b.tvDate.visibility = View.VISIBLE
-            b.tvDate.text = parts.joinToString(" · ")
-            // 기한이 지난 것은 눈에 띄게. 기한을 감춘 화면에서는 강조하지 않습니다.
-            b.tvDate.setTextColor(
-                if (overdue && showDate) overdueColor(b.root.context)
-                else secondaryColor(b.root.context)
-            )
-        }
+        b.tvDate.text = parts.joinToString(" · ")
+        b.tvDate.setTextColor(
+            if (overdue) overdueColor(b.root.context) else secondaryColor(b.root.context)
+        )
 
         if (onToggle == null) {
             b.cbDone.visibility = View.GONE
@@ -87,17 +68,7 @@ object TodoRow {
         }
 
         if (onStar == null) {
-            // 누를 수는 없지만 중요 여부는 알려야 하는 화면(팝업)용 표시.
-            if (starIndicator && todo.important) {
-                b.btnStar.visibility = View.VISIBLE
-                b.btnStar.setImageResource(R.drawable.ic_star)
-                b.btnStar.alpha = 1f
-                b.btnStar.contentDescription = "중요"
-                b.btnStar.setOnClickListener(null)
-                b.btnStar.isClickable = false
-            } else {
-                b.btnStar.visibility = View.GONE
-            }
+            b.btnStar.visibility = View.GONE
         } else {
             b.btnStar.visibility = View.VISIBLE
             b.btnStar.setImageResource(

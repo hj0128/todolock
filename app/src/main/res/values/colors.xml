@@ -119,6 +119,14 @@
       홈 화면 위젯용. 위젯은 앱 테마를 물려받지 못해 ?attr 을 쓸 수 없으므로
       명시적인 색이 필요합니다. 다크는 values-night 에서 같은 이름으로 대체됩니다.
     -->
+    <!--
+      잠금해제 팝업. 투명 액티비티라 뒤 화면이 실제로 비치므로 알파를 넣습니다.
+      앞 두 자리가 알파입니다 (E0 ≈ 88%, F2 ≈ 95%).
+      카드는 살짝 투명하고, 그 위에 항목 카드가 떠 있는 2층 구조입니다.
+    -->
+    <color name="popup_card_bg">#E0EAF6FE</color>
+    <color name="popup_item_bg">#F2FFFFFF</color>
+
     <color name="widget_bg">#EAF6FE</color>
     <color name="widget_text">#2C3A42</color>
     <color name="widget_text_dim">#5A6B75</color>

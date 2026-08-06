@@ -2,9 +2,11 @@ package com.example.todolock
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.example.todolock.databinding.ActivityPopupBinding
-import com.example.todolock.databinding.ItemTodoBinding
+import com.example.todolock.databinding.ItemPopupRowBinding
 
 /**
  * 잠금해제 직후 뜨는 '오늘의 할 일' 화면.
@@ -52,18 +54,32 @@ class TodayPopupActivity : AppCompatActivity() {
 
         b.tvCount.text = "남은 할 일 " + items.size + "개"
 
+        val gap = (4 * resources.displayMetrics.density).toInt()
+
         b.container.removeAllViews()
         for (todo in items) {
-            val row = ItemTodoBinding.inflate(layoutInflater, b.container, false)
-            // 확인 전용이라 누를 수 있는 것은 없지만, 중요(★)와 미리 알림은 보여줍니다.
-            // 기한은 모두 오늘이라 생략합니다.
-            TodoRow.bind(
-                row, todo,
-                showDate = false,
-                showReminder = true,
-                starIndicator = true
+            // 위젯 행과 같은 구조의 전용 레이아웃. 확인 전용이라 누를 것은 없습니다.
+            val row = ItemPopupRowBinding.inflate(layoutInflater, b.container, false)
+            row.pTitle.text = todo.text
+
+            // 기한은 모두 오늘이라 생략하고, 미리 알림만 보여줍니다.
+            if (todo.hasReminder) {
+                row.pSub.visibility = View.VISIBLE
+                row.pSub.text = "🔔 " + TodoStore.prettyRemindShort(todo)
+            } else {
+                row.pSub.visibility = View.GONE
+            }
+
+            row.pStar.visibility = if (todo.important) View.VISIBLE else View.GONE
+
+            // 위젯과 같은 층 구조: 목록 판 위에 항목 판이 떠 있게 보이도록.
+            row.root.setBackgroundResource(R.drawable.popup_item_panel)
+            val lp = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
             )
-            b.container.addView(row.root)
+            lp.bottomMargin = gap
+            b.container.addView(row.root, lp)
         }
     }
 }
