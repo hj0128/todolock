@@ -103,6 +103,8 @@ class MainActivity : AppCompatActivity() {
 
         b.btnBattery.setOnClickListener { requestBatteryExemption() }
 
+        b.btnHideOngoing.setOnClickListener { openServiceChannelSettings() }
+
         b.btnTest.setOnClickListener {
             if (TodoStore.pendingToday(this).isEmpty()) {
                 Toast.makeText(this, "오늘 남은 할 일이 없어 팝업이 뜨지 않습니다", Toast.LENGTH_SHORT).show()
@@ -125,6 +127,40 @@ class MainActivity : AppCompatActivity() {
         // 재부팅·강제 종료로 알람이 날아갔을 수 있으므로 앱을 열 때마다 다시 세웁니다.
         Reminders.rescheduleAll(this)
         refresh()
+    }
+
+    /**
+     * 상시 표시되는 서비스 알림의 채널 설정으로 바로 보냅니다.
+     *
+     * 포그라운드 서비스 알림은 앱이 지울 수 없습니다(시스템이 표시를 강제합니다).
+     * 사용자가 그 채널을 끄면 알림만 사라지고 서비스는 계속 돌아,
+     * 잠금해제 감지 기능은 그대로 유지됩니다.
+     */
+    private fun openServiceChannelSettings() {
+        // 채널은 Android 8 부터입니다. 그 아래는 앱 알림 설정으로 보냅니다.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            try {
+                startActivity(
+                    Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS)
+                        .putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+                        .putExtra(Settings.EXTRA_CHANNEL_ID, Notifications.CHANNEL_SERVICE)
+                )
+                Toast.makeText(this, "이 화면에서 알림을 끄면 상단 표시가 사라집니다", Toast.LENGTH_LONG)
+                    .show()
+                return
+            } catch (e: Exception) {
+                // 기기에 따라 채널 설정 화면이 없을 수 있어 아래로 넘어갑니다
+            }
+        }
+        try {
+            startActivity(
+                Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                    .putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+            )
+            Toast.makeText(this, "'잠금해제 감지' 항목을 끄세요", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            startActivity(Intent(Settings.ACTION_SETTINGS))
+        }
     }
 
     /**

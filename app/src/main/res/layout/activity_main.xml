@@ -185,6 +185,19 @@
                     android:text="미리보기" />
             </LinearLayout>
 
+            <!--
+              상단에 상시 표시되는 서비스 알림을 숨기러 가는 버튼.
+              포그라운드 서비스 알림은 앱이 지울 수 없고, 채널을 끄는 것만 가능합니다.
+              채널을 꺼도 서비스는 계속 돌아 잠금해제 감지는 유지됩니다.
+            -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnHideOngoing"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:text="상단 'TodoLock 실행 중' 알림 숨기기" />
+
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </LinearLayout>
