@@ -5,7 +5,11 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <!--
+      USE_FULL_SCREEN_INTENT 는 선언하지 않습니다.
+      Play 가 알람·통화 앱으로 제한하는 권한인데, 이 앱에서 화면을 덮는 창은
+      '다른 앱 위에 표시'(SYSTEM_ALERT_WINDOW) 로 띄우므로 필요가 없습니다.
+    -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <!--
       REQUEST_IGNORE_BATTERY_OPTIMIZATIONS 는 의도적으로 선언하지 않습니다.

@@ -125,7 +125,7 @@ UnlockService (포그라운드 서비스, 알림 중요도 MIN → 상태바에 
 오늘 날짜에 '미완료' 할 일이 있는가?
    ├─ 없음 → 아무것도 안 함
    └─ 있음 → 0.5초 후 TodayPopupActivity 표시
-              (overlay 권한 없으면 → 전체화면 인텐트 알림)
+              (overlay 권한 없으면 → 헤드업 알림으로 대체)
 
 Watchdog (AlarmManager, 15분 간격) ─→ 서비스가 죽어 있으면 다시 세움
 ```

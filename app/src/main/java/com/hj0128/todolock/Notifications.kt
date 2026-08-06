@@ -146,7 +146,12 @@ object Notifications {
 
     /**
      * '다른 앱 위에 표시' 권한이 없어 백그라운드에서 화면을 띄울 수 없을 때의 대체 수단.
-     * 전체화면 인텐트로 시도하고, 막히면 헤드업 알림으로 표시됩니다.
+     *
+     * 전체 화면 인텐트는 쓰지 않습니다. 이 알림은 사용자가 시각을 정해둔 알람이 아니라
+     * '잠금을 풀었다' 는 사건에 붙어 뜨는 것이라, 화면을 통째로 가져갈 근거가 없습니다.
+     * (Play 는 USE_FULL_SCREEN_INTENT 를 알람·통화가 핵심인 앱으로 제한하고,
+     * Android 14+ 는 그 밖의 앱에 이 권한을 기본으로 주지 않습니다)
+     * 헤드업으로 떠서 눌러야 열리는 편이 잠금해제 직후 동작으로도 덜 거칩니다.
      */
     fun showFallbackAlert(ctx: Context, remaining: Int) {
         ensureChannels(ctx)
@@ -165,7 +170,6 @@ object Notifications {
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .setAutoCancel(true)
             .setContentIntent(pi)
-            .setFullScreenIntent(pi, true)
             .build()
         try {
             ctx.getSystemService(NotificationManager::class.java)?.notify(ID_ALERT, n)
