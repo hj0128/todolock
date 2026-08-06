@@ -35,7 +35,10 @@
 | 기한 설정 | 셀렉트박스로 `오늘` / `내일 (요일)` / `날짜 선택` → 날짜 선택은 달력. 고르지 않으면 오늘 |
 | 미리 알림 | 셀렉트박스로 `내일 (요일) 9시` / `다음 주 (요일) 9시` / `날짜 및 시간 선택` → 달력 다음 시계. 기한과 무관한 절대 시각으로 저장됩니다 |
 | 알림에서 바로 완료 | 알림의 `완료` 버튼으로 앱을 열지 않고 처리 |
-| 날짜 오래된 순 정렬 | 할 일 목록은 항상 기한이 이른 것부터. 중요 표시는 같은 날짜 안에서만 위로 올립니다 |
+| 날짜 오래된 순 정렬 | 정렬 우선순위는 날짜(오래된 것 먼저) → 중요 → 미리 알림 이른 순 → 등록순 |
+| 홈 화면 위젯 | 할 일 목록을 홈에서 바로 보고 처리. `○` 완료 · 본문 수정 · `☆` 중요 · `＋` 추가 · `⚙` 설정 |
+| 위젯 설정 | 톱니바퀴에서 불투명도(20~100%)와 글꼴 크기(작게·보통·크게)를 조절 |
+| 앱 안 열고 추가 | 위젯의 `＋` 는 홈 화면 위에 입력 시트만 띄웁니다 (앱 전체가 열리지 않음) |
 | 완료 섹션 분리 | 체크하면 아래 `완료` 섹션으로 내려감 |
 | 권한 없어도 동작 | 오버레이 권한이 없으면 전체화면/헤드업 알림으로 대체 표시 |
 | 껐다 켜기 | 스위치 하나로 감지 서비스 전체를 중단 |
@@ -158,7 +161,13 @@ Watchdog (AlarmManager, 15분 간격) ─→ 서비스가 죽어 있으면 다�
 ```
 app/src/main/java/com/example/todolock/
 ├── MainActivity.kt          할 일 목록/삭제, 추가 시트 호출, 설정, 진단
-├── AddTodoSheet.kt          기한 · 미리 알림 · 중요를 고르는 추가 시트 (BottomSheetDialog)
+├── AddTodoSheet.kt          기한 · 미리 알림 · 중요를 고르는 추가/수정 시트 (BottomSheetDialog)
+├── QuickAddActivity.kt      위젯에서 앱을 열지 않고 추가·수정하는 투명 액티비티
+├── TodoWidget.kt            홈 화면 위젯 (AppWidgetProvider)
+├── TodoWidgetService.kt     위젯 목록 행 공급 (RemoteViewsService)
+├── WidgetConfig.kt          위젯 불투명도 · 글꼴 크기 설정
+├── WidgetSettingsActivity.kt 톱니바퀴로 열리는 위젯 설정
+├── MaxHeightScrollView.kt   팝업 목록의 높이 상한 (버튼이 잘리지 않게)
 ├── TodayPopupActivity.kt    잠금해제 시 뜨는 팝업
 ├── UnlockService.kt         잠금해제 감지용 포그라운드 서비스
 ├── UnlockReceiver.kt        ACTION_USER_PRESENT 처리 + 팝업 실행

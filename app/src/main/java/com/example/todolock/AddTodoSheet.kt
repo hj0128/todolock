@@ -32,10 +32,15 @@ class AddTodoSheet(
     private var remindAt = existing?.remindAt ?: Todo.NO_REMIND
     private var important = existing?.important ?: false
 
-    fun show() {
+    /**
+     * @param onDismiss 시트가 닫힐 때(저장·취소·바깥 탭 모두) 불립니다.
+     *   홈 화면 위에 떠 있는 QuickAddActivity 가 스스로 끝나기 위해 씁니다.
+     */
+    fun show(onDismiss: (() -> Unit)? = null) {
         val b = SheetAddTodoBinding.inflate(LayoutInflater.from(ctx))
         val dialog = BottomSheetDialog(ctx)
         dialog.setContentView(b.root)
+        if (onDismiss != null) dialog.setOnDismissListener { onDismiss() }
 
         // 저장 아이콘은 추가·수정 모두 체크(✓)입니다. ＋ 는 메인의 '할 일 추가' 버튼 전용.
         if (existing != null) {

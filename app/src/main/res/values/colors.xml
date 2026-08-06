@@ -114,4 +114,12 @@
 
     <!-- 기한 지난 항목 표시색. 파스텔 팔레트에 맞춰 톤을 낮춘 붉은 계열. -->
     <color name="overdue">#D2726B</color>
+
+    <!--
+      홈 화면 위젯용. 위젯은 앱 테마를 물려받지 못해 ?attr 을 쓸 수 없으므로
+      명시적인 색이 필요합니다. 다크는 values-night 에서 같은 이름으로 대체됩니다.
+    -->
+    <color name="widget_bg">#EAF6FE</color>
+    <color name="widget_text">#2C3A42</color>
+    <color name="widget_text_dim">#5A6B75</color>
 </resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 위젯 항목의 '미완료' 표시. RemoteViews 는 CheckBox 를 지원하지 않아 ImageView 로 씁니다. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M12,2A10,10 0,1 0,12 22A10,10 0,1 0,12 2M12,4A8,8 0,1 1,12 20A8,8 0,1 1,12 4z" />
+</vector>

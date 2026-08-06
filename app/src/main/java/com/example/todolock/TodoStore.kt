@@ -105,6 +105,9 @@ object TodoStore {
             )
         }
         prefs(ctx).edit().putString(KEY_TODOS, arr.toString()).apply()
+
+        // 저장은 데이터가 바뀌는 유일한 지점이라, 홈 화면 위젯 갱신을 여기 한 곳에 둡니다.
+        TodoWidget.refresh(ctx)
     }
 
     fun forDate(ctx: Context, date: String): List<Todo> =

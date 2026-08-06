@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TodoLock</string>
+    <string name="widget_name">할 일</string>
+    <string name="widget_desc">할 일을 홈 화면에서 보고 탭으로 완료 처리합니다</string>
 </resources>

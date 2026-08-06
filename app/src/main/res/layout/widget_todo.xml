@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  홈 화면 위젯. RemoteViews 가 지원하는 뷰만 쓸 수 있습니다
+  (FrameLayout · LinearLayout · TextView · ImageView · ListView 등. CheckBox 는 불가).
+
+  배경을 ImageView 로 깐 이유: RemoteViews 로는 background 의 알파를 바꿀 수 없지만
+  ImageView 는 setImageAlpha 를 지원해서 불투명도 설정을 적용할 수 있습니다.
+  둥근 모서리도 그대로 유지됩니다.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/wBg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:src="@drawable/widget_bg"
+        android:contentDescription="@null" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/wCount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/sky_heading"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:text="@string/widget_name" />
+
+            <ImageView
+                android:id="@+id/wAdd"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:padding="3dp"
+                android:src="@drawable/ic_add"
+                android:tint="@color/sky_heading"
+                android:contentDescription="할 일 추가" />
+
+            <ImageView
+                android:id="@+id/wSettings"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="2dp"
+                android:padding="5dp"
+                android:src="@drawable/ic_settings"
+                android:tint="@color/sky_heading"
+                android:contentDescription="위젯 설정" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/wEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textSize="13sp"
+            android:textColor="@color/widget_text_dim"
+            android:text="할 일이 없습니다" />
+
+        <ListView
+            android:id="@+id/wList"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="4dp"
+            android:divider="@null"
+            android:dividerHeight="0dp" />
+    </LinearLayout>
+</FrameLayout>

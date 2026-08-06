@@ -15,4 +15,8 @@
 
     <!-- 어두운 배경에서는 붉은색이 더 강하게 보여 한 톤 더 눕힙니다 -->
     <color name="overdue">#E0928C</color>
+
+    <color name="widget_bg">#1A2226</color>
+    <color name="widget_text">#C9D4DA</color>
+    <color name="widget_text_dim">#9FB0B9</color>
 </resources>

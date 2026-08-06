@@ -31,6 +31,23 @@
             </intent-filter>
         </activity>
 
+        <!-- 위젯에서 앱을 열지 않고 그 자리에서 추가·수정하기 위한 투명 액티비티 -->
+        <activity
+            android:name=".QuickAddActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TodoLock.Popup"
+            android:taskAffinity="com.example.todolock.quickadd"
+            android:excludeFromRecents="true"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- 위젯 톱니바퀴로 열리는 겉모습 설정 -->
+        <activity
+            android:name=".WidgetSettingsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TodoLock.Popup"
+            android:taskAffinity="com.example.todolock.widgetsettings"
+            android:excludeFromRecents="true" />
+
         <activity
             android:name=".TodayPopupActivity"
             android:exported="false"
@@ -57,6 +74,24 @@
         <receiver
             android:name=".ReminderReceiver"
             android:exported="false" />
+
+        <!-- 홈 화면 위젯 -->
+        <receiver
+            android:name=".TodoWidget"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/todo_widget_info" />
+        </receiver>
+
+        <!-- 위젯 목록에 행을 공급합니다. 런처가 바인딩하므로 이 권한이 필요합니다. -->
+        <service
+            android:name=".TodoWidgetService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <receiver
             android:name=".BootReceiver"
