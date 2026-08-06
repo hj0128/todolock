@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  헤더와 각 할 일 행에 깔리는 앞쪽 판.
-  뒤쪽 목록 판(widget_bg)보다 진하게 그려서 층이 구분되도록 합니다.
+  각 할 일 행에 깔리는 앞쪽 판 (헤더는 widget_head 를 씁니다).
+  팝업 항목칸과 같은 흰색이라 뒤쪽 목록 판(widget_bg)에서 또렷하게 떠 보입니다.
   모서리는 위젯 전체(20dp)보다 작게 둬야 안쪽에 들어간 느낌이 납니다.
 -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="@color/widget_bg" />
+    <solid android:color="@color/widget_item_bg" />
     <corners android:radius="14dp" />
 </shape>

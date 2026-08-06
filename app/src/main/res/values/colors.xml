@@ -123,6 +123,11 @@
     <color name="popup_item_bg">#FBFDFF</color>
 
     <color name="widget_bg">#EAF6FE</color>
+    <!--
+      위젯 항목 판. 팝업 항목칸과 같은 값을 참조합니다 — 두 화면의 '할 일 한 줄'이
+      같은 색이어야 같은 물건으로 읽힙니다. 다크 대체값도 참조를 따라갑니다.
+    -->
+    <color name="widget_item_bg">@color/popup_item_bg</color>
     <color name="widget_text">#2C3A42</color>
     <color name="widget_text_dim">#5A6B75</color>
 </resources>
