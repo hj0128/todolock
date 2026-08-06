@@ -49,6 +49,16 @@
 - 외부 라이브러리는 AndroidX / Material 뿐, **네트워크 코드 없음**
 - **GitHub Actions** 에서 푸시마다 빌드를 검증합니다
 
+### 배포용 서명
+
+`assembleRelease` 는 프로젝트 루트의 `keystore.properties` 를 읽어 그 키로 서명합니다.
+파일이 없으면 debug 키로 서명되어 **빌드는 되지만 배포하면 안 됩니다** — debug 키는
+비밀번호가 공개된 표준 키라, 그걸로 서명해 배포하면 누구나 같은 서명의 '업데이트' 를
+만들어 덮어씌울 수 있습니다.
+
+키를 만들고 설정하는 방법은 `keystore.properties.example` 에 적어두었습니다.
+키스토어 파일과 `keystore.properties` 는 저장소에 올라가지 않습니다(`.gitignore`).
+
 ## 개인정보
 
 `INTERNET` 권한이 없습니다. 할 일 데이터는 기기 내부 SharedPreferences에만 저장되며

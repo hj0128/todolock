@@ -1,6 +1,12 @@
 *.iml
 .gradle
 /local.properties
+
+# 배포 서명 키 — 절대 올리지 않습니다 (형식은 keystore.properties.example 참고)
+/keystore.properties
+*.jks
+*.keystore
+
 /.idea
 .DS_Store
 /build

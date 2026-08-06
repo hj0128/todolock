@@ -1,7 +1,23 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
+
+/**
+ * 업로드 키 정보. 저장소에는 두지 않습니다(keystore.properties 는 .gitignore 대상,
+ * 키스토어 파일 자체는 저장소 밖에 둡니다). 형식은 keystore.properties.example 참고.
+ *
+ * 파일이 없으면 release 도 debug 키로 서명합니다 — 클론해서 그냥 빌드해 보려는
+ * 사람이 키를 만들지 않고도 돌려볼 수 있어야 하기 때문입니다.
+ * 배포용 빌드인지는 아래 hasUploadKey 로 갈립니다.
+ */
+val keystoreProps = Properties().apply {
+    val f = rootProject.file("keystore.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+val hasUploadKey = keystoreProps.getProperty("storeFile") != null
 
 android {
     namespace = "com.hj0128.todolock"
@@ -15,11 +31,24 @@ android {
         versionName = "1.4"
     }
 
+    signingConfigs {
+        if (hasUploadKey) {
+            create("upload") {
+                storeFile = file(keystoreProps.getProperty("storeFile"))
+                storePassword = keystoreProps.getProperty("storePassword")
+                keyAlias = keystoreProps.getProperty("keyAlias")
+                keyPassword = keystoreProps.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
-            // 사이드로드용으로 debug 키에 서명 (별도 키스토어 없이 설치 가능)
-            signingConfig = signingConfigs.getByName("debug")
+            // 배포하는 APK 는 반드시 업로드 키로 서명해야 합니다.
+            // debug 키는 비밀번호가 공개된 표준 키라, 그걸로 서명해 배포하면
+            // 누구나 같은 서명의 '업데이트' 를 만들어 덮어씌울 수 있습니다.
+            signingConfig = signingConfigs.getByName(if (hasUploadKey) "upload" else "debug")
         }
     }
 
