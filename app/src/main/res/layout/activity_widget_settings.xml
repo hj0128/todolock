@@ -17,7 +17,12 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         app:cardCornerRadius="24dp"
-        app:cardElevation="12dp">
+        app:cardElevation="12dp"
+        app:rippleColor="@android:color/transparent"
+        android:clickable="true"
+        android:focusable="false"><!--
+          카드 터치를 여기서 소비합니다. 그러지 않으면 아래 스크림이 받아 닫힙니다.
+        -->
 
         <LinearLayout
             android:layout_width="match_parent"

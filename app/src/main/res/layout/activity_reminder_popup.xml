@@ -17,7 +17,14 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         app:cardCornerRadius="24dp"
-        app:cardElevation="12dp">
+        app:cardElevation="12dp"
+        app:rippleColor="@android:color/transparent"
+        android:clickable="true"
+        android:focusable="false"><!--
+          카드를 눌렀을 때 닫히지 않도록 터치를 여기서 소비합니다.
+          FrameLayout 은 위쪽 자식이 터치를 처리하지 않으면 아래 형제(스크림)로
+          이벤트를 넘기므로, 클릭 불가 상태면 카드를 눌러도 스크림이 받아 닫힙니다.
+        -->
 
         <LinearLayout
             android:layout_width="match_parent"
