@@ -23,13 +23,13 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
+      # 버전을 지정하지 않으면 래퍼(gradle-wrapper.properties)의 버전을 씁니다.
+      # 로컬과 CI 가 같은 Gradle 로 빌드되도록 래퍼에 맡깁니다.
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.7'
 
       - name: Build debug APK
-        run: gradle assembleDebug --no-daemon --stacktrace
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Rename APK
         run: |

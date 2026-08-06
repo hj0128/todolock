@@ -1,0 +1,5 @@
+# Gradle 래퍼 스크립트는 리눅스 CI 에서 /bin/sh 로 실행되므로 항상 LF 여야 합니다.
+# CRLF 로 커밋되면 "bad interpreter: /bin/sh^M" 으로 빌드가 깨집니다.
+gradlew         text eol=lf
+gradlew.bat     text eol=crlf
+*.jar           binary

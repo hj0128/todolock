@@ -78,7 +78,20 @@
 
 ### 안드로이드 스튜디오로 빌드하는 경우
 폴더를 그대로 열고 `Build ▸ Build Bundle(s)/APK(s) ▸ Build APK(s)`.
-(Gradle wrapper jar는 포함하지 않았으므로 스튜디오가 자동으로 받아옵니다.)
+
+### 명령줄로 빌드하는 경우
+```bash
+./gradlew assembleDebug          # Windows: .\gradlew.bat assembleDebug
+# 결과: app/build/outputs/apk/debug/app-debug.apk
+```
+
+**JDK 17이 필요합니다.** 안드로이드 스튜디오 번들 JDK는 버전이 더 높아
+이 프로젝트의 Gradle 8.7 이 처리하지 못하고 `25.0.2` 같은 오류로 실패합니다.
+스튜디오 안에서 빌드할 때는 문제가 없고, 명령줄에서만 아래처럼 지정해 주세요.
+
+```bash
+export JAVA_HOME=/path/to/jdk-17     # Windows: $env:JAVA_HOME="C:\...\jdk-17..."
+```
 
 ---
 
