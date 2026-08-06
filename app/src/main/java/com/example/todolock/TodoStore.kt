@@ -81,7 +81,8 @@ object TodoStore {
                         o.optBoolean("done", false),
                         o.optBoolean("important", false),
                         // 알림이 없던 옛 데이터는 '알림 없음' 으로 읽힙니다.
-                        o.optLong("remindAt", Todo.NO_REMIND)
+                        o.optLong("remindAt", Todo.NO_REMIND),
+                        o.optBoolean("notified", false)
                     )
                 )
             }
@@ -102,6 +103,7 @@ object TodoStore {
                     .put("done", t.done)
                     .put("important", t.important)
                     .put("remindAt", t.remindAt)
+                    .put("notified", t.notified)
             )
         }
         prefs(ctx).edit().putString(KEY_TODOS, arr.toString()).apply()

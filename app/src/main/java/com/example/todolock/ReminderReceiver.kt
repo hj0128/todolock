@@ -28,6 +28,9 @@ class ReminderReceiver : BroadcastReceiver() {
 
         if (todo.done) return
         Notifications.showReminder(ctx, todo)
+        // 이미 알렸다고 남겨야 '놓친 알림 따라잡기' 가 중복으로 띄우지 않습니다.
+        todo.notified = true
+        TodoStore.update(ctx, todo)
         TodoStore.appendLog(ctx, "미리 알림: " + todo.text)
     }
 }

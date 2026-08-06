@@ -17,8 +17,8 @@ class TodayPopupActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 오늘 등록된 할 일이 아예 없으면 아무것도 띄우지 않습니다.
-        if (TodoStore.forDate(this, TodoStore.today()).isEmpty()) {
+        // 완료된 것은 보여주지 않으므로, 오늘 '남은' 할 일이 없으면 아무것도 띄우지 않습니다.
+        if (TodoStore.pendingToday(this).isEmpty()) {
             finish()
             return
         }
@@ -40,16 +40,17 @@ class TodayPopupActivity : AppCompatActivity() {
     }
 
     private fun render() {
-        // 팝업은 오늘 것만 보여주므로 날짜는 감춥니다.
-        // 목록 화면과 같은 우선순위: 미완료 먼저 → 중요 → 미리 알림 이른 순 → 등록순.
-        val items = TodoStore.forDate(this, TodoStore.today())
+        // 오늘 남은 할 일만. 완료된 것은 확인할 필요가 없어 감춥니다.
+        // 팝업은 오늘 것만 보여주므로 날짜도 감춥니다.
+        // 목록 화면과 같은 우선순위: 중요 → 미리 알림 이른 순 → 등록순.
+        val items = TodoStore.pendingToday(this)
             .sortedWith(
-                compareBy<Todo> { it.done }
-                    .thenByDescending { it.important }
+                compareByDescending<Todo> { it.important }
                     .thenBy { if (it.hasReminder) it.remindAt else Long.MAX_VALUE }
                     .thenBy { it.id }
             )
-        val remaining = items.count { !it.done }
+
+        b.tvCount.text = "남은 할 일 " + items.size + "개"
 
         b.container.removeAllViews()
         for (todo in items) {
@@ -57,13 +58,6 @@ class TodayPopupActivity : AppCompatActivity() {
             // 이 화면은 '확인' 전용입니다. 체크·별표·삭제 없이 보여주기만 합니다.
             TodoRow.bind(row, todo, showDate = false)
             b.container.addView(row.root)
-        }
-
-        if (remaining == 0) {
-            b.tvCount.text = "오늘 할 일 전부 끝냈어요 🎉"
-            b.root.postDelayed({ if (!isFinishing) finish() }, 1100L)
-        } else {
-            b.tvCount.text = "남은 할 일 " + remaining + "개"
         }
     }
 }

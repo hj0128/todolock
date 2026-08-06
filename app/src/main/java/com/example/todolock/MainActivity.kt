@@ -149,8 +149,12 @@ class MainActivity : AppCompatActivity() {
         AddTodoSheet(this, todo) { text, date, remindAt, important ->
             todo.text = text
             todo.date = date
-            todo.remindAt = remindAt
             todo.important = important
+            // 알림 시각이 바뀌었으면 '이미 알렸음' 표시를 지워야 새 시각에 알립니다.
+            if (todo.remindAt != remindAt) {
+                todo.remindAt = remindAt
+                todo.notified = false
+            }
             TodoStore.update(this, todo)
             // 기한·알림이 바뀌었을 수 있으므로 예약을 다시 세웁니다(내부에서 취소 먼저).
             announceReminder(todo, Reminders.schedule(this, todo))
