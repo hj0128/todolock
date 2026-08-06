@@ -46,6 +46,7 @@ private class TodoWidgetFactory(
         rv.setTextViewTextSize(R.id.wTitle, TypedValue.COMPLEX_UNIT_SP, WidgetConfig.titleSp(ctx))
         rv.setTextViewTextSize(R.id.wSub, TypedValue.COMPLEX_UNIT_SP, WidgetConfig.subSp(ctx))
         rv.setTextViewTextSize(R.id.wRemind, TypedValue.COMPLEX_UNIT_SP, WidgetConfig.subSp(ctx))
+        rv.setTextViewTextSize(R.id.wMemo, TypedValue.COMPLEX_UNIT_SP, WidgetConfig.subSp(ctx))
 
         // 행은 뒤쪽 목록 판보다 진하게 (헤더와 같은 알파)
         rv.setInt(R.id.wItemBg, "setImageAlpha", WidgetConfig.panelAlpha(ctx))
@@ -67,6 +68,10 @@ private class TodoWidgetFactory(
             if (todo.hasReminder) "🔔 " + TodoStore.prettyRemindShort(todo) else ""
         )
         rv.setViewVisibility(R.id.wRemind, if (todo.hasReminder) View.VISIBLE else View.GONE)
+
+        // 메모 첫 줄. 있는 항목만 한 줄 더 차지합니다.
+        rv.setTextViewText(R.id.wMemo, TodoStore.memoLine(todo))
+        rv.setViewVisibility(R.id.wMemo, if (todo.hasMemo) View.VISIBLE else View.GONE)
 
         rv.setImageViewResource(
             R.id.wStar,

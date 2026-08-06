@@ -2,6 +2,7 @@ package com.hj0128.todolock
 
 import android.app.NotificationManager
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.hj0128.todolock.databinding.ActivityReminderPopupBinding
 
@@ -31,6 +32,10 @@ class ReminderPopupActivity : AppCompatActivity() {
 
         b.tvText.text = todo.text
         b.tvWhen.text = TodoStore.prettyDue(todo) + " 기한"
+
+        // 메모는 첫 줄만이 아니라 전문을 보여줍니다. 화면을 덮는 창이라 자리가 있습니다.
+        b.tvMemo.visibility = if (todo.hasMemo) View.VISIBLE else View.GONE
+        b.tvMemo.text = todo.memo
 
         b.btnDone.setOnClickListener {
             todo.done = true

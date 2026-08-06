@@ -44,6 +44,19 @@
                 android:layout_marginTop="1dp"
                 android:textSize="11sp"
                 android:textColor="?android:attr/textColorSecondary" />
+
+            <!-- 메모 첫 줄. 메모가 없으면 GONE 이라 행 높이는 지금 그대로입니다. -->
+            <TextView
+                android:id="@+id/tvMemo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textSize="12sp"
+                android:textColor="?android:attr/textColorSecondary"
+                android:alpha="0.75"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:visibility="gone" />
         </LinearLayout>
 
         <ImageButton

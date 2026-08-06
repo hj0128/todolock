@@ -68,6 +68,14 @@ class TodayPopupActivity : AppCompatActivity() {
                 row.pSub.text = sub.joinToString(" · ")
             }
 
+            // 메모 첫 줄. 앱을 열지 않고도 무엇을 해야 하는지 보이게 합니다.
+            if (todo.hasMemo) {
+                row.pMemo.visibility = View.VISIBLE
+                row.pMemo.text = TodoStore.memoLine(todo)
+            } else {
+                row.pMemo.visibility = View.GONE
+            }
+
             // GONE 이 아니라 INVISIBLE 입니다. 자리를 비워 두지 않으면 별표 유무에 따라
             // 알림 시각이 좌우로 밀려서 세로로 정렬되지 않습니다.
             row.pStar.visibility = if (todo.important) View.VISIBLE else View.INVISIBLE

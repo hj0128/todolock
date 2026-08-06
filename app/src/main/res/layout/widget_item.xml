@@ -87,6 +87,18 @@
                     android:maxLines="1"
                     android:ellipsize="end" />
             </LinearLayout>
+
+            <!-- 메모 첫 줄. 없으면 GONE 이라 행 높이는 지금 그대로입니다. -->
+            <TextView
+                android:id="@+id/wMemo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:textSize="10sp"
+                android:textColor="@color/widget_text_dim"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:visibility="gone" />
         </LinearLayout>
 
         <!-- 중요 토글. 목록 화면처럼 꺼져 있어도 빈 별로 보여야 눌러서 켤 수 있습니다. -->

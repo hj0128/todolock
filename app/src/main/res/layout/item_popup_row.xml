@@ -18,21 +18,45 @@
     android:layout_marginBottom="2dp"
     android:orientation="horizontal"
     android:gravity="center_vertical"
+    android:baselineAligned="false"
     android:background="@drawable/popup_item_panel"
     android:paddingStart="14dp"
     android:paddingEnd="12dp"
     android:paddingTop="11dp"
     android:paddingBottom="11dp">
 
-    <TextView
-        android:id="@+id/pTitle"
+    <!--
+      제목과 메모는 세로로 겹쳐 둡니다. 메모가 있는 항목만 두 줄이 되어 행 높이가
+      달라지지만, 잠금해제 직후에 '무엇을 해야 하는지' 를 앱을 열지 않고 확인하는
+      것이 이 화면의 목적이라 그 값은 치를 만합니다.
+    -->
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textSize="16sp"
-        android:textColor="?android:attr/textColorPrimary"
-        android:maxLines="1"
-        android:ellipsize="end" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/pTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="?android:attr/textColorPrimary"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/pMemo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textSize="12sp"
+            android:textColor="?android:attr/textColorSecondary"
+            android:alpha="0.75"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:visibility="gone" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/pSub"

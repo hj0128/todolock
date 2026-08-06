@@ -14,6 +14,8 @@ data class Todo(
      * remindAt 하나뿐이라, 알림이 어디서 오는지 헷갈릴 일이 없습니다.
      */
     var dueMinutes: Int = NO_TIME,
+    /** 자유롭게 적는 메모. 여러 줄일 수 있고, 비어 있으면 어느 화면에도 나오지 않습니다. */
+    var memo: String = "",
     var done: Boolean = false,
     var important: Boolean = false,
     /**
@@ -30,6 +32,8 @@ data class Todo(
     val hasReminder: Boolean get() = remindAt > NO_REMIND
 
     val hasDueTime: Boolean get() = dueMinutes >= 0
+
+    val hasMemo: Boolean get() = memo.isNotBlank()
 
     companion object {
         const val NO_REMIND = 0L

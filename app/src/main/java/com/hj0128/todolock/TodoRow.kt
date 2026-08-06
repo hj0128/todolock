@@ -49,6 +49,15 @@ object TodoRow {
             if (overdue) overdueColor(b.root.context) else secondaryColor(b.root.context)
         )
 
+        // 메모는 첫 줄만. 열어보지 않아도 무슨 내용인지 알 수 있으면 충분합니다.
+        if (todo.hasMemo) {
+            b.tvMemo.visibility = View.VISIBLE
+            b.tvMemo.text = TodoStore.memoLine(todo)
+            b.tvMemo.alpha = if (todo.done) 0.35f else 0.75f
+        } else {
+            b.tvMemo.visibility = View.GONE
+        }
+
         if (onToggle == null) {
             b.cbDone.visibility = View.GONE
         } else {

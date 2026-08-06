@@ -89,6 +89,7 @@ object TodoStore {
                         date = o.optString("date", today()),
                         // 시각이 없던 옛 데이터는 '날짜만' 으로 읽힙니다.
                         dueMinutes = o.optInt("dueMinutes", Todo.NO_TIME),
+                        memo = o.optString("memo", ""),
                         done = o.optBoolean("done", false),
                         important = o.optBoolean("important", false),
                         // 알림이 없던 옛 데이터는 '알림 없음' 으로 읽힙니다.
@@ -112,6 +113,7 @@ object TodoStore {
                     .put("text", t.text)
                     .put("date", t.date)
                     .put("dueMinutes", t.dueMinutes)
+                    .put("memo", t.memo)
                     .put("done", t.done)
                     .put("important", t.important)
                     .put("remindAt", t.remindAt)
@@ -137,13 +139,15 @@ object TodoStore {
         date: String,
         important: Boolean = false,
         remindAt: Long = Todo.NO_REMIND,
-        dueMinutes: Int = Todo.NO_TIME
+        dueMinutes: Int = Todo.NO_TIME,
+        memo: String = ""
     ): Todo {
         val todo = Todo(
             id = System.currentTimeMillis(),
             text = text,
             date = date,
             dueMinutes = dueMinutes,
+            memo = memo,
             important = important,
             remindAt = remindAt
         )
@@ -197,6 +201,13 @@ object TodoStore {
     /** 기한 시각을 "14:00" 으로. */
     fun formatMinutes(minutes: Int): String =
         String.format(Locale.KOREA, "%02d:%02d", minutes / 60, minutes % 60)
+
+    /**
+     * 목록·팝업·위젯에 한 줄로 넣을 메모 미리보기.
+     * 여러 줄이면 내용이 있는 첫 줄만 씁니다 — 빈 줄로 시작하는 메모도 흔합니다.
+     */
+    fun memoLine(t: Todo): String =
+        t.memo.lineSequence().firstOrNull { it.isNotBlank() }?.trim() ?: ""
 
     /**
      * 목록·위젯·알림에 쓰는 기한 표기.

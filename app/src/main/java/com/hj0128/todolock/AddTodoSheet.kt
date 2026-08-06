@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import androidx.appcompat.widget.PopupMenu
 import com.hj0128.todolock.databinding.SheetAddTodoBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -16,6 +17,7 @@ import java.util.Locale
  *
  * 첫 줄에서 입력·중요·저장을 끝낼 수 있고, 기한과 미리 알림은 둘째 줄의
  * 셀렉트박스(PopupMenu)로 흔한 선택지를 먼저 주고 마지막에 달력/시계로 넘깁니다.
+ * 메모는 같은 줄의 버튼으로 접었다 펴는 칸이라, 쓰지 않는 사람에게는 보이지 않습니다.
  *
  * existing 을 넘기면 그 값으로 채워진 '수정' 시트가 됩니다.
  * 프래그먼트 없이 BottomSheetDialog 만 쓰므로(프로젝트의 경량 구조 유지)
@@ -29,7 +31,8 @@ class AddTodoSheet(
         date: String,
         dueMinutes: Int,
         remindAt: Long,
-        important: Boolean
+        important: Boolean,
+        memo: String
     ) -> Unit
 ) {
     /** 기한. 고르지 않으면 오늘입니다. */
@@ -55,6 +58,11 @@ class AddTodoSheet(
         if (existing != null) {
             b.etText.setText(existing.text)
             b.etText.setSelection(existing.text.length)
+            // 이미 적어둔 메모는 감추지 않습니다. 접혀 있으면 있는 줄도 모릅니다.
+            if (existing.hasMemo) {
+                b.etMemo.setText(existing.memo)
+                b.etMemo.visibility = View.VISIBLE
+            }
         }
         sync(b)
 
@@ -64,6 +72,7 @@ class AddTodoSheet(
         }
         b.btnDue.setOnClickListener { dueMenu(b) }
         b.btnRemind.setOnClickListener { remindMenu(b) }
+        b.btnMemo.setOnClickListener { toggleMemo(b) }
 
         b.btnSave.setOnClickListener { save(b, dialog) }
         b.etText.setOnEditorActionListener { _, _, _ -> save(b, dialog); true }
@@ -79,8 +88,25 @@ class AddTodoSheet(
             b.etText.error = "할 일을 입력하세요"
             return
         }
-        onSave(text, TodoStore.format(due), dueMinutes, remindAt, important)
+        onSave(
+            text, TodoStore.format(due), dueMinutes, remindAt, important,
+            b.etMemo.text.toString().trim()
+        )
         dialog.dismiss()
+    }
+
+    /**
+     * 메모 칸을 펼치거나 접습니다.
+     * 접을 때 적어둔 내용은 지우지 않습니다 — 잘못 눌렀다가 글이 날아가면 곤란합니다.
+     * (접힌 채로 저장하면 그 내용이 그대로 저장됩니다)
+     */
+    private fun toggleMemo(b: SheetAddTodoBinding) {
+        if (b.etMemo.visibility == View.VISIBLE) {
+            b.etMemo.visibility = View.GONE
+        } else {
+            b.etMemo.visibility = View.VISIBLE
+            b.etMemo.requestFocus()
+        }
     }
 
     /** 세 컨트롤의 표시를 현재 선택 상태와 맞춥니다. */

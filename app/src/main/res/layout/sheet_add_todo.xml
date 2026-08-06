@@ -92,5 +92,48 @@
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:text="미리 알림" />
+
+        <!--
+          메모는 폭을 나눠 갖지 않습니다(weight 없음). 기한 버튼에는 날짜에 시각까지
+          들어갈 수 있어 자리가 빠듯한데, '메모' 는 두 글자면 충분합니다.
+        -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMemo"
+            style="@style/Widget.TodoLock.Button.SkyOutlined"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textSize="12sp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:text="메모" />
     </LinearLayout>
+
+    <!--
+      메모 칸은 접혀 있다가 '메모' 를 눌러야 나옵니다. 한 줄 적고 ✓ 로 끝내는 것이
+      이 시트의 기본 흐름이라, 늘 펼쳐 두면 안 쓰는 사람에게도 시트가 커집니다.
+      이미 메모가 있는 항목을 수정할 때는 처음부터 펼쳐집니다.
+    -->
+    <EditText
+        android:id="@+id/etMemo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:hint="메모"
+        android:inputType="textMultiLine|textCapSentences"
+        android:gravity="top|start"
+        android:minLines="3"
+        android:maxLines="6"
+        android:scrollbars="vertical"
+        android:textSize="14sp"
+        android:importantForAutofill="no"
+        android:visibility="gone" />
 </LinearLayout>

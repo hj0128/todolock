@@ -98,7 +98,19 @@ object Notifications {
         )
             .setSmallIcon(R.drawable.ic_check)
             .setContentTitle(todo.text)
-            .setContentText(due)
+            .setContentText(if (todo.hasMemo) TodoStore.memoLine(todo) else due)
+            // 메모가 있으면 펼쳤을 때 전문을 보여줍니다. 알림은 원래 펼쳐 보는 곳이라
+            // 긴 글을 담기에 알맞고, 기한은 접혀도 보이도록 아랫줄에 남깁니다.
+            .apply {
+                if (todo.hasMemo) {
+                    setStyle(
+                        NotificationCompat.BigTextStyle()
+                            .bigText(todo.memo)
+                            .setSummaryText(due)
+                    )
+                    setSubText(due)
+                }
+            }
             .setPriority(
                 if (headsUp) NotificationCompat.PRIORITY_HIGH
                 else NotificationCompat.PRIORITY_DEFAULT
