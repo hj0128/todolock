@@ -217,22 +217,15 @@ object TodoStore {
         else prettyDate(t.date)
 
     /**
-     * 목록 한 줄에 넣을 짧은 알림 표기.
-     * 알림이 기한과 같은 날이면 시각만("14:12"), 다른 날이면 날짜까지 붙입니다.
-     * 대부분 같은 날이라 줄이 훨씬 짧아집니다.
+     * 미리 알림 표기. 목록·위젯·팝업·시트·토스트가 모두 이 한 가지 형식을 씁니다.
      *
-     * 알림 쪽 날짜에는 '오늘/내일/어제' 를 붙이지 않습니다. 같은 줄에 기한이 이미
-     * 그 말을 쓰고 있어서, 양쪽에 나오면 어느 쪽 이야기인지 헷갈립니다.
+     * 언제나 "8월 6일 (목) 09:00" 처럼 날짜와 시각을 함께 씁니다. 기한과 같은 날이면
+     * 시각만 보여주던 때가 있었는데, 그러면 줄마다 형식이 달라져 훑어볼 때 오히려
+     * 읽는 품이 듭니다.
+     *
+     * 날짜에는 '오늘/내일/어제' 를 붙이지 않습니다 — 같은 줄에서 기한이 이미 그 말을
+     * 쓰고 있어, 양쪽에 나오면 어느 쪽 이야기인지 헷갈립니다.
      */
-    fun prettyRemindShort(t: Todo): String {
-        if (!t.hasReminder) return ""
-        val cal = Calendar.getInstance()
-        cal.timeInMillis = t.remindAt
-        val time = SimpleDateFormat("HH:mm", Locale.KOREA).format(Date(t.remindAt))
-        return if (format(cal) == t.date) time else plainDate(format(cal)) + " " + time
-    }
-
-    /** "8월 6일 (목) 09:00" 처럼 알림 시각을 사람이 읽는 형태로. */
     fun prettyDateTime(ms: Long): String {
         if (ms <= 0L) return ""
         val cal = Calendar.getInstance()

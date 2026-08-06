@@ -65,7 +65,7 @@ private class TodoWidgetFactory(
         // 알림 쪽은 기한이 지나도 색을 바꾸지 않습니다. '지남' 은 기한의 사정입니다.
         rv.setTextViewText(
             R.id.wRemind,
-            if (todo.hasReminder) "🔔 " + TodoStore.prettyRemindShort(todo) else ""
+            if (todo.hasReminder) "🔔 " + TodoStore.prettyDateTime(todo.remindAt) else ""
         )
         rv.setViewVisibility(R.id.wRemind, if (todo.hasReminder) View.VISIBLE else View.GONE)
 

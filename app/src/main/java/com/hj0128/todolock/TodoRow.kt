@@ -42,7 +42,7 @@ object TodoRow {
         val overdue = TodoStore.isOverdue(todo)
         val parts = mutableListOf(TodoStore.prettyDue(todo))
         if (overdue) parts.add("지남")
-        if (todo.hasReminder) parts.add("🔔 " + TodoStore.prettyRemindShort(todo))
+        if (todo.hasReminder) parts.add("🔔 " + TodoStore.prettyDateTime(todo.remindAt))
 
         b.tvDate.text = parts.joinToString(" · ")
         b.tvDate.setTextColor(

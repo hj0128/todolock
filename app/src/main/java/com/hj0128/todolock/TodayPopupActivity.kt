@@ -59,7 +59,7 @@ class TodayPopupActivity : AppCompatActivity() {
             // 미리 알림이 있으면 뒤에 붙입니다.
             val sub = mutableListOf<String>()
             if (todo.hasDueTime) sub.add(TodoStore.formatMinutes(todo.dueMinutes) + "까지")
-            if (todo.hasReminder) sub.add("🔔 " + TodoStore.prettyRemindShort(todo))
+            if (todo.hasReminder) sub.add("🔔 " + TodoStore.prettyDateTime(todo.remindAt))
 
             if (sub.isEmpty()) {
                 row.pSub.visibility = View.GONE
