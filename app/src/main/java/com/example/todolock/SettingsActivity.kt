@@ -115,7 +115,11 @@ class SettingsActivity : AppCompatActivity() {
         b.tvPermWarn.visibility = if (overlayOk) View.GONE else View.VISIBLE
         b.btnOverlay.text =
             if (overlayOk) "다른 앱 위에 표시 · 허용됨" else "다른 앱 위에 표시 권한 주기"
-        b.btnBattery.text = if (isBatteryExempt()) "배터리 예외 · 완료" else "배터리 예외"
+
+        // 경고는 아직 허용되지 않았을 때만 띄웁니다. 다 해둔 사람에게는 잔소리가 됩니다.
+        val batteryOk = isBatteryExempt()
+        b.tvBatteryWarn.visibility = if (batteryOk) View.GONE else View.VISIBLE
+        b.btnBattery.text = if (batteryOk) "배터리 예외 · 완료" else "배터리 예외"
     }
 
     private fun isBatteryExempt(): Boolean = try {
