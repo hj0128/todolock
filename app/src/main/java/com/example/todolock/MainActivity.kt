@@ -104,6 +104,7 @@ class MainActivity : AppCompatActivity() {
         b.btnBattery.setOnClickListener { requestBatteryExemption() }
 
         b.btnHideOngoing.setOnClickListener { openServiceChannelSettings() }
+        b.btnRemindSound.setOnClickListener { openRemindChannelSettings() }
 
         b.btnTest.setOnClickListener {
             if (TodoStore.pendingToday(this).isEmpty()) {
@@ -130,23 +131,59 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * 상시 표시되는 서비스 알림의 채널 설정으로 바로 보냅니다.
+     * 상시 표시되는 서비스 알림의 채널 설정으로 보냅니다.
      *
      * 포그라운드 서비스 알림은 앱이 지울 수 없습니다(시스템이 표시를 강제합니다).
      * 사용자가 그 채널을 끄면 알림만 사라지고 서비스는 계속 돌아,
      * 잠금해제 감지 기능은 그대로 유지됩니다.
      */
-    private fun openServiceChannelSettings() {
+    private fun openServiceChannelSettings() = openChannelSettings(
+        Notifications.CHANNEL_SERVICE,
+        "이 화면에서 알림을 끄면 상단 표시가 사라집니다",
+        "'잠금해제 감지' 항목을 끄세요"
+    )
+
+    /**
+     * 미리 알림의 소리·진동 설정으로 보냅니다.
+     *
+     * 소리와 진동은 채널이 결정하고, 채널은 만들어진 뒤 앱이 바꿀 수 없습니다
+     * (setSound / setVibrate 는 Android 8+ 에서 무시됩니다).
+     * 앱에 무음·진동·소리 선택을 두려면 채널을 그만큼 더 만들어야 하는데,
+     * 이미 헤드업/알림창으로 갈라져 있어 조합이 곱해지고 시스템 설정 목록이
+     * 어지러워집니다. 게다가 시스템 설정이 항상 앱을 이깁니다.
+     * 그래서 기능이 더 많은 시스템 화면으로 안내하는 쪽을 택했습니다.
+     */
+    private fun openRemindChannelSettings() {
+        // 지금 쓰는 방식의 채널을 열어야 사용자가 실제로 받는 알림이 바뀝니다.
+        val channel = if (TodoStore.getRemindStyle(this) == TodoStore.REMIND_HEADS_UP) {
+            Notifications.CHANNEL_REMIND
+        } else {
+            Notifications.CHANNEL_REMIND_QUIET
+        }
+        openChannelSettings(
+            channel,
+            "이 화면에서 소리·진동을 고를 수 있습니다",
+            "'할 일 미리 알림' 항목에서 소리·진동을 고르세요"
+        )
+    }
+
+    /**
+     * 특정 알림 채널 설정 화면으로 보냅니다.
+     * 채널 화면이 없는 기기를 위해 앱 알림 설정 → 전체 설정으로 단계적으로 물러납니다.
+     */
+    private fun openChannelSettings(channelId: String, hint: String, fallbackHint: String) {
+        // 채널이 아직 없으면 설정 화면이 비어 보이므로 먼저 만들어 둡니다.
+        Notifications.ensureChannels(this)
+
         // 채널은 Android 8 부터입니다. 그 아래는 앱 알림 설정으로 보냅니다.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             try {
                 startActivity(
                     Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS)
                         .putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
-                        .putExtra(Settings.EXTRA_CHANNEL_ID, Notifications.CHANNEL_SERVICE)
+                        .putExtra(Settings.EXTRA_CHANNEL_ID, channelId)
                 )
-                Toast.makeText(this, "이 화면에서 알림을 끄면 상단 표시가 사라집니다", Toast.LENGTH_LONG)
-                    .show()
+                Toast.makeText(this, hint, Toast.LENGTH_LONG).show()
                 return
             } catch (e: Exception) {
                 // 기기에 따라 채널 설정 화면이 없을 수 있어 아래로 넘어갑니다
@@ -157,7 +194,7 @@ class MainActivity : AppCompatActivity() {
                 Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
                     .putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
             )
-            Toast.makeText(this, "'잠금해제 감지' 항목을 끄세요", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, fallbackHint, Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
             startActivity(Intent(Settings.ACTION_SETTINGS))
         }

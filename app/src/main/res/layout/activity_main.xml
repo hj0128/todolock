@@ -198,6 +198,18 @@
                 android:textSize="11sp"
                 android:text="상단 'TodoLock 실행 중' 알림 숨기기" />
 
+            <!--
+              소리·진동은 채널이 결정하고 앱이 바꿀 수 없어(setSound/setVibrate 는
+              Android 8+ 에서 무시됨) 시스템 화면으로 안내합니다.
+            -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRemindSound"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:text="미리 알림 소리 · 진동 설정" />
+
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </LinearLayout>

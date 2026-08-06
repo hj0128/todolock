@@ -62,12 +62,15 @@ object Notifications {
         }
         nm.createNotificationChannel(remind)
 
+        // 이름·설명은 생성 후에도 바꿀 수 있습니다(중요도만 고정).
+        // '알림창' 과 '전체 팝업' 두 방식이 이 채널을 공유하므로,
+        // 특정 방식 이름을 붙이지 않고 성질(헤드업 없음)로 표현합니다.
         val remindQuiet = NotificationChannel(
             CHANNEL_REMIND_QUIET,
-            "할 일 미리 알림 (알림창만)",
+            "할 일 미리 알림 (조용히)",
             NotificationManager.IMPORTANCE_DEFAULT
         ).apply {
-            description = "화면 위에 띄우지 않고 알림창에만 표시합니다"
+            description = "화면 위에 배너로 띄우지 않습니다"
         }
         nm.createNotificationChannel(remindQuiet)
     }
