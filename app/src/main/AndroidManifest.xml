@@ -31,6 +31,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
         <!-- 위젯에서 앱을 열지 않고 그 자리에서 추가·수정하기 위한 투명 액티비티 -->
         <activity
             android:name=".QuickAddActivity"
