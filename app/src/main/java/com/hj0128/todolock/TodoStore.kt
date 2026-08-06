@@ -210,21 +210,24 @@ object TodoStore {
      * 목록 한 줄에 넣을 짧은 알림 표기.
      * 알림이 기한과 같은 날이면 시각만("14:12"), 다른 날이면 날짜까지 붙입니다.
      * 대부분 같은 날이라 줄이 훨씬 짧아집니다.
+     *
+     * 알림 쪽 날짜에는 '오늘/내일/어제' 를 붙이지 않습니다. 같은 줄에 기한이 이미
+     * 그 말을 쓰고 있어서, 양쪽에 나오면 어느 쪽 이야기인지 헷갈립니다.
      */
     fun prettyRemindShort(t: Todo): String {
         if (!t.hasReminder) return ""
         val cal = Calendar.getInstance()
         cal.timeInMillis = t.remindAt
         val time = SimpleDateFormat("HH:mm", Locale.KOREA).format(Date(t.remindAt))
-        return if (format(cal) == t.date) time else prettyDate(format(cal)) + " " + time
+        return if (format(cal) == t.date) time else plainDate(format(cal)) + " " + time
     }
 
-    /** "내일 · 8월 6일 (목) 09:00" 처럼 알림 시각을 사람이 읽는 형태로. */
+    /** "8월 6일 (목) 09:00" 처럼 알림 시각을 사람이 읽는 형태로. */
     fun prettyDateTime(ms: Long): String {
         if (ms <= 0L) return ""
         val cal = Calendar.getInstance()
         cal.timeInMillis = ms
-        return prettyDate(format(cal)) + " " +
+        return plainDate(format(cal)) + " " +
             SimpleDateFormat("HH:mm", Locale.KOREA).format(Date(ms))
     }
 
@@ -234,7 +237,18 @@ object TodoStore {
             compareByDescending<Todo> { it.date }.thenByDescending { it.id }
         )
 
-    /** "오늘 · 8월 5일 (수)" 처럼 사람이 읽는 날짜. 목록에서 날짜를 행마다 보여주므로 필요합니다. */
+    /** "8월 5일 (수)". 오늘·내일 같은 말을 붙이지 않은 날짜입니다. */
+    fun plainDate(dateKey: String): String = try {
+        val d = keyFormat().parse(dateKey)
+        if (d != null) SimpleDateFormat("M월 d일 (E)", Locale.KOREA).format(d) else dateKey
+    } catch (e: Exception) {
+        dateKey
+    }
+
+    /**
+     * "오늘 · 8월 5일 (수)" 처럼 사람이 읽는 날짜. 목록에서 날짜를 행마다 보여주므로 필요합니다.
+     * 기한 쪽에만 씁니다 — 알림 쪽은 plainDate 입니다.
+     */
     fun prettyDate(dateKey: String): String {
         val cal = Calendar.getInstance()
         val today = format(cal)
@@ -243,13 +257,7 @@ object TodoStore {
         cal.add(Calendar.DAY_OF_YEAR, -2)
         val yesterday = format(cal)
 
-        val base = try {
-            val d = keyFormat().parse(dateKey)
-            if (d != null) SimpleDateFormat("M월 d일 (E)", Locale.KOREA).format(d) else dateKey
-        } catch (e: Exception) {
-            dateKey
-        }
-
+        val base = plainDate(dateKey)
         return when (dateKey) {
             today -> "오늘 · " + base
             tomorrow -> "내일 · " + base
