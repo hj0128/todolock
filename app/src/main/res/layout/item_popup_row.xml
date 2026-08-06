@@ -36,7 +36,7 @@
             android:id="@+id/pTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
+            android:textSize="14sp"
             android:textColor="?android:attr/textColorPrimary"
             android:maxLines="1"
             android:ellipsize="end" />
@@ -45,7 +45,7 @@
             android:id="@+id/pSub"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="11sp"
+            android:textSize="10sp"
             android:textColor="?android:attr/textColorSecondary"
             android:maxLines="1"
             android:ellipsize="end"

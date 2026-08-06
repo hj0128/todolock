@@ -121,11 +121,15 @@
     -->
     <!--
       잠금해제 팝업. 투명 액티비티라 뒤 화면이 실제로 비치므로 알파를 넣습니다.
-      앞 두 자리가 알파입니다 (E0 ≈ 88%, F2 ≈ 95%).
+      앞 두 자리가 알파입니다 (E0 ≈ 88%, D9 ≈ 85%).
       카드는 살짝 투명하고, 그 위에 항목 카드가 떠 있는 2층 구조입니다.
+
+      항목 카드는 카드(88%)보다 알파가 낮으면 오히려 어두워져 움푹 들어가 보입니다.
+      뒤가 어두운 스크림이기 때문입니다(위젯은 벽지 위라 반대로 동작).
+      그래서 '살짝 투명' 은 85% 까지만 내립니다.
     -->
     <color name="popup_card_bg">#E0EAF6FE</color>
-    <color name="popup_item_bg">#F2FFFFFF</color>
+    <color name="popup_item_bg">#D9FFFFFF</color>
 
     <color name="widget_bg">#EAF6FE</color>
     <color name="widget_text">#2C3A42</color>

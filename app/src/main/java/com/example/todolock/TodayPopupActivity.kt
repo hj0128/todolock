@@ -54,7 +54,8 @@ class TodayPopupActivity : AppCompatActivity() {
 
         b.tvCount.text = "남은 할 일 " + items.size + "개"
 
-        val gap = (4 * resources.displayMetrics.density).toInt()
+        // 위젯 항목 간격(widget_item.xml 의 layout_marginBottom)과 같은 값
+        val gap = (2 * resources.displayMetrics.density).toInt()
 
         b.container.removeAllViews()
         for (todo in items) {
