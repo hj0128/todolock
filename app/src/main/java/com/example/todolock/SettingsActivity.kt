@@ -111,22 +111,15 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun syncPermissionStates() {
-        val overlayOk = Settings.canDrawOverlays(this)
+        val overlayOk = Permissions.canShowPopup(this)
         b.tvPermWarn.visibility = if (overlayOk) View.GONE else View.VISIBLE
         b.btnOverlay.text =
             if (overlayOk) "다른 앱 위에 표시 · 허용됨" else "다른 앱 위에 표시 권한 주기"
 
         // 경고는 아직 허용되지 않았을 때만 띄웁니다. 다 해둔 사람에게는 잔소리가 됩니다.
-        val batteryOk = isBatteryExempt()
+        val batteryOk = Permissions.isBatteryExempt(this)
         b.tvBatteryWarn.visibility = if (batteryOk) View.GONE else View.VISIBLE
         b.btnBattery.text = if (batteryOk) "배터리 예외 · 완료" else "배터리 예외"
-    }
-
-    private fun isBatteryExempt(): Boolean = try {
-        val pm = getSystemService(PowerManager::class.java)
-        pm != null && pm.isIgnoringBatteryOptimizations(packageName)
-    } catch (e: Exception) {
-        false
     }
 
     /**
@@ -135,8 +128,7 @@ class SettingsActivity : AppCompatActivity() {
      * 우리 패키지를 지정해 '허용' 팝업을 바로 띄웁니다. 막히면 목록으로 대체합니다.
      */
     private fun requestBatteryExemption() {
-        val pm = getSystemService(PowerManager::class.java)
-        if (pm != null && pm.isIgnoringBatteryOptimizations(packageName)) {
+        if (Permissions.isBatteryExempt(this)) {
             Toast.makeText(this, "이미 배터리 최적화 예외 상태입니다", Toast.LENGTH_SHORT).show()
             return
         }

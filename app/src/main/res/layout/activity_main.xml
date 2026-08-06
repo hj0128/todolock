@@ -37,6 +37,32 @@
             android:contentDescription="설정" />
     </LinearLayout>
 
+    <!--
+      필수 권한이 없을 때만 뜨는 경고. 설정 화면을 열어보지 않은 사람도
+      팝업이 왜 안 뜨는지 알 수 있어야 하므로 목록 화면에 둡니다.
+    -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardWarn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="?attr/colorErrorContainer"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvWarn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:textSize="12sp"
+            android:lineSpacingExtra="2dp"
+            android:textColor="?attr/colorOnErrorContainer" />
+    </com.google.android.material.card.MaterialCardView>
+
     <TextView
         android:id="@+id/tvEmpty"
         android:layout_width="match_parent"

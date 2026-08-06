@@ -35,9 +35,8 @@ class MainActivity : AppCompatActivity() {
         b.recycler.adapter = adapter
 
         b.btnOpenAdd.setOnClickListener { openAddSheet() }
-        b.btnSettings.setOnClickListener {
-            startActivity(Intent(this, SettingsActivity::class.java))
-        }
+        b.btnSettings.setOnClickListener { openSettings() }
+        b.cardWarn.setOnClickListener { openSettings() }
 
         askNotificationPermission()
         if (TodoStore.isEnabled(this)) UnlockService.start(this)
@@ -115,6 +114,29 @@ class MainActivity : AppCompatActivity() {
 
         adapter.submit(rows)
         b.tvEmpty.visibility = if (rows.isEmpty()) View.VISIBLE else View.GONE
+
+        syncWarning()
+    }
+
+    /**
+     * 권한이 없어 잠금해제 팝업이 동작하지 못하는 상태를 목록 화면에 알립니다.
+     *
+     * 설정 화면에도 같은 경고가 있지만, 설정을 열어보지 않은 사람은 팝업이 왜
+     * 안 뜨는지 알 수 없습니다. 스위치를 끈 사람에게는 띄우지 않습니다 —
+     * 기능을 원하지 않는 것이므로 잔소리가 됩니다.
+     */
+    private fun syncWarning() {
+        val warning = if (TodoStore.isEnabled(this)) Permissions.warning(this) else null
+        if (warning == null) {
+            b.cardWarn.visibility = View.GONE
+        } else {
+            b.cardWarn.visibility = View.VISIBLE
+            b.tvWarn.text = warning
+        }
+    }
+
+    private fun openSettings() {
+        startActivity(Intent(this, SettingsActivity::class.java))
     }
 
     private fun askNotificationPermission() {
