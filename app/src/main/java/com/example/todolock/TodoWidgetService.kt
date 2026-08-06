@@ -51,7 +51,7 @@ private class TodoWidgetFactory(
         val overdue = TodoStore.isOverdue(todo)
         val sb = StringBuilder(TodoStore.prettyDate(todo.date))
         if (overdue) sb.append(" · 지남")
-        if (todo.hasReminder) sb.append(" · 🔔 ").append(TodoStore.prettyDateTime(todo.remindAt))
+        if (todo.hasReminder) sb.append(" · 🔔 ").append(TodoStore.prettyRemindShort(todo))
         rv.setTextViewText(R.id.wSub, sb)
         rv.setTextColor(
             R.id.wSub,

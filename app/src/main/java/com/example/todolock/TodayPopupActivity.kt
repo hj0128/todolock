@@ -55,8 +55,14 @@ class TodayPopupActivity : AppCompatActivity() {
         b.container.removeAllViews()
         for (todo in items) {
             val row = ItemTodoBinding.inflate(layoutInflater, b.container, false)
-            // 이 화면은 '확인' 전용입니다. 체크·별표·삭제 없이 보여주기만 합니다.
-            TodoRow.bind(row, todo, showDate = false)
+            // 확인 전용이라 누를 수 있는 것은 없지만, 중요(★)와 미리 알림은 보여줍니다.
+            // 기한은 모두 오늘이라 생략합니다.
+            TodoRow.bind(
+                row, todo,
+                showDate = false,
+                showReminder = true,
+                starIndicator = true
+            )
             b.container.addView(row.root)
         }
     }

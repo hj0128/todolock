@@ -162,6 +162,19 @@ object TodoStore {
     /** 기한 날짜가 이미 지났는지. */
     fun isOverdue(t: Todo): Boolean = !t.done && t.date < today()
 
+    /**
+     * 목록 한 줄에 넣을 짧은 알림 표기.
+     * 알림이 기한과 같은 날이면 시각만("14:12"), 다른 날이면 날짜까지 붙입니다.
+     * 대부분 같은 날이라 줄이 훨씬 짧아집니다.
+     */
+    fun prettyRemindShort(t: Todo): String {
+        if (!t.hasReminder) return ""
+        val cal = Calendar.getInstance()
+        cal.timeInMillis = t.remindAt
+        val time = SimpleDateFormat("HH:mm", Locale.KOREA).format(Date(t.remindAt))
+        return if (format(cal) == t.date) time else prettyDate(format(cal)) + " " + time
+    }
+
     /** "내일 · 8월 6일 (목) 09:00" 처럼 알림 시각을 사람이 읽는 형태로. */
     fun prettyDateTime(ms: Long): String {
         if (ms <= 0L) return ""
