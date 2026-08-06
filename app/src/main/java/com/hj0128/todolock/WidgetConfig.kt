@@ -22,10 +22,17 @@ object WidgetConfig {
     /** 0 = 작게, 1 = 보통, 2 = 크게 */
     const val FONT_STEPS = 3
 
-    private val TITLE_SP = floatArrayOf(12f, 14f, 16.5f)
-    private val SUB_SP = floatArrayOf(9f, 10f, 11.5f)
+    /**
+     * 세 단계 모두 한 칸씩 올려 잡았습니다. 예전 '크게'(제목 16.5sp)가 실제로는
+     * 보통 크기로 읽혔고, 아랫줄은 9~11.5sp 라 본문 최소 가독선 아래였습니다.
+     *
+     * 아랫줄(기한 · 미리 알림 · 메모)은 제목 대비 비율도 함께 올렸습니다.
+     * 부가 정보가 아니라 '언제까지 · 언제 알림 · 무슨 내용' 이라 실제로 읽는 줄입니다.
+     */
+    private val TITLE_SP = floatArrayOf(14f, 16.5f, 19f)
+    private val SUB_SP = floatArrayOf(11f, 12.5f, 14.5f)
     /** 헤더는 항목 제목보다 반 단계만 크게 둬서 층이 구분되게 합니다. */
-    private val HEADER_SP = floatArrayOf(13f, 14.5f, 17f)
+    private val HEADER_SP = floatArrayOf(15f, 17f, 19.5f)
 
     private fun prefs(ctx: Context) =
         ctx.applicationContext.getSharedPreferences(PREF, Context.MODE_PRIVATE)
