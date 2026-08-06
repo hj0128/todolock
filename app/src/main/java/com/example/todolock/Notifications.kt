@@ -14,6 +14,13 @@ object Notifications {
     const val CHANNEL_SERVICE = "todolock_service"
     const val CHANNEL_ALERT = "todolock_alert"
     const val CHANNEL_REMIND = "todolock_remind"
+
+    /**
+     * '알림창만' 용 채널.
+     * 채널 중요도는 한 번 만들어지면 코드로 바꿀 수 없으므로(생성 후엔 사용자 소유),
+     * 헤드업 없는 모드는 중요도가 다른 별도 채널로 둬야 합니다.
+     */
+    const val CHANNEL_REMIND_QUIET = "todolock_remind_quiet"
     const val ID_SERVICE = 1001
     const val ID_ALERT = 1002
 
@@ -54,6 +61,15 @@ object Notifications {
             description = "설정한 기한보다 미리 알려줍니다"
         }
         nm.createNotificationChannel(remind)
+
+        val remindQuiet = NotificationChannel(
+            CHANNEL_REMIND_QUIET,
+            "할 일 미리 알림 (알림창만)",
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = "화면 위에 띄우지 않고 알림창에만 표시합니다"
+        }
+        nm.createNotificationChannel(remindQuiet)
     }
 
     /** 기한 전에 울리는 개별 할 일 알림. '완료' 를 누르면 앱을 열지 않고 바로 처리됩니다. */
@@ -68,11 +84,20 @@ object Notifications {
 
         val due = TodoStore.prettyDate(todo.date) + " 기한"
 
-        val n = NotificationCompat.Builder(ctx, CHANNEL_REMIND)
+        // '알림창만' 이면 헤드업이 뜨지 않는 채널을 씁니다.
+        val shadeOnly = TodoStore.getRemindStyle(ctx) == TodoStore.REMIND_SHADE
+
+        val n = NotificationCompat.Builder(
+            ctx,
+            if (shadeOnly) CHANNEL_REMIND_QUIET else CHANNEL_REMIND
+        )
             .setSmallIcon(R.drawable.ic_check)
             .setContentTitle(todo.text)
             .setContentText(due)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setPriority(
+                if (shadeOnly) NotificationCompat.PRIORITY_DEFAULT
+                else NotificationCompat.PRIORITY_HIGH
+            )
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .setAutoCancel(true)
             .setContentIntent(open)

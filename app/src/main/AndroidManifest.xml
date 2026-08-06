@@ -48,6 +48,15 @@
             android:taskAffinity="com.example.todolock.widgetsettings"
             android:excludeFromRecents="true" />
 
+        <!-- 미리 알림 방식이 '전체 팝업' 일 때 뜨는 창 -->
+        <activity
+            android:name=".ReminderPopupActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TodoLock.Popup"
+            android:launchMode="singleInstance"
+            android:taskAffinity="com.example.todolock.remindpopup"
+            android:excludeFromRecents="true" />
+
         <activity
             android:name=".TodayPopupActivity"
             android:exported="false"

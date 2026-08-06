@@ -91,6 +91,45 @@
             </RadioGroup>
 
             <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="미리 알림 방식"
+                android:textSize="12sp"
+                android:textColor="?android:attr/textColorSecondary" />
+
+            <RadioGroup
+                android:id="@+id/rgRemind"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/rbShade"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="13sp"
+                    android:text="알림창" />
+
+                <RadioButton
+                    android:id="@+id/rbHeadsUp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="13sp"
+                    android:text="헤드업" />
+
+                <RadioButton
+                    android:id="@+id/rbPopup"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="13sp"
+                    android:text="전체 팝업" />
+            </RadioGroup>
+
+            <TextView
                 android:id="@+id/tvPermWarn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

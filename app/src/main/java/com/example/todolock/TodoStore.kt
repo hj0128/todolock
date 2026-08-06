@@ -18,6 +18,7 @@ object TodoStore {
     private const val KEY_TODOS = "todos"
     private const val KEY_MODE = "popup_mode"            // 0=매번, 1=1시간 간격, 2=하루 1번
     private const val KEY_ENABLED = "enabled"
+    private const val KEY_REMIND_STYLE = "remind_style"
     private const val KEY_LAST_SHOWN_MS = "last_shown_ms"
     private const val KEY_LAST_SHOWN_DAY = "last_shown_day"
 
@@ -36,6 +37,14 @@ object TodoStore {
     const val MODE_ALWAYS = 0
     const val MODE_HOURLY = 1
     const val MODE_ONCE_A_DAY = 2
+
+    /**
+     * 미리 알림을 어떤 세기로 알릴지.
+     * 헤드업 알림은 항상 알림창에도 남으므로 '팝업만' 같은 선택지는 없습니다.
+     */
+    const val REMIND_SHADE = 0      // 알림창에만 (헤드업 없음)
+    const val REMIND_HEADS_UP = 1   // 화면 위에 잠깐 + 알림창
+    const val REMIND_POPUP = 2      // 화면 전체 팝업 + 알림창
 
     /** shouldShowNow 가 false 를 반환한 '이유'. 진단 표시에 씁니다. */
     const val DECIDE_SHOW = 0
@@ -217,6 +226,12 @@ object TodoStore {
     fun getMode(ctx: Context): Int = prefs(ctx).getInt(KEY_MODE, MODE_ALWAYS)
 
     fun setMode(ctx: Context, m: Int) = prefs(ctx).edit().putInt(KEY_MODE, m).apply()
+
+    fun getRemindStyle(ctx: Context): Int =
+        prefs(ctx).getInt(KEY_REMIND_STYLE, REMIND_HEADS_UP)
+
+    fun setRemindStyle(ctx: Context, v: Int) =
+        prefs(ctx).edit().putInt(KEY_REMIND_STYLE, v).apply()
 
     /**
      * 팝업을 띄울지, 아니면 왜 안 띄우는지를 판단합니다.

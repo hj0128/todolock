@@ -70,6 +70,24 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
+        b.rgRemind.check(
+            when (TodoStore.getRemindStyle(this)) {
+                TodoStore.REMIND_SHADE -> R.id.rbShade
+                TodoStore.REMIND_POPUP -> R.id.rbPopup
+                else -> R.id.rbHeadsUp
+            }
+        )
+        b.rgRemind.setOnCheckedChangeListener { _, id ->
+            TodoStore.setRemindStyle(
+                this,
+                when (id) {
+                    R.id.rbShade -> TodoStore.REMIND_SHADE
+                    R.id.rbPopup -> TodoStore.REMIND_POPUP
+                    else -> TodoStore.REMIND_HEADS_UP
+                }
+            )
+        }
+
         b.btnOverlay.setOnClickListener {
             try {
                 startActivity(

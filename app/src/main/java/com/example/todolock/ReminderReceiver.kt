@@ -27,7 +27,23 @@ class ReminderReceiver : BroadcastReceiver() {
         }
 
         if (todo.done) return
+
+        // 알림창 항목은 어느 방식이든 남깁니다. 전체 팝업이 막혀도 놓치지 않도록.
         Notifications.showReminder(ctx, todo)
+
+        if (TodoStore.getRemindStyle(ctx) == TodoStore.REMIND_POPUP) {
+            try {
+                ctx.startActivity(
+                    Intent(ctx, ReminderPopupActivity::class.java)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        .putExtra(ReminderPopupActivity.EXTRA_ID, id)
+                )
+            } catch (e: Exception) {
+                // '다른 앱 위에 표시' 권한이 없으면 팝업은 막힙니다. 알림은 이미 떴습니다.
+                TodoStore.appendLog(ctx, "알림 팝업 실패 " + e.javaClass.simpleName)
+            }
+        }
+
         // 이미 알렸다고 남겨야 '놓친 알림 따라잡기' 가 중복으로 띄우지 않습니다.
         todo.notified = true
         TodoStore.update(ctx, todo)
