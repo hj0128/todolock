@@ -40,7 +40,7 @@ object TodoRow {
 
         // 아래 줄은 기한 · '지남' · 미리 알림을 이어 붙입니다.
         val overdue = TodoStore.isOverdue(todo)
-        val parts = mutableListOf(TodoStore.prettyDate(todo.date))
+        val parts = mutableListOf(TodoStore.prettyDue(todo))
         if (overdue) parts.add("지남")
         if (todo.hasReminder) parts.add("🔔 " + TodoStore.prettyRemindShort(todo))
 

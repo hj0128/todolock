@@ -43,13 +43,8 @@ class TodayPopupActivity : AppCompatActivity() {
     private fun render() {
         // 오늘 남은 할 일만. 완료된 것은 확인할 필요가 없어 감춥니다.
         // 팝업은 오늘 것만 보여주므로 날짜도 감춥니다.
-        // 목록 화면과 같은 우선순위: 중요 → 미리 알림 이른 순 → 등록순.
-        val items = TodoStore.pendingToday(this)
-            .sortedWith(
-                compareByDescending<Todo> { it.important }
-                    .thenBy { if (it.hasReminder) it.remindAt else Long.MAX_VALUE }
-                    .thenBy { it.id }
-            )
+        // 순서는 목록 화면과 같은 비교자를 씁니다(모두 같은 날이라 날짜 항목은 무의미).
+        val items = TodoStore.pendingToday(this).sortedWith(TodoStore.pendingOrder)
 
         b.tvCount.text = "남은 할 일 " + items.size + "개"
 
@@ -59,12 +54,18 @@ class TodayPopupActivity : AppCompatActivity() {
             val row = ItemPopupRowBinding.inflate(layoutInflater, b.container, false)
             row.pTitle.text = todo.text
 
-            // 기한은 모두 오늘이라 생략하고, 미리 알림만 보여줍니다.
-            if (todo.hasReminder) {
-                row.pSub.visibility = View.VISIBLE
-                row.pSub.text = "🔔 " + TodoStore.prettyRemindShort(todo)
-            } else {
+            // 기한 '날짜' 는 모두 오늘이라 생략합니다.
+            // 시각을 정했으면 그것만 남기고(잠금해제 직후에 가장 급한 정보입니다),
+            // 미리 알림이 있으면 뒤에 붙입니다.
+            val sub = mutableListOf<String>()
+            if (todo.hasDueTime) sub.add(TodoStore.formatMinutes(todo.dueMinutes) + "까지")
+            if (todo.hasReminder) sub.add("🔔 " + TodoStore.prettyRemindShort(todo))
+
+            if (sub.isEmpty()) {
                 row.pSub.visibility = View.GONE
+            } else {
+                row.pSub.visibility = View.VISIBLE
+                row.pSub.text = sub.joinToString(" · ")
             }
 
             // GONE 이 아니라 INVISIBLE 입니다. 자리를 비워 두지 않으면 별표 유무에 따라

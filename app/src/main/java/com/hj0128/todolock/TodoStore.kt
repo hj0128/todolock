@@ -84,14 +84,16 @@ object TodoStore {
                 val o = arr.getJSONObject(i)
                 out.add(
                     Todo(
-                        o.optLong("id", System.nanoTime()),
-                        o.optString("text", ""),
-                        o.optString("date", today()),
-                        o.optBoolean("done", false),
-                        o.optBoolean("important", false),
+                        id = o.optLong("id", System.nanoTime()),
+                        text = o.optString("text", ""),
+                        date = o.optString("date", today()),
+                        // 시각이 없던 옛 데이터는 '날짜만' 으로 읽힙니다.
+                        dueMinutes = o.optInt("dueMinutes", Todo.NO_TIME),
+                        done = o.optBoolean("done", false),
+                        important = o.optBoolean("important", false),
                         // 알림이 없던 옛 데이터는 '알림 없음' 으로 읽힙니다.
-                        o.optLong("remindAt", Todo.NO_REMIND),
-                        o.optBoolean("notified", false)
+                        remindAt = o.optLong("remindAt", Todo.NO_REMIND),
+                        notified = o.optBoolean("notified", false)
                     )
                 )
             }
@@ -109,6 +111,7 @@ object TodoStore {
                     .put("id", t.id)
                     .put("text", t.text)
                     .put("date", t.date)
+                    .put("dueMinutes", t.dueMinutes)
                     .put("done", t.done)
                     .put("important", t.important)
                     .put("remindAt", t.remindAt)
@@ -133,9 +136,17 @@ object TodoStore {
         text: String,
         date: String,
         important: Boolean = false,
-        remindAt: Long = Todo.NO_REMIND
+        remindAt: Long = Todo.NO_REMIND,
+        dueMinutes: Int = Todo.NO_TIME
     ): Todo {
-        val todo = Todo(System.currentTimeMillis(), text, date, false, important, remindAt)
+        val todo = Todo(
+            id = System.currentTimeMillis(),
+            text = text,
+            date = date,
+            dueMinutes = dueMinutes,
+            important = important,
+            remindAt = remindAt
+        )
         val list = load(ctx)
         list.add(todo)
         save(ctx, list)
@@ -143,24 +154,57 @@ object TodoStore {
     }
 
     /**
-     * 미완료 정렬 우선순위: 날짜(오래된 것 먼저) → 중요 → 미리 알림(이른 것 먼저) → 등록순.
+     * 미완료 정렬 우선순위:
+     * 날짜(오래된 것 먼저) → 중요 → 기한 시각(이른 것 먼저) → 미리 알림 → 등록순.
      *
      * 날짜는 여전히 최우선이라 중요 표시로도 날짜 경계를 넘지 못합니다.
-     * 알림을 걸지 않은 항목은 remindAt 이 0 이라 그대로 두면 맨 앞으로 오므로,
-     * 정렬 키에서만 가장 큰 값으로 바꿔 뒤로 보냅니다.
+     * 시각·알림을 정하지 않은 항목은 값이 각각 -1 과 0 이라 그대로 두면 맨 앞으로
+     * 오므로, 정렬 키에서만 가장 큰 값으로 바꿔 뒤로 보냅니다.
      */
     fun pendingSorted(ctx: Context): List<Todo> =
-        load(ctx).filter { !it.done }.sortedWith(
-            compareBy<Todo> { it.date }
-                .thenByDescending { it.important }
-                .thenBy { if (it.hasReminder) it.remindAt else Long.MAX_VALUE }
-                .thenBy { it.id }
-        )
+        load(ctx).filter { !it.done }.sortedWith(pendingOrder)
+
+    /** 목록·위젯·잠금해제 팝업이 같은 순서를 쓰도록 비교자를 한곳에 둡니다. */
+    val pendingOrder: Comparator<Todo> =
+        compareBy<Todo> { it.date }
+            .thenByDescending { it.important }
+            .thenBy { if (it.hasDueTime) it.dueMinutes else Int.MAX_VALUE }
+            .thenBy { if (it.hasReminder) it.remindAt else Long.MAX_VALUE }
+            .thenBy { it.id }
 
     // ---------- 기한 / 미리 알림 ----------
 
-    /** 기한 날짜가 이미 지났는지. */
-    fun isOverdue(t: Todo): Boolean = !t.done && t.date < today()
+    /**
+     * 기한이 이미 지났는지.
+     *
+     * 시각을 정한 항목은 당일에도 그 시각이 지나면 '지남' 입니다 — 시각을 정하는
+     * 이유가 그것이기 때문입니다. 시각이 없으면 지금까지처럼 날짜로만 판단하므로,
+     * 날짜만 쓰던 사람에게는 아무것도 달라지지 않습니다.
+     */
+    fun isOverdue(t: Todo): Boolean {
+        if (t.done) return false
+        val today = today()
+        if (t.date != today) return t.date < today
+        return t.hasDueTime && t.dueMinutes < nowMinutes()
+    }
+
+    /** 자정부터 지금까지의 분. 기한 시각과 같은 단위로 비교하기 위해. */
+    private fun nowMinutes(): Int {
+        val c = Calendar.getInstance()
+        return c.get(Calendar.HOUR_OF_DAY) * 60 + c.get(Calendar.MINUTE)
+    }
+
+    /** 기한 시각을 "14:00" 으로. */
+    fun formatMinutes(minutes: Int): String =
+        String.format(Locale.KOREA, "%02d:%02d", minutes / 60, minutes % 60)
+
+    /**
+     * 목록·위젯·알림에 쓰는 기한 표기.
+     * 시각을 정하지 않았으면 지금까지와 똑같이 날짜만 나옵니다.
+     */
+    fun prettyDue(t: Todo): String =
+        if (t.hasDueTime) prettyDate(t.date) + " " + formatMinutes(t.dueMinutes)
+        else prettyDate(t.date)
 
     /**
      * 목록 한 줄에 넣을 짧은 알림 표기.

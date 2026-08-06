@@ -85,7 +85,7 @@ object Notifications {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val due = TodoStore.prettyDate(todo.date) + " 기한"
+        val due = TodoStore.prettyDue(todo) + " 기한"
 
         // 헤드업은 '헤드업' 방식에서만 띄웁니다.
         // '전체 팝업' 은 팝업이 주역이라 헤드업까지 뜨면 같은 알림이 두 번 보입니다.

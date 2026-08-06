@@ -24,11 +24,20 @@ import java.util.Locale
 class AddTodoSheet(
     private val ctx: Context,
     private val existing: Todo? = null,
-    private val onSave: (text: String, date: String, remindAt: Long, important: Boolean) -> Unit
+    private val onSave: (
+        text: String,
+        date: String,
+        dueMinutes: Int,
+        remindAt: Long,
+        important: Boolean
+    ) -> Unit
 ) {
     /** 기한. 고르지 않으면 오늘입니다. */
     private val due: Calendar =
         if (existing != null) TodoStore.parseDate(existing.date) else Calendar.getInstance()
+
+    /** 기한 시각. 기본은 '없음' 이고, 기한 메뉴에서 따로 골라야 붙습니다. */
+    private var dueMinutes = existing?.dueMinutes ?: Todo.NO_TIME
     private var remindAt = existing?.remindAt ?: Todo.NO_REMIND
     private var important = existing?.important ?: false
 
@@ -70,13 +79,14 @@ class AddTodoSheet(
             b.etText.error = "할 일을 입력하세요"
             return
         }
-        onSave(text, TodoStore.format(due), remindAt, important)
+        onSave(text, TodoStore.format(due), dueMinutes, remindAt, important)
         dialog.dismiss()
     }
 
     /** 세 컨트롤의 표시를 현재 선택 상태와 맞춥니다. */
     private fun sync(b: SheetAddTodoBinding) {
-        b.btnDue.text = TodoStore.prettyDate(TodoStore.format(due))
+        b.btnDue.text = TodoStore.prettyDate(TodoStore.format(due)) +
+            (if (dueMinutes >= 0) " " + TodoStore.formatMinutes(dueMinutes) else "")
         b.btnRemind.text =
             if (remindAt > Todo.NO_REMIND) TodoStore.prettyDateTime(remindAt) else "미리 알림"
 
@@ -86,26 +96,44 @@ class AddTodoSheet(
         b.btnStar.alpha = if (important) 1f else 0.45f
     }
 
-    // ---------- 기한: 오늘 / 내일 / 날짜 선택 ----------
+    // ---------- 기한: 오늘 / 내일 / 날짜 선택 / 시간 ----------
 
+    /**
+     * 시각은 날짜와 같은 줄에서 고르되 별도 항목으로 둡니다.
+     * 날짜를 고르면 시계까지 이어서 뜨는 방식이면 시각이 사실상 필수가 되는데,
+     * 대부분의 할 일에는 시각이 필요 없습니다. 그래서 원하는 사람만 한 번 더
+     * 누르게 하고, 기본은 지금까지처럼 날짜만입니다.
+     */
     private fun dueMenu(b: SheetAddTodoBinding) {
         val tomorrow = daysFromToday(1)
         val menu = PopupMenu(ctx, b.btnDue)
         menu.menu.add(0, 1, 0, "오늘")
         menu.menu.add(0, 2, 1, "내일 (" + dayOfWeek(tomorrow) + ")")
         menu.menu.add(0, 3, 2, "날짜 선택")
+        menu.menu.add(
+            0, 4, 3,
+            if (dueMinutes >= 0) "시간 변경 (" + TodoStore.formatMinutes(dueMinutes) + ")"
+            else "시간 추가"
+        )
+        if (dueMinutes >= 0) menu.menu.add(0, 5, 4, "시간 지우기")
 
         menu.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 1 -> setDue(Calendar.getInstance(), b)
                 2 -> setDue(tomorrow, b)
-                else -> pickDueDate(b)
+                3 -> pickDueDate(b)
+                4 -> pickDueTime(b)
+                else -> {
+                    dueMinutes = Todo.NO_TIME
+                    sync(b)
+                }
             }
             true
         }
         menu.show()
     }
 
+    /** 날짜만 바꿉니다. 이미 고른 시각은 그대로 둡니다. */
     private fun setDue(cal: Calendar, b: SheetAddTodoBinding) {
         due.timeInMillis = cal.timeInMillis
         sync(b)
@@ -119,6 +147,19 @@ class AddTodoSheet(
                 sync(b)
             },
             due.get(Calendar.YEAR), due.get(Calendar.MONTH), due.get(Calendar.DAY_OF_MONTH)
+        ).show()
+    }
+
+    /** 시계를 열어 기한 시각을 받습니다. 아직 없으면 9시에서 시작합니다. */
+    private fun pickDueTime(b: SheetAddTodoBinding) {
+        val start = if (dueMinutes >= 0) dueMinutes else 9 * 60
+        TimePickerDialog(
+            ctx,
+            { _, h, min ->
+                dueMinutes = h * 60 + min
+                sync(b)
+            },
+            start / 60, start % 60, true
         ).show()
     }
 

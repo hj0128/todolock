@@ -30,7 +30,7 @@ class ReminderPopupActivity : AppCompatActivity() {
         setContentView(b.root)
 
         b.tvText.text = todo.text
-        b.tvWhen.text = TodoStore.prettyDate(todo.date) + " 기한"
+        b.tvWhen.text = TodoStore.prettyDue(todo) + " 기한"
 
         b.btnDone.setOnClickListener {
             todo.done = true

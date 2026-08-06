@@ -57,8 +57,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openAddSheet() {
-        AddTodoSheet(this) { text, date, remindAt, important ->
-            val todo = TodoStore.add(this, text, date, important, remindAt)
+        AddTodoSheet(this) { text, date, dueMinutes, remindAt, important ->
+            val todo = TodoStore.add(this, text, date, important, remindAt, dueMinutes)
             announceReminder(todo, Reminders.schedule(this, todo))
             refresh()
         }.show()
@@ -66,9 +66,10 @@ class MainActivity : AppCompatActivity() {
 
     /** 목록에서 행 본문을 탭했을 때. 같은 시트를 기존 값으로 채워 엽니다. */
     private fun openEditSheet(todo: Todo) {
-        AddTodoSheet(this, todo) { text, date, remindAt, important ->
+        AddTodoSheet(this, todo) { text, date, dueMinutes, remindAt, important ->
             todo.text = text
             todo.date = date
+            todo.dueMinutes = dueMinutes
             todo.important = important
             // 알림 시각이 바뀌었으면 '이미 알렸음' 표시를 지워야 새 시각에 알립니다.
             if (todo.remindAt != remindAt) {

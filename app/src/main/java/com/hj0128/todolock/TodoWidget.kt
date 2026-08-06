@@ -104,7 +104,9 @@ class TodoWidget : AppWidgetProvider() {
             val pending = TodoStore.pendingSorted(ctx)
             rv.setTextViewText(
                 R.id.wCount,
-                if (pending.isEmpty()) "다 끝냈어요 🎉" else "할 일 " + pending.size + "개"
+                // 비어 있을 때는 개수를 붙이지 않습니다. 아래 빈 목록 자리에
+                // '할 일이 없습니다' 가 이미 뜨므로 헤더까지 거들 필요가 없습니다.
+                if (pending.isEmpty()) "할 일" else "할 일 " + pending.size + "개"
             )
 
             // 겉모습 설정 적용. background 는 알파를 못 바꿔서 배경을 ImageView 로 깔았습니다.
