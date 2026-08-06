@@ -84,19 +84,21 @@ object Notifications {
 
         val due = TodoStore.prettyDate(todo.date) + " 기한"
 
-        // '알림창만' 이면 헤드업이 뜨지 않는 채널을 씁니다.
-        val shadeOnly = TodoStore.getRemindStyle(ctx) == TodoStore.REMIND_SHADE
+        // 헤드업은 '헤드업' 방식에서만 띄웁니다.
+        // '전체 팝업' 은 팝업이 주역이라 헤드업까지 뜨면 같은 알림이 두 번 보입니다.
+        // 그래도 알림창 항목은 남겨서, 팝업이 막혔을 때의 대비책과 '완료' 버튼을 유지합니다.
+        val headsUp = TodoStore.getRemindStyle(ctx) == TodoStore.REMIND_HEADS_UP
 
         val n = NotificationCompat.Builder(
             ctx,
-            if (shadeOnly) CHANNEL_REMIND_QUIET else CHANNEL_REMIND
+            if (headsUp) CHANNEL_REMIND else CHANNEL_REMIND_QUIET
         )
             .setSmallIcon(R.drawable.ic_check)
             .setContentTitle(todo.text)
             .setContentText(due)
             .setPriority(
-                if (shadeOnly) NotificationCompat.PRIORITY_DEFAULT
-                else NotificationCompat.PRIORITY_HIGH
+                if (headsUp) NotificationCompat.PRIORITY_HIGH
+                else NotificationCompat.PRIORITY_DEFAULT
             )
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .setAutoCancel(true)
