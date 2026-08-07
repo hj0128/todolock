@@ -78,8 +78,10 @@ class MainActivity : AppCompatActivity() {
             at + " — 이미 지난 시각이라 알림을 걸지 않았습니다"
         } else {
             // 정확 알람 권한이 없으면 몇 분 늦으므로 그 사실을 같이 알려줍니다.
+            // 기한 뒤에 우는 알림도 그대로 걸되, 그렇다는 사실은 알려줍니다.
             at + "에 알려드립니다" +
-                (if (Reminders.canBeExact(this)) "" else " (권한이 없어 몇 분 늦을 수 있음)")
+                (if (Reminders.canBeExact(this)) "" else " (권한이 없어 몇 분 늦을 수 있음)") +
+                (if (TodoStore.isRemindAfterDue(todo)) " · 기한 뒤입니다" else "")
         }
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
     }

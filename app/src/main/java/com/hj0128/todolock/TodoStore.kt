@@ -197,6 +197,33 @@ object TodoStore {
      */
     fun isDueToday(t: Todo): Boolean = !t.done && t.date == today() && !isOverdue(t)
 
+    /**
+     * 미리 알림이 기한보다 늦는지.
+     *
+     * 기한에 시각이 있으면 그 시각이, 없으면 그날 끝(23:59)이 기준입니다.
+     * 날짜만 정한 기한은 '그날 안'이라는 뜻이라 같은 날 저녁 알림은 어긋난 것이
+     * 아닙니다. 이름부터 '미리' 알림이라 기한 뒤에 울리면 앞뒤가 맞지 않습니다.
+     */
+    fun isRemindAfterDue(date: String, dueMinutes: Int, remindAt: Long): Boolean {
+        if (remindAt <= Todo.NO_REMIND) return false
+        val cal = parseDate(date)
+        if (dueMinutes >= 0) {
+            cal.set(Calendar.HOUR_OF_DAY, dueMinutes / 60)
+            cal.set(Calendar.MINUTE, dueMinutes % 60)
+            cal.set(Calendar.SECOND, 0)
+            cal.set(Calendar.MILLISECOND, 0)
+        } else {
+            cal.set(Calendar.HOUR_OF_DAY, 23)
+            cal.set(Calendar.MINUTE, 59)
+            cal.set(Calendar.SECOND, 59)
+            cal.set(Calendar.MILLISECOND, 999)
+        }
+        return remindAt > cal.timeInMillis
+    }
+
+    fun isRemindAfterDue(t: Todo): Boolean =
+        isRemindAfterDue(t.date, t.dueMinutes, t.remindAt)
+
     /** 자정부터 지금까지의 분. 기한 시각과 같은 단위로 비교하기 위해. */
     private fun nowMinutes(): Int {
         val c = Calendar.getInstance()

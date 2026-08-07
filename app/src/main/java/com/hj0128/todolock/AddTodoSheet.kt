@@ -119,10 +119,16 @@ class AddTodoSheet(
 
     /** 세 컨트롤의 표시를 현재 선택 상태와 맞춥니다. */
     private fun sync(b: SheetAddTodoBinding) {
-        b.btnDue.text = TodoStore.prettyDate(TodoStore.format(due)) +
+        val dueLabel = TodoStore.prettyDate(TodoStore.format(due)) +
             (if (dueMinutes >= 0) " " + TodoStore.formatMinutes(dueMinutes) else "")
+        b.btnDue.text = dueLabel
         b.btnRemind.text =
             if (remindAt > Todo.NO_REMIND) TodoStore.prettyDateTime(remindAt) else "미리 알림"
+
+        // 기한 뒤에 울리는 알림은 십중팔구 잘못 고른 것입니다. 막지는 않고 알립니다.
+        val late = TodoStore.isRemindAfterDue(TodoStore.format(due), dueMinutes, remindAt)
+        b.tvWarn.visibility = if (late) View.VISIBLE else View.GONE
+        if (late) b.tvWarn.text = "⚠ 기한(" + dueLabel + ") 보다 늦은 알림입니다"
 
         b.btnStar.setImageResource(
             if (important) R.drawable.ic_star else R.drawable.ic_star_border

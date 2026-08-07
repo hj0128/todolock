@@ -41,7 +41,8 @@ class QuickAddActivity : AppCompatActivity() {
             at + " — 이미 지난 시각이라 알림을 걸지 않았습니다"
         } else {
             at + "에 알려드립니다" +
-                (if (Reminders.canBeExact(this)) "" else " (권한이 없어 몇 분 늦을 수 있음)")
+                (if (Reminders.canBeExact(this)) "" else " (권한이 없어 몇 분 늦을 수 있음)") +
+                (if (TodoStore.isRemindAfterDue(todo)) " · 기한 뒤입니다" else "")
         }
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
     }

@@ -118,6 +118,20 @@
     </LinearLayout>
 
     <!--
+      기한보다 늦은 알림을 골랐을 때만 보입니다.
+      저장을 막지는 않습니다 — 알림을 먼저 고르고 기한을 나중에 미루는 정상
+      경로가 있어서, 막으면 그 순서가 강제됩니다.
+    -->
+    <TextView
+        android:id="@+id/tvWarn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:textSize="12sp"
+        android:textColor="?attr/colorError"
+        android:visibility="gone" />
+
+    <!--
       메모 칸은 접혀 있다가 '메모' 를 눌러야 나옵니다. 한 줄 적고 ✓ 로 끝내는 것이
       이 시트의 기본 흐름이라, 늘 펼쳐 두면 안 쓰는 사람에게도 시트가 커집니다.
       이미 메모가 있는 항목을 수정할 때는 처음부터 펼쳐집니다.
