@@ -191,6 +191,12 @@ object TodoStore {
         return t.hasDueTime && t.dueMinutes < nowMinutes()
     }
 
+    /**
+     * 기한이 오늘이고 아직 남아 있는지. 목록·위젯에서 강조 표시할지 판단합니다.
+     * 시각이 지나 '지남' 이 된 항목은 제외합니다 — 그쪽은 빨간색이 이깁니다.
+     */
+    fun isDueToday(t: Todo): Boolean = !t.done && t.date == today() && !isOverdue(t)
+
     /** 자정부터 지금까지의 분. 기한 시각과 같은 단위로 비교하기 위해. */
     private fun nowMinutes(): Int {
         val c = Calendar.getInstance()

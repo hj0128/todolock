@@ -3,6 +3,11 @@ package com.hj0128.todolock
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Typeface
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import android.view.View
 import com.hj0128.todolock.databinding.ItemTodoBinding
 
@@ -40,11 +45,17 @@ object TodoRow {
 
         // 아래 줄은 기한 · '지남' · 미리 알림을 이어 붙입니다.
         val overdue = TodoStore.isOverdue(todo)
-        val parts = mutableListOf(TodoStore.prettyDue(todo))
+        val due = TodoStore.prettyDue(todo)
+        val parts = mutableListOf(due)
         if (overdue) parts.add("지남")
         if (todo.hasReminder) parts.add("🔔 " + TodoStore.prettyDateTime(todo.remindAt))
 
-        b.tvDate.text = parts.joinToString(" · ")
+        // 오늘 기한은 눈에 띄어야 합니다 — '지남'(빨강)만 강조되고 정작 오늘 할 일이
+        // 어제·모레와 같은 회색이면, 목록에서 가장 급한 줄이 가장 안 보입니다.
+        // 색은 날짜 부분에만 입힙니다. 줄 전체를 물들이면 뒤에 붙는 미리 알림까지
+        // 같은 무게로 읽혀 오히려 초점이 흐려집니다.
+        val line = parts.joinToString(" · ")
+        b.tvDate.text = if (TodoStore.isDueToday(todo)) emphasize(b, line, due.length) else line
         b.tvDate.setTextColor(
             if (overdue) overdueColor(b.root.context) else secondaryColor(b.root.context)
         )
@@ -97,6 +108,17 @@ object TodoRow {
             b.btnDelete.visibility = View.VISIBLE
             b.btnDelete.setOnClickListener { onDelete.invoke(todo) }
         }
+    }
+
+    /** 앞에서부터 length 글자에만 파란 굵은 글씨를 입힙니다(= 기한 날짜 부분). */
+    private fun emphasize(b: ItemTodoBinding, text: String, length: Int): CharSequence {
+        val s = SpannableString(text)
+        val color = androidx.core.content.ContextCompat.getColor(
+            b.root.context, R.color.sky_heading
+        )
+        s.setSpan(ForegroundColorSpan(color), 0, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        s.setSpan(StyleSpan(Typeface.BOLD), 0, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        return s
     }
 
     /** 다크/라이트 어느 쪽에서도 맞는 보조 텍스트 색을 테마에서 꺼내옵니다. */
