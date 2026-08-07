@@ -34,7 +34,13 @@ class UnlockReceiver : BroadcastReceiver() {
         }
     }
 
-    /** 화면이 켜진 뒤 키가드가 풀리는 순간까지 최대 20초 감시합니다. */
+    /**
+     * 화면이 켜진 뒤 키가드가 풀리는 순간까지 최대 20초 감시합니다.
+     *
+     * 0.2초 간격입니다. 이 경로로 잡히는 기기에서는 폴링 간격이 그대로 팝업이
+     * 늦는 시간이 되므로 짧게 둡니다. 화면이 켜져 있고 잠긴 동안에만 도는
+     * 검사라(최대 100회) 전력에는 영향이 없습니다.
+     */
     private fun watchKeyguard(ctx: Context) {
         val km = ctx.getSystemService(KeyguardManager::class.java) ?: return
 
@@ -52,10 +58,10 @@ class UnlockReceiver : BroadcastReceiver() {
                     handle(ctx, "SCREEN_ON+키가드해제")
                     return
                 }
-                if (++tries < 40) h.postDelayed(this, 500L)
+                if (++tries < 100) h.postDelayed(this, POLL_MS)
             }
         }
-        h.postDelayed(poll, 500L)
+        h.postDelayed(poll, POLL_MS)
     }
 
     private fun handle(ctx: Context, via: String) {
@@ -73,32 +79,41 @@ class UnlockReceiver : BroadcastReceiver() {
         TodoStore.markShown(ctx)
         val remaining = TodoStore.pendingToday(ctx).size
 
-        // 런처가 자리를 잡을 시간을 조금 준 뒤 띄웁니다.
-        Handler(Looper.getMainLooper()).postDelayed({
-            if (Settings.canDrawOverlays(ctx)) {
-                val i = Intent(ctx, TodayPopupActivity::class.java).apply {
-                    addFlags(
-                        Intent.FLAG_ACTIVITY_NEW_TASK or
-                            Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                            Intent.FLAG_ACTIVITY_NO_ANIMATION
-                    )
-                }
-                try {
-                    ctx.startActivity(i)
-                    finish(ctx, via, "팝업 표시")
-                } catch (e: Exception) {
-                    Notifications.showFallbackAlert(ctx, remaining)
-                    finish(ctx, via, "팝업 차단됨 → 알림 (" + e.javaClass.simpleName + ")")
-                }
-            } else {
-                Notifications.showFallbackAlert(ctx, remaining)
-                finish(ctx, via, "알림으로 대체 · '다른 앱 위에 표시' 권한 없음")
+        // 기다리지 않고 곧바로 띄웁니다. 잠금을 푼 순간 이미 화면에 있어야
+        // '잠금해제하면 할 일이 뜬다' 로 느껴집니다.
+        //
+        // 예전에는 런처가 자리를 잡도록 0.5초를 줬는데, 그만큼 팝업이 늦게 떠서
+        // 홈 화면이 한 번 보였다가 덮이는 모양이 됐습니다. 혹시 기기에 따라
+        // 팝업이 런처에 가려지면 여기서 다시 지연을 주면 됩니다(진단 로그의
+        // '팝업 표시' 기록은 남지만 화면에 안 보이는 증상).
+        if (Settings.canDrawOverlays(ctx)) {
+            val i = Intent(ctx, TodayPopupActivity::class.java).apply {
+                addFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                        Intent.FLAG_ACTIVITY_NO_ANIMATION
+                )
             }
-        }, 500L)
+            try {
+                ctx.startActivity(i)
+                finish(ctx, via, "팝업 표시")
+            } catch (e: Exception) {
+                Notifications.showFallbackAlert(ctx, remaining)
+                finish(ctx, via, "팝업 차단됨 → 알림 (" + e.javaClass.simpleName + ")")
+            }
+        } else {
+            Notifications.showFallbackAlert(ctx, remaining)
+            finish(ctx, via, "알림으로 대체 · '다른 앱 위에 표시' 권한 없음")
+        }
     }
 
     private fun finish(ctx: Context, via: String, result: String) {
         TodoStore.markUnlock(ctx, result)
         TodoStore.appendLog(ctx, via + " → " + result)
+    }
+
+    private companion object {
+        /** 키가드 감시 간격. 이 값이 곧 팝업이 늦는 시간입니다. */
+        const val POLL_MS = 200L
     }
 }

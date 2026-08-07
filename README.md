@@ -212,7 +212,8 @@ app/src/main/java/com/hj0128/todolock/
 
 ## 5. 커스터마이즈 힌트
 
-- 팝업 지연 시간: `UnlockReceiver.kt` 의 `postDelayed(..., 500L)`
+- 팝업은 잠금해제 즉시 뜹니다. 기기에 따라 런처에 가려지면 `UnlockReceiver.kt` 의
+  `startActivity` 를 `Handler(...).postDelayed({ ... }, 200L)` 로 감싸 늦추면 됩니다
 - 패키지명/앱 이름 변경: `app/build.gradle.kts` 의 `applicationId`,
   `res/values/strings.xml` 의 `app_name`
 - 팝업 디자인: `res/layout/activity_popup.xml` (팝업의 할 일 한 줄은 `res/layout/item_popup_row.xml`)
