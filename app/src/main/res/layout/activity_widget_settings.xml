@@ -76,37 +76,33 @@
                 android:textSize="12sp"
                 android:textColor="?android:attr/textColorSecondary" />
 
-            <RadioGroup
-                android:id="@+id/rgFont"
+            <!--
+              3단계(작게·보통·크게) 대신 슬라이더입니다. 제목 크기만 고르면
+              아랫줄과 헤더는 비율로 따라갑니다. 움직이는 동안 뒤의 위젯이 바로
+              바뀌므로, 눈으로 보면서 원하는 크기에 세울 수 있습니다.
+            -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="2dp">
+                android:gravity="center_vertical">
 
-                <RadioButton
-                    android:id="@+id/rbSmall"
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/slFont"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textSize="13sp"
-                    android:text="작게" />
+                    android:stepSize="0.5"
+                    android:valueFrom="11"
+                    android:valueTo="24" />
 
-                <RadioButton
-                    android:id="@+id/rbMedium"
-                    android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/tvFont"
+                    android:layout_width="52dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textSize="13sp"
-                    android:text="보통" />
-
-                <RadioButton
-                    android:id="@+id/rbLarge"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textSize="13sp"
-                    android:text="크게" />
-            </RadioGroup>
+                    android:gravity="end"
+                    android:textSize="14sp" />
+            </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDone"

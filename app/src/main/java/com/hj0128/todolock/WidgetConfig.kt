@@ -13,26 +13,30 @@ object WidgetConfig {
 
     private const val PREF = "todolock_widget"
     private const val KEY_OPACITY = "opacity"
-    private const val KEY_FONT = "font_step"
+    private const val KEY_TITLE_SP = "title_sp"
+
+    /** 3단계(작게·보통·크게)를 쓰던 시절의 키. 지금은 값을 이어받는 데만 씁니다. */
+    private const val KEY_FONT_STEP = "font_step"
 
     /** 완전히 투명해지면 위젯을 다시 찾을 수 없어 하한을 둡니다. */
     const val MIN_OPACITY = 20
     const val MAX_OPACITY = 100
 
-    /** 0 = 작게, 1 = 보통, 2 = 크게 */
-    const val FONT_STEPS = 3
-
     /**
-     * 세 단계 모두 한 칸씩 올려 잡았습니다. 예전 '크게'(제목 16.5sp)가 실제로는
-     * 보통 크기로 읽혔고, 아랫줄은 9~11.5sp 라 본문 최소 가독선 아래였습니다.
-     *
-     * 아랫줄(기한 · 미리 알림 · 메모)은 제목 대비 비율도 함께 올렸습니다.
-     * 부가 정보가 아니라 '언제까지 · 언제 알림 · 무슨 내용' 이라 실제로 읽는 줄입니다.
+     * 글자 크기는 제목 기준 하나로 정하고 나머지는 비율로 따라갑니다.
+     * 세 값을 따로 고르게 하면 조합이 어긋나 층이 무너지는데, 실제로 원하는 것은
+     * '전체적으로 크게/작게' 이지 '제목만 크게' 가 아닙니다.
      */
-    private val TITLE_SP = floatArrayOf(14f, 16.5f, 19f)
-    private val SUB_SP = floatArrayOf(11f, 12.5f, 14.5f)
-    /** 헤더는 항목 제목보다 반 단계만 크게 둬서 층이 구분되게 합니다. */
-    private val HEADER_SP = floatArrayOf(15f, 17f, 19.5f)
+    const val MIN_TITLE_SP = 11f
+    const val MAX_TITLE_SP = 24f
+    const val DEFAULT_TITLE_SP = 16.5f
+
+    /** 아랫줄(기한 · 미리 알림 · 메모)과 헤더의 제목 대비 비율. */
+    private const val SUB_RATIO = 0.76f
+    private const val HEADER_RATIO = 1.03f
+
+    /** 3단계를 쓰던 사용자의 설정을 이어받기 위한 값(작게 · 보통 · 크게). */
+    private val LEGACY_STEP_SP = floatArrayOf(14f, 16.5f, 19f)
 
     private fun prefs(ctx: Context) =
         ctx.applicationContext.getSharedPreferences(PREF, Context.MODE_PRIVATE)
@@ -45,11 +49,24 @@ object WidgetConfig {
             .putInt(KEY_OPACITY, percent.coerceIn(MIN_OPACITY, MAX_OPACITY))
             .apply()
 
-    fun fontStep(ctx: Context): Int =
-        prefs(ctx).getInt(KEY_FONT, 1).coerceIn(0, FONT_STEPS - 1)
+    /**
+     * 제목 글자 크기(sp). 값을 정한 적이 없으면 예전 3단계 설정을 이어받고,
+     * 그것도 없으면 기본값입니다.
+     */
+    fun titleSp(ctx: Context): Float {
+        val p = prefs(ctx)
+        if (p.contains(KEY_TITLE_SP)) {
+            return p.getFloat(KEY_TITLE_SP, DEFAULT_TITLE_SP)
+                .coerceIn(MIN_TITLE_SP, MAX_TITLE_SP)
+        }
+        val step = p.getInt(KEY_FONT_STEP, 1).coerceIn(0, LEGACY_STEP_SP.size - 1)
+        return LEGACY_STEP_SP[step]
+    }
 
-    fun setFontStep(ctx: Context, step: Int) =
-        prefs(ctx).edit().putInt(KEY_FONT, step.coerceIn(0, FONT_STEPS - 1)).apply()
+    fun setTitleSp(ctx: Context, sp: Float) =
+        prefs(ctx).edit()
+            .putFloat(KEY_TITLE_SP, sp.coerceIn(MIN_TITLE_SP, MAX_TITLE_SP))
+            .apply()
 
     /**
      * 헤더와 각 할 일 행(앞쪽 판)의 알파. 설정값을 그대로 씁니다.
@@ -64,9 +81,8 @@ object WidgetConfig {
 
     private const val LIST_RATIO = 0.45f
 
-    fun titleSp(ctx: Context): Float = TITLE_SP[fontStep(ctx)]
+    fun subSp(ctx: Context): Float = titleSp(ctx) * SUB_RATIO
 
-    fun subSp(ctx: Context): Float = SUB_SP[fontStep(ctx)]
-
-    fun headerSp(ctx: Context): Float = HEADER_SP[fontStep(ctx)]
+    /** 헤더는 항목 제목보다 반 단계만 크게 둬서 층이 구분되게 합니다. */
+    fun headerSp(ctx: Context): Float = titleSp(ctx) * HEADER_RATIO
 }
