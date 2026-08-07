@@ -1,22 +1,24 @@
 package com.hj0128.todolock
 
 import android.app.DatePickerDialog
+import android.app.Dialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
-import androidx.appcompat.widget.PopupMenu
+import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.hj0128.todolock.databinding.SheetAddTodoBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Locale
 
 /**
  * 홈 화면 아래에 낮게 뜨는 추가 · 수정 시트.
  *
- * 첫 줄에서 입력·중요·저장을 끝낼 수 있고, 기한과 미리 알림은 둘째 줄의
- * 셀렉트박스(PopupMenu)로 흔한 선택지를 먼저 주고 마지막에 달력/시계로 넘깁니다.
+ * 첫 줄에서 입력·중요·저장을 끝낼 수 있고, 기한과 미리 알림은 둘째 줄의 버튼을
+ * 누르면 곧바로 달력이 열리고 날짜를 고르면 이어서 시계가 뜹니다.
  * 메모는 같은 줄의 버튼으로 접었다 펴는 칸이라, 쓰지 않는 사람에게는 보이지 않습니다.
  *
  * existing 을 넘기면 그 값으로 채워진 '수정' 시트가 됩니다.
@@ -40,6 +42,13 @@ class AddTodoSheet(
     private var dueMinutes = existing?.dueMinutes ?: Todo.NO_TIME
     private var remindAt = existing?.remindAt ?: Todo.NO_REMIND
     private var important = existing?.important ?: false
+
+    /**
+     * 달력·시계를 열기 직전의 키보드 상태.
+     * 다이얼로그가 닫히면서 시스템이 키보드를 내려버리므로, 원래 열려 있었으면
+     * 되돌려 놓습니다. 닫혀 있었으면 아무것도 하지 않아 그대로 닫힌 채 남습니다.
+     */
+    private var imeWasVisible = false
 
     /**
      * @param onDismiss 시트가 닫힐 때(저장·취소·바깥 탭 모두) 불립니다.
@@ -67,8 +76,8 @@ class AddTodoSheet(
             important = !important
             sync(b)
         }
-        b.btnDue.setOnClickListener { dueMenu(b) }
-        b.btnRemind.setOnClickListener { remindMenu(b) }
+        b.btnDue.setOnClickListener { pickDue(b) }
+        b.btnRemind.setOnClickListener { pickRemind(b) }
         b.btnMemo.setOnClickListener { toggleMemo(b) }
 
         b.btnSave.setOnClickListener { save(b, dialog) }
@@ -136,144 +145,130 @@ class AddTodoSheet(
         b.btnStar.alpha = if (important) 1f else 0.45f
     }
 
-    // ---------- 기한: 오늘 / 내일 / 날짜 선택 / 시간 ----------
+    // ---------- 기한: 달력 → (선택) 시계 ----------
 
     /**
-     * 시각은 날짜와 같은 줄에서 고르되 별도 항목으로 둡니다.
-     * 날짜를 고르면 시계까지 이어서 뜨는 방식이면 시각이 사실상 필수가 되는데,
-     * 대부분의 할 일에는 시각이 필요 없습니다. 그래서 원하는 사람만 한 번 더
-     * 누르게 하고, 기본은 지금까지처럼 날짜만입니다.
+     * 기한 버튼을 누르면 곧바로 달력이 열리고, 날짜를 고르면 이어서 시계가 뜹니다.
+     *
+     * '오늘/내일' 같은 후보 메뉴를 두지 않습니다. 한 번 더 누르게 만드는 대신
+     * 달력에서 오늘 날짜가 이미 선택된 채로 열리므로, 오늘로 두려면 확인만 누르면
+     * 됩니다. 후보가 있어도 결국 달력을 여는 경우가 대부분이었습니다.
+     *
+     * 시각은 선택입니다 — 시계에서 취소하면 날짜만 남습니다(이미 있던 시각도 지워집니다).
      */
-    private fun dueMenu(b: SheetAddTodoBinding) {
-        val tomorrow = daysFromToday(1)
-        val menu = PopupMenu(ctx, b.btnDue)
-        menu.menu.add(0, 1, 0, "오늘")
-        menu.menu.add(0, 2, 1, "내일 (" + dayOfWeek(tomorrow) + ")")
-        menu.menu.add(0, 3, 2, "날짜 선택")
-        menu.menu.add(
-            0, 4, 3,
-            if (dueMinutes >= 0) "시간 변경 (" + TodoStore.formatMinutes(dueMinutes) + ")"
-            else "시간 추가"
-        )
-        if (dueMinutes >= 0) menu.menu.add(0, 5, 4, "시간 지우기")
-
-        menu.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                1 -> setDue(Calendar.getInstance(), b)
-                2 -> setDue(tomorrow, b)
-                3 -> pickDueDate(b)
-                4 -> pickDueTime(b)
-                else -> {
-                    dueMinutes = Todo.NO_TIME
-                    sync(b)
-                }
-            }
-            true
-        }
-        menu.show()
-    }
-
-    /** 날짜만 바꿉니다. 이미 고른 시각은 그대로 둡니다. */
-    private fun setDue(cal: Calendar, b: SheetAddTodoBinding) {
-        due.timeInMillis = cal.timeInMillis
-        sync(b)
-    }
-
-    private fun pickDueDate(b: SheetAddTodoBinding) {
-        DatePickerDialog(
+    private fun pickDue(b: SheetAddTodoBinding) {
+        imeWasVisible = isImeVisible(b)
+        val picker = DatePickerDialog(
             ctx,
             { _, y, m, d ->
                 due.set(y, m, d)
                 sync(b)
+                pickDueTime(b)
             },
             due.get(Calendar.YEAR), due.get(Calendar.MONTH), due.get(Calendar.DAY_OF_MONTH)
-        ).show()
+        )
+        picker.setOnCancelListener { restoreIme(b) }
+        showKeepingIme(picker)
     }
 
-    /** 시계를 열어 기한 시각을 받습니다. 아직 없으면 9시에서 시작합니다. */
+    /** 기한 시각. 아직 없으면 9시에서 시작하고, 취소하면 '시각 없음' 이 됩니다. */
     private fun pickDueTime(b: SheetAddTodoBinding) {
         val start = if (dueMinutes >= 0) dueMinutes else 9 * 60
-        TimePickerDialog(
+        val picker = TimePickerDialog(
             ctx,
             { _, h, min ->
                 dueMinutes = h * 60 + min
                 sync(b)
             },
             start / 60, start % 60, true
-        ).show()
-    }
-
-    // ---------- 미리 알림: 내일 9시 / 다음 주 9시 / 날짜 및 시간 선택 ----------
-
-    private fun remindMenu(b: SheetAddTodoBinding) {
-        val tomorrow9 = atNine(1)
-        val nextWeek9 = atNine(8)
-
-        val menu = PopupMenu(ctx, b.btnRemind)
-        menu.menu.add(0, 1, 0, "내일 (" + dayOfWeek(tomorrow9) + ") 9시")
-        menu.menu.add(0, 2, 1, "다음 주 (" + dayOfWeek(nextWeek9) + ") 9시")
-        menu.menu.add(0, 3, 2, "날짜 및 시간 선택")
-        if (remindAt > Todo.NO_REMIND) menu.menu.add(0, 4, 3, "알림 삭제")
-
-        menu.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                1 -> setRemind(tomorrow9.timeInMillis, b)
-                2 -> setRemind(nextWeek9.timeInMillis, b)
-                3 -> pickRemindDateTime(b)
-                else -> setRemind(Todo.NO_REMIND, b)
-            }
-            true
+        )
+        picker.setOnCancelListener {
+            dueMinutes = Todo.NO_TIME
+            sync(b)
         }
-        menu.show()
+        picker.setOnDismissListener { restoreIme(b) }
+        showKeepingIme(picker)
     }
 
-    private fun setRemind(ms: Long, b: SheetAddTodoBinding) {
-        remindAt = ms
-        sync(b)
-    }
+    // ---------- 미리 알림: 달력 → 시계 ----------
 
-    /** 달력으로 날짜를 받은 뒤 이어서 시계로 시각을 받습니다. */
-    private fun pickRemindDateTime(b: SheetAddTodoBinding) {
+    /**
+     * 기한과 같은 흐름입니다. 다만 알림은 시각이 있어야 성립하므로,
+     * 시계에서 취소하면 알림 자체가 해제됩니다(= 알림 삭제 경로이기도 합니다).
+     */
+    private fun pickRemind(b: SheetAddTodoBinding) {
+        imeWasVisible = isImeVisible(b)
         val base = Calendar.getInstance()
         if (remindAt > Todo.NO_REMIND) base.timeInMillis = remindAt
 
-        DatePickerDialog(
+        val picker = DatePickerDialog(
             ctx,
-            { _, y, m, d ->
-                TimePickerDialog(
-                    ctx,
-                    { _, h, min ->
-                        val c = Calendar.getInstance()
-                        c.set(y, m, d, h, min)
-                        c.set(Calendar.SECOND, 0)
-                        c.set(Calendar.MILLISECOND, 0)
-                        setRemind(c.timeInMillis, b)
-                    },
-                    base.get(Calendar.HOUR_OF_DAY), base.get(Calendar.MINUTE), true
-                ).show()
-            },
+            { _, y, m, d -> pickRemindTime(b, y, m, d, base) },
             base.get(Calendar.YEAR), base.get(Calendar.MONTH), base.get(Calendar.DAY_OF_MONTH)
-        ).show()
+        )
+        picker.setOnCancelListener { restoreIme(b) }
+        showKeepingIme(picker)
     }
 
-    // ---------- 날짜 계산 ----------
+    private fun pickRemindTime(b: SheetAddTodoBinding, y: Int, m: Int, d: Int, base: Calendar) {
+        val startH = if (remindAt > Todo.NO_REMIND) base.get(Calendar.HOUR_OF_DAY) else 9
+        val startM = if (remindAt > Todo.NO_REMIND) base.get(Calendar.MINUTE) else 0
 
-    private fun daysFromToday(days: Int): Calendar {
-        val c = Calendar.getInstance()
-        c.add(Calendar.DAY_OF_YEAR, days)
-        return c
+        val picker = TimePickerDialog(
+            ctx,
+            { _, h, min ->
+                val c = Calendar.getInstance()
+                c.set(y, m, d, h, min)
+                c.set(Calendar.SECOND, 0)
+                c.set(Calendar.MILLISECOND, 0)
+                remindAt = c.timeInMillis
+                sync(b)
+            },
+            startH, startM, true
+        )
+        picker.setOnCancelListener {
+            remindAt = Todo.NO_REMIND
+            sync(b)
+        }
+        picker.setOnDismissListener { restoreIme(b) }
+        showKeepingIme(picker)
     }
 
-    /** 오늘로부터 days 일 뒤 오전 9시 정각. */
-    private fun atNine(days: Int): Calendar {
-        val c = daysFromToday(days)
-        c.set(Calendar.HOUR_OF_DAY, 9)
-        c.set(Calendar.MINUTE, 0)
-        c.set(Calendar.SECOND, 0)
-        c.set(Calendar.MILLISECOND, 0)
-        return c
+    /**
+     * 키보드를 건드리지 않고 다이얼로그를 띄웁니다.
+     *
+     * 그냥 show() 하면 다이얼로그 창이 입력 포커스를 가져가면서 키보드가 내려갑니다.
+     * 띄우는 순간만 '포커스 받지 않는 창' 으로 만들었다가 곧바로 되돌리면, 시스템이
+     * 키보드 상태를 다시 계산하지 않아 열려 있던 건 열린 채, 닫혀 있던 건 닫힌 채로
+     * 남습니다. 달력·시계를 쓰는 동안에도 시트의 입력칸은 그대로입니다.
+     */
+    private fun isImeVisible(b: SheetAddTodoBinding): Boolean =
+        ViewCompat.getRootWindowInsets(b.root)?.isVisible(WindowInsetsCompat.Type.ime()) ?: false
+
+    /**
+     * 다이얼로그가 닫힌 뒤 키보드를 원래대로 되돌립니다.
+     * 다이얼로그 창이 사라지면서 포커스가 시트로 돌아오는데, 그때 시스템이 키보드를
+     * 내리므로 한 박자 뒤(post)에 다시 올립니다.
+     */
+    private fun restoreIme(b: SheetAddTodoBinding) {
+        if (!imeWasVisible) return
+        b.root.post {
+            val target = if (b.etMemo.hasFocus()) b.etMemo else b.etText
+            target.requestFocus()
+            ctx.getSystemService(InputMethodManager::class.java)
+                ?.showSoftInput(target, InputMethodManager.SHOW_IMPLICIT)
+        }
     }
 
-    private fun dayOfWeek(cal: Calendar): String =
-        SimpleDateFormat("E", Locale.KOREA).format(cal.time)
+    private fun showKeepingIme(dialog: Dialog) {
+        val window = dialog.window
+        window?.setFlags(
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+        )
+        window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED)
+        dialog.show()
+        // 띄운 뒤 곧바로 되돌려야 달력·시계를 실제로 조작할 수 있습니다.
+        window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+    }
 }
