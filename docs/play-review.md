@@ -228,7 +228,7 @@ Google 계정에 백업될 수 있습니다. 개발자가 접근할 수 없으�
 - **AAB 빌드** — 신규 앱은 APK 가 아닌 `bundleRelease` 결과물을 올립니다.
 - **`targetSdk` 상향** — 34 는 신규 앱 요구 수준보다 낮습니다. 올린 뒤 동작 재검증 필요.
 - **방침 URL** — `docs/privacy.html` 을 `hj0128.com` 에 올리고 그 주소를 콘솔에 입력.
-  GitHub Pages 를 `/docs` 로 켜면 `https://hj0128.github.io/TodoLock/privacy.html` 로도 즉시 사용 가능합니다.
+  GitHub Pages 를 `/docs` 로 켜면 `https://hj0128.github.io/todoLock/privacy.html` 로도 즉시 사용 가능합니다.
 - **연락 메일** — 방침 문서에 `contact@hj0128.com` 을 적어 두었습니다.
   도메인은 보유하고 있으므로 **`contact@` 수신(포워딩) 설정만 걸면 됩니다.**
 
