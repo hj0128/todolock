@@ -27,12 +27,17 @@ object WidgetConfig {
      * 세 값을 따로 고르게 하면 조합이 어긋나 층이 무너지는데, 실제로 원하는 것은
      * '전체적으로 크게/작게' 이지 '제목만 크게' 가 아닙니다.
      */
-    const val MIN_TITLE_SP = 11f
-    const val MAX_TITLE_SP = 24f
+    const val MIN_TITLE_SP = 12f
+    const val MAX_TITLE_SP = 30f
     const val DEFAULT_TITLE_SP = 16.5f
 
-    /** 아랫줄(기한 · 미리 알림 · 메모)과 헤더의 제목 대비 비율. */
-    private const val SUB_RATIO = 0.76f
+    /**
+     * 아랫줄(기한 · 미리 알림 · 메모)과 헤더의 제목 대비 비율.
+     *
+     * 아랫줄은 제목의 0.82배입니다. 더 낮추면 제목만 읽히는데, 이 줄에는 언제까지
+     * 인지 · 언제 알리는지 · 무슨 내용인지가 들어가 실제로 읽어야 하는 정보입니다.
+     */
+    private const val SUB_RATIO = 0.82f
     private const val HEADER_RATIO = 1.03f
 
     /** 3단계를 쓰던 사용자의 설정을 이어받기 위한 값(작게 · 보통 · 크게). */

@@ -55,38 +55,31 @@
                 android:ellipsize="end" />
 
             <!--
-              아랫줄은 왼쪽 = 기한, 오른쪽 = 미리 알림으로 갈라 둡니다.
-              기한에 시각이 붙을 수 있게 되면서 한 줄에 시각이 둘 나올 수 있는데,
-              이어 붙이면 어느 쪽이 기한이고 어느 쪽이 알림인지 읽히지 않습니다.
-              자리가 모자라면 기한 쪽이 줄어듭니다(weight).
+              기한과 미리 알림은 줄을 나눠 씁니다.
+              한 줄에 나란히 두면 시각이 둘 붙어 어느 쪽인지 헷갈리고, 글자 크기를
+              키우면 둘 중 하나가 반드시 잘립니다(한 줄에 시각 두 개는 들어가지
+              않습니다). 줄을 나누면 어느 크기에서도 둘 다 온전히 보입니다.
+              알림 줄은 🔔 로 시작해 기한과 구분됩니다.
             -->
-            <LinearLayout
+            <TextView
+                android:id="@+id/wSub"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:baselineAligned="false">
+                android:textSize="13.5sp"
+                android:textColor="@color/widget_text_dim"
+                android:maxLines="1"
+                android:ellipsize="end" />
 
-                <TextView
-                    android:id="@+id/wSub"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textSize="12.5sp"
-                    android:textColor="@color/widget_text_dim"
-                    android:maxLines="1"
-                    android:ellipsize="end" />
-
-                <TextView
-                    android:id="@+id/wRemind"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:textSize="12.5sp"
-                    android:textColor="@color/widget_text_dim"
-                    android:maxLines="1"
-                    android:ellipsize="end" />
-            </LinearLayout>
+            <TextView
+                android:id="@+id/wRemind"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:textSize="13.5sp"
+                android:textColor="@color/widget_text_dim"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:visibility="gone" />
 
             <!-- 메모 첫 줄. 없으면 GONE 이라 행 높이는 지금 그대로입니다. -->
             <TextView
@@ -94,7 +87,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:textSize="12.5sp"
+                android:textSize="13.5sp"
                 android:textColor="@color/widget_text_dim"
                 android:maxLines="1"
                 android:ellipsize="end"
