@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  강조색을 테마 속성으로 뺍니다.
+
+  레이아웃이 @color/sky_* 를 직접 가리키고 있으면 팔레트를 바꿔도 그대로입니다.
+  ?attr 로 두면 액티비티에 테마 오버레이만 얹어 한 번에 갈아끼울 수 있습니다.
+
+  위젯 레이아웃은 예외입니다 — 런처가 그리기 때문에 ?attr 이 풀리지 않아
+  거기서는 @color 를 두고 RemoteViews 로 직접 색을 넣습니다(TodoWidgetService).
+-->
+<resources>
+    <!-- 채워진 버튼·상태바처럼 넓은 면적에 쓰는 밝은 색 -->
+    <attr name="accentFill" format="color" />
+    <!-- accentFill 위에 얹는 글자색 -->
+    <attr name="onAccentFill" format="color" />
+    <!-- 외곽선 버튼의 선 색 -->
+    <attr name="accentStroke" format="color" />
+    <!-- 제목·아이콘에 쓰는 중간 톤. 연한 배경 위에서 읽히는 선입니다 -->
+    <attr name="accentHeading" format="color" />
+</resources>

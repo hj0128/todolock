@@ -45,10 +45,49 @@
         <item name="colorSurfaceContainerHigh">@color/md_surface_container_high</item>
         <item name="colorSurfaceContainerHighest">@color/md_surface_container_highest</item>
 
-        <!-- 넓은 면적은 밝은 하늘색으로. 배경이 밝아지므로 상태바 아이콘은 어둡게. -->
-        <item name="android:statusBarColor">@color/sky_bright</item>
+        <!--
+          강조색 기본값(하늘색). 설정에서 다른 팔레트를 고르면 액티비티에
+          ThemeOverlay.TodoLock.* 을 얹어 이 네 값만 갈아끼웁니다.
+        -->
+        <item name="accentFill">@color/sky_bright</item>
+        <item name="onAccentFill">@color/on_sky_bright</item>
+        <item name="accentStroke">@color/sky_stroke</item>
+        <item name="accentHeading">@color/sky_heading</item>
+
+        <!-- 넓은 면적은 밝은 강조색으로. 배경이 밝아지므로 상태바 아이콘은 어둡게. -->
+        <item name="android:statusBarColor">?attr/accentFill</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:navigationBarColor">@color/md_surface</item>
+    </style>
+
+    <!--
+      팔레트 오버레이. 액티비티에서 setTheme 으로 얹습니다(ThemeConfig.apply).
+      가리키는 색 이름에 values-night 대응이 있어 다크 모드는 저절로 따라갑니다.
+      colorPrimary 까지 바꾸는 이유: 라디오·스위치·링크가 그 값을 쓰기 때문에
+      강조색만 바꾸면 그것들만 하늘색으로 남아 어긋나 보입니다.
+    -->
+    <style name="ThemeOverlay.TodoLock.Green" parent="">
+        <item name="accentFill">@color/green_bright</item>
+        <item name="onAccentFill">@color/on_green_bright</item>
+        <item name="accentStroke">@color/green_stroke</item>
+        <item name="accentHeading">@color/green_heading</item>
+        <item name="colorPrimary">@color/green_heading</item>
+    </style>
+
+    <style name="ThemeOverlay.TodoLock.Purple" parent="">
+        <item name="accentFill">@color/purple_bright</item>
+        <item name="onAccentFill">@color/on_purple_bright</item>
+        <item name="accentStroke">@color/purple_stroke</item>
+        <item name="accentHeading">@color/purple_heading</item>
+        <item name="colorPrimary">@color/purple_heading</item>
+    </style>
+
+    <style name="ThemeOverlay.TodoLock.Orange" parent="">
+        <item name="accentFill">@color/orange_bright</item>
+        <item name="onAccentFill">@color/on_orange_bright</item>
+        <item name="accentStroke">@color/orange_stroke</item>
+        <item name="accentHeading">@color/orange_heading</item>
+        <item name="colorPrimary">@color/orange_heading</item>
     </style>
 
     <!--
@@ -56,17 +95,17 @@
       colorPrimary 를 그대로 쓰면 어두워지므로 이 스타일로 분리했습니다.
     -->
     <style name="Widget.TodoLock.Button.Sky" parent="Widget.Material3.Button">
-        <item name="backgroundTint">@color/sky_bright</item>
-        <item name="android:textColor">@color/on_sky_bright</item>
-        <item name="iconTint">@color/on_sky_bright</item>
-        <item name="rippleColor">@color/on_sky_bright</item>
+        <item name="backgroundTint">?attr/accentFill</item>
+        <item name="android:textColor">?attr/onAccentFill</item>
+        <item name="iconTint">?attr/onAccentFill</item>
+        <item name="rippleColor">?attr/onAccentFill</item>
     </style>
 
-    <!-- 외곽선 버튼: 기본값은 회색(colorOutline)이라 하늘색 선으로 바꿉니다 -->
+    <!-- 외곽선 버튼: 기본값은 회색(colorOutline)이라 강조색 선으로 바꿉니다 -->
     <style name="Widget.TodoLock.Button.SkyOutlined" parent="Widget.Material3.Button.OutlinedButton">
-        <item name="strokeColor">@color/sky_stroke</item>
-        <item name="android:textColor">@color/sky_heading</item>
-        <item name="rippleColor">@color/sky_heading</item>
+        <item name="strokeColor">?attr/accentStroke</item>
+        <item name="android:textColor">?attr/accentHeading</item>
+        <item name="rippleColor">?attr/accentHeading</item>
     </style>
 
     <style name="Theme.TodoLock.Popup" parent="Theme.TodoLock">

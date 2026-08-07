@@ -103,6 +103,33 @@
     <color name="sky_bright">#4FBDE8</color>
     <color name="on_sky_bright">#1B5D7A</color>
 
+    <!--
+      ========== 강조색 팔레트 ==========
+      사용자가 설정에서 고릅니다(ThemeConfig). 하늘색은 위의 sky_* 를 그대로 씁니다.
+      네 값의 역할은 하늘색과 같습니다 — bright(넓은 면적) · on_bright(그 위 글자)
+      · stroke(외곽선) · heading(제목·아이콘) · panel(위젯 판 배경).
+      다크 모드 값은 values-night/colors.xml 에 같은 이름으로 있습니다.
+    -->
+    <color name="sky_panel">#EAF6FE</color>
+
+    <color name="green_bright">#62C270</color>
+    <color name="on_green_bright">#14512A</color>
+    <color name="green_stroke">#8FD59A</color>
+    <color name="green_heading">#2F8F52</color>
+    <color name="green_panel">#EAF9EE</color>
+
+    <color name="purple_bright">#A48BE0</color>
+    <color name="on_purple_bright">#2E1F63</color>
+    <color name="purple_stroke">#BFAEEA</color>
+    <color name="purple_heading">#6B52B8</color>
+    <color name="purple_panel">#F2EEFD</color>
+
+    <color name="orange_bright">#F0A85A</color>
+    <color name="on_orange_bright">#6B3A05</color>
+    <color name="orange_stroke">#F3C48F</color>
+    <color name="orange_heading">#C97A20</color>
+    <color name="orange_panel">#FEF3E8</color>
+
     <!-- 외곽선 버튼(기한 설정 · 미리 알림)의 선 색. 회색이 아닌 하늘색 계열. -->
     <color name="sky_stroke">#7FC9EC</color>
 

@@ -23,6 +23,8 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // 고른 강조색을 입힙니다. setContentView 보다 먼저여야 합니다.
+        ThemeConfig.apply(this)
         b = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(b.root)
 
@@ -75,6 +77,30 @@ class SettingsActivity : AppCompatActivity() {
                     else -> TodoStore.REMIND_HEADS_UP
                 }
             )
+        }
+
+        b.rgPalette.check(
+            when (ThemeConfig.palette(this)) {
+                ThemeConfig.GREEN -> R.id.rbGreen
+                ThemeConfig.PURPLE -> R.id.rbPurple
+                ThemeConfig.ORANGE -> R.id.rbOrange
+                else -> R.id.rbSky
+            }
+        )
+        b.rgPalette.setOnCheckedChangeListener { _, id ->
+            val picked = when (id) {
+                R.id.rbGreen -> ThemeConfig.GREEN
+                R.id.rbPurple -> ThemeConfig.PURPLE
+                R.id.rbOrange -> ThemeConfig.ORANGE
+                else -> ThemeConfig.SKY
+            }
+            if (picked != ThemeConfig.palette(this)) {
+                ThemeConfig.setPalette(this, picked)
+                TodoWidget.refresh(this)
+                // 테마는 화면을 만들 때 정해지므로, 지금 보이는 화면은 다시 만들어야
+                // 바뀝니다. 다른 화면은 다음에 열릴 때 새 색으로 뜹니다.
+                recreate()
+            }
         }
 
         b.btnOverlay.setOnClickListener {

@@ -113,6 +113,16 @@ class TodoWidget : AppWidgetProvider() {
             // 뒤쪽 목록 판은 옅게, 헤더는 진하게 해서 두 층이 구분됩니다.
             rv.setInt(R.id.wBg, "setImageAlpha", WidgetConfig.listAlpha(ctx))
             rv.setInt(R.id.wHeadBg, "setImageAlpha", WidgetConfig.panelAlpha(ctx))
+
+            // 강조색 팔레트. 위젯 XML 은 런처가 그려서 ?attr 이 풀리지 않으므로
+            // 색을 직접 넣습니다. 판 색은 알파와 함께 걸려도 서로 간섭하지 않습니다.
+            val accent = ThemeConfig.headingColor(ctx)
+            val panel = ThemeConfig.panelColor(ctx)
+            rv.setInt(R.id.wHeadBg, "setColorFilter", panel)
+            rv.setInt(R.id.wBg, "setColorFilter", panel)
+            rv.setTextColor(R.id.wCount, accent)
+            rv.setInt(R.id.wAdd, "setColorFilter", accent)
+            rv.setInt(R.id.wSettings, "setColorFilter", accent)
             rv.setTextViewTextSize(R.id.wCount, TypedValue.COMPLEX_UNIT_SP, WidgetConfig.headerSp(ctx))
             rv.setTextViewTextSize(R.id.wEmpty, TypedValue.COMPLEX_UNIT_SP, WidgetConfig.subSp(ctx))
 

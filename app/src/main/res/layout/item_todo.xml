@@ -64,7 +64,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/ic_star_border"
-            android:tint="@color/sky_heading"
+            android:tint="?attr/accentHeading"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="중요 표시" />
 

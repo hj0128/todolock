@@ -181,7 +181,87 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- ───── 3. 권한 · 도구 ───── -->
+        <!-- ───── 3. 색 ───── -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="강조색"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textSize="11sp"
+                    android:alpha="0.7"
+                    android:text="앱 화면과 위젯에 함께 적용됩니다. 다크 모드에서는 같은 색의 어두운 톤이 쓰입니다." />
+
+                <!--
+                  라디오 자체를 그 색으로 칠해 이름과 색을 같이 보여줍니다.
+                  색만 있는 동그라미 네 개보다, 이름이 있어야 무엇을 고르는지 분명합니다.
+                -->
+                <RadioGroup
+                    android:id="@+id/rgPalette"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="4dp">
+
+                    <RadioButton
+                        android:id="@+id/rbSky"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="13sp"
+                        android:buttonTint="@color/sky_heading"
+                        android:text="하늘" />
+
+                    <RadioButton
+                        android:id="@+id/rbGreen"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="13sp"
+                        android:buttonTint="@color/green_heading"
+                        android:text="초록" />
+
+                    <RadioButton
+                        android:id="@+id/rbPurple"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="13sp"
+                        android:buttonTint="@color/purple_heading"
+                        android:text="보라" />
+
+                    <RadioButton
+                        android:id="@+id/rbOrange"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="13sp"
+                        android:buttonTint="@color/orange_heading"
+                        android:text="주황" />
+                </RadioGroup>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ───── 4. 권한 · 도구 ───── -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -214,7 +294,7 @@
                     android:textSize="11sp"
                     android:alpha="0.7"
                     android:lineSpacingExtra="2dp"
-                    android:text="잠금해제시 팝업이 뜨려면 아래 두 가지가 필요합니다. 되어 있으면 버튼에 '허용됨 / 완료' 가 표시됩니다. 절전 예외는 앱이 대신 켤 수 없어, 앱 정보 화면에서 '배터리 → 제한 없음' 을 직접 골라야 합니다 (삼성 기기도 같은 경로입니다)." />
+                    android:text="잠금해제시 팝업이 뜨려면 아래 두 가지가 필요합니다. 되어 있으면 버튼에 '허용됨 / 완료' 가 표시됩니다. 절전 예외는 앱이 대신 켤 수 없어, 앱 정보 화면에서 '배터리 → 제한 없음' 을 직접 골라야 합니다." />
 
                 <TextView
                     android:id="@+id/tvPermWarn"

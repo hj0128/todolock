@@ -17,6 +17,8 @@ class TodayPopupActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // 고른 강조색을 입힙니다. setContentView 보다 먼저여야 합니다.
+        ThemeConfig.apply(this)
 
         // 완료된 것은 보여주지 않으므로, 오늘 '남은' 할 일이 없으면 아무것도 띄우지 않습니다.
         if (TodoStore.pendingToday(this).isEmpty()) {

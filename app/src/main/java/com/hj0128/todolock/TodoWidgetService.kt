@@ -90,14 +90,11 @@ private class TodoWidgetFactory(
         )
         rv.setTextColor(
             R.id.wSub,
-            ContextCompat.getColor(
-                ctx,
-                when {
-                    overdue -> R.color.overdue
-                    dueToday -> R.color.sky_heading
-                    else -> R.color.widget_text_dim
-                }
-            )
+            when {
+                overdue -> ContextCompat.getColor(ctx, R.color.overdue)
+                dueToday -> ThemeConfig.headingColor(ctx)
+                else -> ContextCompat.getColor(ctx, R.color.widget_text_dim)
+            }
         )
 
         // 알림은 자리가 되면 기한과 같은 줄 오른쪽 끝에, 모자라면 아랫줄에 놓습니다.
@@ -121,6 +118,12 @@ private class TodoWidgetFactory(
             R.id.wStar,
             if (todo.important) R.drawable.ic_star else R.drawable.ic_star_border
         )
+
+        // 아이콘 색은 레이아웃의 tint 가 아니라 여기서 넣습니다.
+        // 위젯 XML 은 런처가 그려서 ?attr 로 팔레트를 따라갈 수 없습니다.
+        val accent = ThemeConfig.headingColor(ctx)
+        rv.setInt(R.id.wCheck, "setColorFilter", accent)
+        rv.setInt(R.id.wStar, "setColorFilter", accent)
 
         // 컬렉션 위젯은 행마다 PendingIntent 를 만들 수 없어 템플릿 하나를 공유합니다.
         // 그래서 어느 영역을 눌렀는지는 fillInIntent 의 extra 로 구분합니다.

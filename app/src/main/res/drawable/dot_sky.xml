@@ -2,5 +2,5 @@
 <!-- 팝업 항목의 기준점. 체크박스로 오해되지 않게 작은 점으로 둡니다. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
-    <solid android:color="@color/sky_heading" />
+    <solid android:color="?attr/accentHeading" />
 </shape>

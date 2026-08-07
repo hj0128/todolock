@@ -38,7 +38,7 @@
                 android:text="🔔 미리 알림"
                 android:textSize="15sp"
                 android:textStyle="bold"
-                android:textColor="@color/sky_heading" />
+                android:textColor="?attr/accentHeading" />
 
             <TextView
                 android:id="@+id/tvText"

@@ -48,7 +48,7 @@
                     android:text="잠깐!"
                     android:textSize="23sp"
                     android:textStyle="bold"
-                    android:textColor="@color/sky_heading" />
+                    android:textColor="?attr/accentHeading" />
 
                 <TextView
                     android:layout_width="0dp"

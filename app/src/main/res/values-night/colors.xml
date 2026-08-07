@@ -8,6 +8,27 @@
     <color name="sky_bright">#31768F</color>
     <color name="on_sky_bright">#C4E8F7</color>
 
+    <!-- 강조색 팔레트(다크). 라이트와 같은 이름이라 테마 오버레이가 그대로 따라옵니다. -->
+    <color name="sky_panel">#1A2226</color>
+
+    <color name="green_bright">#35714A</color>
+    <color name="on_green_bright">#C6EFD1</color>
+    <color name="green_stroke">#5C9A6E</color>
+    <color name="green_heading">#7FCB92</color>
+    <color name="green_panel">#19221C</color>
+
+    <color name="purple_bright">#55458C</color>
+    <color name="on_purple_bright">#DDD2F7</color>
+    <color name="purple_stroke">#7C6BB0</color>
+    <color name="purple_heading">#B7A6EC</color>
+    <color name="purple_panel">#1E1A26</color>
+
+    <color name="orange_bright">#8A5A24</color>
+    <color name="on_orange_bright">#FBE0C2</color>
+    <color name="orange_stroke">#B0824B</color>
+    <color name="orange_heading">#EFB877</color>
+    <color name="orange_panel">#241E18</color>
+
     <color name="sky_stroke">#568DA6</color>
 
     <!-- '잠깐!' — 어두운 카드 위에서 과하지 않게 밝은 하늘색 -->

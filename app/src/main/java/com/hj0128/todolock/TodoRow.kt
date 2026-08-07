@@ -114,12 +114,21 @@ object TodoRow {
     /** 앞에서부터 length 글자에만 파란 굵은 글씨를 입힙니다(= 기한 날짜 부분). */
     private fun emphasize(b: ItemTodoBinding, text: String, length: Int): CharSequence {
         val s = SpannableString(text)
-        val color = androidx.core.content.ContextCompat.getColor(
-            b.root.context, R.color.sky_heading
-        )
+        val color = accentColor(b.root.context)
         s.setSpan(ForegroundColorSpan(color), 0, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         s.setSpan(StyleSpan(Typeface.BOLD), 0, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         return s
+    }
+
+    /**
+     * 강조색을 테마에서 꺼내옵니다.
+     * 사용자가 고른 팔레트가 오버레이로 얹혀 있으므로 @color 를 직접 읽으면 안 됩니다.
+     */
+    private fun accentColor(ctx: Context): Int {
+        val ta = ctx.obtainStyledAttributes(intArrayOf(R.attr.accentHeading))
+        val c = ta.getColor(0, Color.BLUE)
+        ta.recycle()
+        return c
     }
 
     /** 다크/라이트 어느 쪽에서도 맞는 보조 텍스트 색을 테마에서 꺼내옵니다. */

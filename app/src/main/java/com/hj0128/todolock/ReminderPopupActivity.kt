@@ -17,6 +17,8 @@ class ReminderPopupActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // 고른 강조색을 입힙니다. setContentView 보다 먼저여야 합니다.
+        ThemeConfig.apply(this)
 
         val id = intent?.getLongExtra(EXTRA_ID, 0L) ?: 0L
         val todo = if (id != 0L) TodoStore.load(this).firstOrNull { it.id == id } else null

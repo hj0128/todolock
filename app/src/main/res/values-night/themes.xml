@@ -42,7 +42,13 @@
         <item name="colorSurfaceContainerHigh">@color/md_surface_container_high_dark</item>
         <item name="colorSurfaceContainerHighest">@color/md_surface_container_highest_dark</item>
 
-        <!-- 다크에서는 밝은 하늘색 상태바가 눈부시므로 표면색으로 둡니다 -->
+        <!-- 강조색 기본값(하늘색). 색 이름은 라이트와 같고 값만 다크용입니다. -->
+        <item name="accentFill">@color/sky_bright</item>
+        <item name="onAccentFill">@color/on_sky_bright</item>
+        <item name="accentStroke">@color/sky_stroke</item>
+        <item name="accentHeading">@color/sky_heading</item>
+
+        <!-- 다크에서는 밝은 강조색 상태바가 눈부시므로 표면색으로 둡니다 -->
         <item name="android:statusBarColor">@color/md_surface_dark</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:navigationBarColor">@color/md_surface_dark</item>

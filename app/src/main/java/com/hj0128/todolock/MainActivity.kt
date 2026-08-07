@@ -19,6 +19,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // 고른 강조색을 입힙니다. setContentView 보다 먼저여야 합니다.
+        ThemeConfig.apply(this)
         b = ActivityMainBinding.inflate(layoutInflater)
         setContentView(b.root)
 
