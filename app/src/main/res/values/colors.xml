@@ -102,33 +102,129 @@
     -->
     <color name="sky_bright">#4FBDE8</color>
     <color name="on_sky_bright">#1B5D7A</color>
-
-    <!--
-      ========== 강조색 팔레트 ==========
-      사용자가 설정에서 고릅니다(ThemeConfig). 하늘색은 위의 sky_* 를 그대로 씁니다.
-      네 값의 역할은 하늘색과 같습니다 — bright(넓은 면적) · on_bright(그 위 글자)
-      · stroke(외곽선) · heading(제목·아이콘) · panel(위젯 판 배경).
-      다크 모드 값은 values-night/colors.xml 에 같은 이름으로 있습니다.
-    -->
+    <!-- 위젯 헤더·목록 판 배경 (0번 팔레트) -->
     <color name="sky_panel">#EAF6FE</color>
 
-    <color name="green_bright">#62C270</color>
-    <color name="on_green_bright">#14512A</color>
-    <color name="green_stroke">#8FD59A</color>
-    <color name="green_heading">#2F8F52</color>
-    <color name="green_panel">#EAF9EE</color>
+    <!--
+      ========== 강조색 팔레트 16색 ==========
+      설정에서 색상표로 고릅니다(ThemeConfig). 색상만 다르고 밝기·채도 관계는
+      하늘색에서 뽑은 값을 그대로 씁니다 — 손으로 찍으면 색마다 밝기가 들쭉날쭉해
+      어떤 색은 글자가 안 보이고 어떤 색은 눈이 아픕니다.
+      bright(넓은 면적) · on(그 위 글자) · stroke(외곽선) · heading(제목·아이콘)
+      · panel(위젯 판). 0번 하늘색만 손으로 다듬은 기존 값을 그대로 씁니다.
+      다크 모드 값은 values-night/colors.xml 에 같은 이름으로 있습니다.
+    -->
+    <!-- 0 하늘 -->
+    <color name="p0_bright">@color/sky_bright</color>
+    <color name="p0_on">@color/on_sky_bright</color>
+    <color name="p0_stroke">@color/sky_stroke</color>
+    <color name="p0_heading">@color/sky_heading</color>
+    <color name="p0_panel">@color/sky_panel</color>
 
-    <color name="purple_bright">#A48BE0</color>
-    <color name="on_purple_bright">#2E1F63</color>
-    <color name="purple_stroke">#BFAEEA</color>
-    <color name="purple_heading">#6B52B8</color>
-    <color name="purple_panel">#F2EEFD</color>
+    <!-- 1 파랑 -->
+    <color name="p1_bright">#5488E3</color>
+    <color name="p1_on">#1B3D79</color>
+    <color name="p1_stroke">#81A7E9</color>
+    <color name="p1_heading">#2E62BD</color>
+    <color name="p1_panel">#ECF2FD</color>
 
-    <color name="orange_bright">#F0A85A</color>
-    <color name="on_orange_bright">#6B3A05</color>
-    <color name="orange_stroke">#F3C48F</color>
-    <color name="orange_heading">#C97A20</color>
-    <color name="orange_panel">#FEF3E8</color>
+    <!-- 2 남색 -->
+    <color name="p2_bright">#5459E3</color>
+    <color name="p2_on">#1B1E79</color>
+    <color name="p2_stroke">#8185E9</color>
+    <color name="p2_heading">#2E33BD</color>
+    <color name="p2_panel">#ECEDFD</color>
+
+    <!-- 3 보라 -->
+    <color name="p3_bright">#8854E3</color>
+    <color name="p3_on">#3D1B79</color>
+    <color name="p3_stroke">#A781E9</color>
+    <color name="p3_heading">#622EBD</color>
+    <color name="p3_panel">#F2ECFD</color>
+
+    <!-- 4 자주 -->
+    <color name="p4_bright">#C754E3</color>
+    <color name="p4_on">#661B79</color>
+    <color name="p4_stroke">#D481E9</color>
+    <color name="p4_heading">#A02EBD</color>
+    <color name="p4_panel">#FAECFD</color>
+
+    <!-- 5 분홍 -->
+    <color name="p5_bright">#E354B8</color>
+    <color name="p5_on">#791B5D</color>
+    <color name="p5_stroke">#E981CA</color>
+    <color name="p5_heading">#BD2E92</color>
+    <color name="p5_panel">#FDECF8</color>
+
+    <!-- 6 장미 -->
+    <color name="p6_bright">#E35484</color>
+    <color name="p6_on">#791B3A</color>
+    <color name="p6_stroke">#E981A4</color>
+    <color name="p6_heading">#BD2E5D</color>
+    <color name="p6_panel">#FDECF2</color>
+
+    <!-- 7 빨강 -->
+    <color name="p7_bright">#E35459</color>
+    <color name="p7_on">#791B1E</color>
+    <color name="p7_stroke">#E98185</color>
+    <color name="p7_heading">#BD2E33</color>
+    <color name="p7_panel">#FDECED</color>
+
+    <!-- 8 주황 -->
+    <color name="p8_bright">#E38854</color>
+    <color name="p8_on">#793D1B</color>
+    <color name="p8_stroke">#E9A781</color>
+    <color name="p8_heading">#BD622E</color>
+    <color name="p8_panel">#FDF2EC</color>
+
+    <!-- 9 호박 -->
+    <color name="p9_bright">#E3AA54</color>
+    <color name="p9_on">#79531B</color>
+    <color name="p9_stroke">#E9BF81</color>
+    <color name="p9_heading">#BD842E</color>
+    <color name="p9_panel">#FDF7EC</color>
+
+    <!-- 10 노랑 -->
+    <color name="p10_bright">#E3C754</color>
+    <color name="p10_on">#79661B</color>
+    <color name="p10_stroke">#E9D481</color>
+    <color name="p10_heading">#BDA02E</color>
+    <color name="p10_panel">#FDFAEC</color>
+
+    <!-- 11 라임 -->
+    <color name="p11_bright">#B3E354</color>
+    <color name="p11_on">#5A791B</color>
+    <color name="p11_stroke">#C6E981</color>
+    <color name="p11_heading">#8DBD2E</color>
+    <color name="p11_panel">#F8FDEC</color>
+
+    <!-- 12 초록 -->
+    <color name="p12_bright">#54E36C</color>
+    <color name="p12_on">#1B792A</color>
+    <color name="p12_stroke">#81E993</color>
+    <color name="p12_heading">#2EBD46</color>
+    <color name="p12_panel">#ECFDEF</color>
+
+    <!-- 13 에메랄드 -->
+    <color name="p13_bright">#54E3B3</color>
+    <color name="p13_on">#1B795A</color>
+    <color name="p13_stroke">#81E9C6</color>
+    <color name="p13_heading">#2EBD8D</color>
+    <color name="p13_panel">#ECFDF8</color>
+
+    <!-- 14 청록 -->
+    <color name="p14_bright">#54E3DE</color>
+    <color name="p14_on">#1B7976</color>
+    <color name="p14_stroke">#81E9E5</color>
+    <color name="p14_heading">#2EBDB8</color>
+    <color name="p14_panel">#ECFDFD</color>
+
+    <!-- 15 회색 -->
+    <color name="p15_bright">#919CA6</color>
+    <color name="p15_on">#434A51</color>
+    <color name="p15_stroke">#ADB5BD</color>
+    <color name="p15_heading">#6B7580</color>
+    <color name="p15_panel">#F3F5F6</color>
 
     <!-- 외곽선 버튼(기한 설정 · 미리 알림)의 선 색. 회색이 아닌 하늘색 계열. -->
     <color name="sky_stroke">#7FC9EC</color>

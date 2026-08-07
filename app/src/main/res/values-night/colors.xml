@@ -7,27 +7,120 @@
 <resources>
     <color name="sky_bright">#31768F</color>
     <color name="on_sky_bright">#C4E8F7</color>
-
-    <!-- 강조색 팔레트(다크). 라이트와 같은 이름이라 테마 오버레이가 그대로 따라옵니다. -->
     <color name="sky_panel">#1A2226</color>
 
-    <color name="green_bright">#35714A</color>
-    <color name="on_green_bright">#C6EFD1</color>
-    <color name="green_stroke">#5C9A6E</color>
-    <color name="green_heading">#7FCB92</color>
-    <color name="green_panel">#19221C</color>
+    <!-- 강조색 팔레트 16색(다크). 라이트와 같은 이름이라 오버레이가 그대로 따라옵니다. -->
+    <!-- 0 하늘 -->
+    <color name="p0_bright">@color/sky_bright</color>
+    <color name="p0_on">@color/on_sky_bright</color>
+    <color name="p0_stroke">@color/sky_stroke</color>
+    <color name="p0_heading">@color/sky_heading</color>
+    <color name="p0_panel">@color/sky_panel</color>
 
-    <color name="purple_bright">#55458C</color>
-    <color name="on_purple_bright">#DDD2F7</color>
-    <color name="purple_stroke">#7C6BB0</color>
-    <color name="purple_heading">#B7A6EC</color>
-    <color name="purple_panel">#1E1A26</color>
+    <!-- 1 파랑 -->
+    <color name="p1_bright">#315490</color>
+    <color name="p1_on">#C5D7F7</color>
+    <color name="p1_stroke">#5572A5</color>
+    <color name="p1_heading">#79A1E6</color>
+    <color name="p1_panel">#1B2027</color>
 
-    <color name="orange_bright">#8A5A24</color>
-    <color name="on_orange_bright">#FBE0C2</color>
-    <color name="orange_stroke">#B0824B</color>
-    <color name="orange_heading">#EFB877</color>
-    <color name="orange_panel">#241E18</color>
+    <!-- 2 남색 -->
+    <color name="p2_bright">#313590</color>
+    <color name="p2_on">#C5C7F7</color>
+    <color name="p2_stroke">#5558A5</color>
+    <color name="p2_heading">#797DE6</color>
+    <color name="p2_panel">#1B1C27</color>
+
+    <!-- 3 보라 -->
+    <color name="p3_bright">#543190</color>
+    <color name="p3_on">#D7C5F7</color>
+    <color name="p3_stroke">#7255A5</color>
+    <color name="p3_heading">#A179E6</color>
+    <color name="p3_panel">#201B27</color>
+
+    <!-- 4 자주 -->
+    <color name="p4_bright">#7D3190</color>
+    <color name="p4_on">#EDC5F7</color>
+    <color name="p4_stroke">#9555A5</color>
+    <color name="p4_heading">#D179E6</color>
+    <color name="p4_panel">#251B27</color>
+
+    <!-- 5 분홍 -->
+    <color name="p5_bright">#903174</color>
+    <color name="p5_on">#F7C5E8</color>
+    <color name="p5_stroke">#A5558D</color>
+    <color name="p5_heading">#E679C6</color>
+    <color name="p5_panel">#271B24</color>
+
+    <!-- 6 장미 -->
+    <color name="p6_bright">#903151</color>
+    <color name="p6_on">#F7C5D6</color>
+    <color name="p6_stroke">#A55570</color>
+    <color name="p6_heading">#E6799E</color>
+    <color name="p6_panel">#271B1F</color>
+
+    <!-- 7 빨강 -->
+    <color name="p7_bright">#903135</color>
+    <color name="p7_on">#F7C5C7</color>
+    <color name="p7_stroke">#A55558</color>
+    <color name="p7_heading">#E6797D</color>
+    <color name="p7_panel">#271B1C</color>
+
+    <!-- 8 주황 -->
+    <color name="p8_bright">#905431</color>
+    <color name="p8_on">#F7D7C5</color>
+    <color name="p8_stroke">#A57255</color>
+    <color name="p8_heading">#E6A179</color>
+    <color name="p8_panel">#27201B</color>
+
+    <!-- 9 호박 -->
+    <color name="p9_bright">#906A31</color>
+    <color name="p9_on">#F7E3C5</color>
+    <color name="p9_stroke">#A58555</color>
+    <color name="p9_heading">#E6BB79</color>
+    <color name="p9_panel">#27221B</color>
+
+    <!-- 10 노랑 -->
+    <color name="p10_bright">#907D31</color>
+    <color name="p10_on">#F7EDC5</color>
+    <color name="p10_stroke">#A59555</color>
+    <color name="p10_heading">#E6D179</color>
+    <color name="p10_panel">#27251B</color>
+
+    <!-- 11 라임 -->
+    <color name="p11_bright">#719031</color>
+    <color name="p11_on">#E6F7C5</color>
+    <color name="p11_stroke">#8AA555</color>
+    <color name="p11_heading">#C2E679</color>
+    <color name="p11_panel">#23271B</color>
+
+    <!-- 12 초록 -->
+    <color name="p12_bright">#319041</color>
+    <color name="p12_on">#C5F7CD</color>
+    <color name="p12_stroke">#55A562</color>
+    <color name="p12_heading">#79E68C</color>
+    <color name="p12_panel">#1B271D</color>
+
+    <!-- 13 에메랄드 -->
+    <color name="p13_bright">#319071</color>
+    <color name="p13_on">#C5F7E6</color>
+    <color name="p13_stroke">#55A58A</color>
+    <color name="p13_heading">#79E6C2</color>
+    <color name="p13_panel">#1B2723</color>
+
+    <!-- 14 청록 -->
+    <color name="p14_bright">#31908D</color>
+    <color name="p14_on">#C5F7F5</color>
+    <color name="p14_stroke">#55A5A2</color>
+    <color name="p14_heading">#79E6E3</color>
+    <color name="p14_panel">#1B2727</color>
+
+    <!-- 15 회색 -->
+    <color name="p15_bright">#5A6168</color>
+    <color name="p15_on">#DADEE2</color>
+    <color name="p15_stroke">#777D83</color>
+    <color name="p15_heading">#A8B0B8</color>
+    <color name="p15_panel">#202122</color>
 
     <color name="sky_stroke">#568DA6</color>
 

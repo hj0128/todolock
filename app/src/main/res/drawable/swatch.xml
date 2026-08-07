@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  색상표의 동그라미. 색은 코드에서 backgroundTintList 로 넣습니다
+  (16색을 XML 로 각각 만들면 파일만 늘어납니다).
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="#FFFFFF" />
+</shape>

@@ -1,14 +1,18 @@
 package com.hj0128.todolock
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
 import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.hj0128.todolock.databinding.ActivitySettingsBinding
 
 /**
@@ -79,29 +83,7 @@ class SettingsActivity : AppCompatActivity() {
             )
         }
 
-        b.rgPalette.check(
-            when (ThemeConfig.palette(this)) {
-                ThemeConfig.GREEN -> R.id.rbGreen
-                ThemeConfig.PURPLE -> R.id.rbPurple
-                ThemeConfig.ORANGE -> R.id.rbOrange
-                else -> R.id.rbSky
-            }
-        )
-        b.rgPalette.setOnCheckedChangeListener { _, id ->
-            val picked = when (id) {
-                R.id.rbGreen -> ThemeConfig.GREEN
-                R.id.rbPurple -> ThemeConfig.PURPLE
-                R.id.rbOrange -> ThemeConfig.ORANGE
-                else -> ThemeConfig.SKY
-            }
-            if (picked != ThemeConfig.palette(this)) {
-                ThemeConfig.setPalette(this, picked)
-                TodoWidget.refresh(this)
-                // 테마는 화면을 만들 때 정해지므로, 지금 보이는 화면은 다시 만들어야
-                // 바뀝니다. 다른 화면은 다음에 열릴 때 새 색으로 뜹니다.
-                recreate()
-            }
-        }
+        buildPalette()
 
         b.btnOverlay.setOnClickListener {
             try {
@@ -133,6 +115,49 @@ class SettingsActivity : AppCompatActivity() {
         super.onResume()
         // 시스템 설정에 다녀오면 권한 상태가 바뀌므로 돌아올 때마다 다시 읽습니다.
         syncPermissionStates()
+    }
+
+    /**
+     * 색상표를 채웁니다. 동그라미 하나가 팔레트 하나이고, 고른 것에만 체크가 보입니다.
+     * 색이 16개라 XML 로 적으면 같은 덩어리가 열여섯 번 반복되므로 코드로 만듭니다.
+     */
+    private fun buildPalette() {
+        val selected = ThemeConfig.palette(this)
+        // 한 줄에 8개가 들어가야 합니다. 36+2+2 = 40dp × 8 = 320dp 로 카드 안에 맞습니다.
+        val dp = resources.displayMetrics.density
+        val size = (36 * dp).toInt()
+        val gap = (2 * dp).toInt()
+        val pad = (8 * dp).toInt()
+
+        b.gridPalette.removeAllViews()
+        for (i in 0 until ThemeConfig.COUNT) {
+            val dot = ImageView(this)
+            dot.layoutParams = ViewGroup.MarginLayoutParams(size, size).apply {
+                setMargins(gap, gap, gap, gap)
+            }
+            dot.background = ContextCompat.getDrawable(this, R.drawable.swatch)
+            dot.backgroundTintList =
+                ColorStateList.valueOf(ThemeConfig.headingColor(this, i))
+            dot.setImageResource(R.drawable.ic_check)
+            dot.setColorFilter(ThemeConfig.onColor(this, i))
+            dot.setPadding(pad, pad, pad, pad)
+            // 고른 색에만 체크를 보입니다. 자리는 그대로 둬서 크기가 흔들리지 않습니다.
+            dot.imageAlpha = if (i == selected) 255 else 0
+            // 이름은 화면에 적지 않습니다 — 색을 보고 고르는 것이라 글자가 거들 게
+            // 없습니다. 다만 화면 낭독기에는 필요해서 contentDescription 으로 남깁니다.
+            dot.contentDescription = ThemeConfig.NAMES[i]
+            dot.setOnClickListener { pickPalette(i) }
+            b.gridPalette.addView(dot)
+        }
+    }
+
+    private fun pickPalette(palette: Int) {
+        if (palette == ThemeConfig.palette(this)) return
+        ThemeConfig.setPalette(this, palette)
+        TodoWidget.refresh(this)
+        // 테마는 화면을 만들 때 정해지므로 지금 보이는 화면은 다시 만들어야 바뀝니다.
+        // 다른 화면은 다음에 열릴 때 새 색으로 뜹니다.
+        recreate()
     }
 
     private fun syncPermissionStates() {

@@ -66,28 +66,124 @@
       colorPrimary 까지 바꾸는 이유: 라디오·스위치·링크가 그 값을 쓰기 때문에
       강조색만 바꾸면 그것들만 하늘색으로 남아 어긋나 보입니다.
     -->
-    <style name="ThemeOverlay.TodoLock.Green" parent="">
-        <item name="accentFill">@color/green_bright</item>
-        <item name="onAccentFill">@color/on_green_bright</item>
-        <item name="accentStroke">@color/green_stroke</item>
-        <item name="accentHeading">@color/green_heading</item>
-        <item name="colorPrimary">@color/green_heading</item>
+    <style name="ThemeOverlay.TodoLock.P1" parent="">
+        <item name="accentFill">@color/p1_bright</item>
+        <item name="onAccentFill">@color/p1_on</item>
+        <item name="accentStroke">@color/p1_stroke</item>
+        <item name="accentHeading">@color/p1_heading</item>
+        <item name="colorPrimary">@color/p1_heading</item>
     </style>
 
-    <style name="ThemeOverlay.TodoLock.Purple" parent="">
-        <item name="accentFill">@color/purple_bright</item>
-        <item name="onAccentFill">@color/on_purple_bright</item>
-        <item name="accentStroke">@color/purple_stroke</item>
-        <item name="accentHeading">@color/purple_heading</item>
-        <item name="colorPrimary">@color/purple_heading</item>
+    <style name="ThemeOverlay.TodoLock.P2" parent="">
+        <item name="accentFill">@color/p2_bright</item>
+        <item name="onAccentFill">@color/p2_on</item>
+        <item name="accentStroke">@color/p2_stroke</item>
+        <item name="accentHeading">@color/p2_heading</item>
+        <item name="colorPrimary">@color/p2_heading</item>
     </style>
 
-    <style name="ThemeOverlay.TodoLock.Orange" parent="">
-        <item name="accentFill">@color/orange_bright</item>
-        <item name="onAccentFill">@color/on_orange_bright</item>
-        <item name="accentStroke">@color/orange_stroke</item>
-        <item name="accentHeading">@color/orange_heading</item>
-        <item name="colorPrimary">@color/orange_heading</item>
+    <style name="ThemeOverlay.TodoLock.P3" parent="">
+        <item name="accentFill">@color/p3_bright</item>
+        <item name="onAccentFill">@color/p3_on</item>
+        <item name="accentStroke">@color/p3_stroke</item>
+        <item name="accentHeading">@color/p3_heading</item>
+        <item name="colorPrimary">@color/p3_heading</item>
+    </style>
+
+    <style name="ThemeOverlay.TodoLock.P4" parent="">
+        <item name="accentFill">@color/p4_bright</item>
+        <item name="onAccentFill">@color/p4_on</item>
+        <item name="accentStroke">@color/p4_stroke</item>
+        <item name="accentHeading">@color/p4_heading</item>
+        <item name="colorPrimary">@color/p4_heading</item>
+    </style>
+
+    <style name="ThemeOverlay.TodoLock.P5" parent="">
+        <item name="accentFill">@color/p5_bright</item>
+        <item name="onAccentFill">@color/p5_on</item>
+        <item name="accentStroke">@color/p5_stroke</item>
+        <item name="accentHeading">@color/p5_heading</item>
+        <item name="colorPrimary">@color/p5_heading</item>
+    </style>
+
+    <style name="ThemeOverlay.TodoLock.P6" parent="">
+        <item name="accentFill">@color/p6_bright</item>
+        <item name="onAccentFill">@color/p6_on</item>
+        <item name="accentStroke">@color/p6_stroke</item>
+        <item name="accentHeading">@color/p6_heading</item>
+        <item name="colorPrimary">@color/p6_heading</item>
+    </style>
+
+    <style name="ThemeOverlay.TodoLock.P7" parent="">
+        <item name="accentFill">@color/p7_bright</item>
+        <item name="onAccentFill">@color/p7_on</item>
+        <item name="accentStroke">@color/p7_stroke</item>
+        <item name="accentHeading">@color/p7_heading</item>
+        <item name="colorPrimary">@color/p7_heading</item>
+    </style>
+
+    <style name="ThemeOverlay.TodoLock.P8" parent="">
+        <item name="accentFill">@color/p8_bright</item>
+        <item name="onAccentFill">@color/p8_on</item>
+        <item name="accentStroke">@color/p8_stroke</item>
+        <item name="accentHeading">@color/p8_heading</item>
+        <item name="colorPrimary">@color/p8_heading</item>
+    </style>
+
+    <style name="ThemeOverlay.TodoLock.P9" parent="">
+        <item name="accentFill">@color/p9_bright</item>
+        <item name="onAccentFill">@color/p9_on</item>
+        <item name="accentStroke">@color/p9_stroke</item>
+        <item name="accentHeading">@color/p9_heading</item>
+        <item name="colorPrimary">@color/p9_heading</item>
+    </style>
+
+    <style name="ThemeOverlay.TodoLock.P10" parent="">
+        <item name="accentFill">@color/p10_bright</item>
+        <item name="onAccentFill">@color/p10_on</item>
+        <item name="accentStroke">@color/p10_stroke</item>
+        <item name="accentHeading">@color/p10_heading</item>
+        <item name="colorPrimary">@color/p10_heading</item>
+    </style>
+
+    <style name="ThemeOverlay.TodoLock.P11" parent="">
+        <item name="accentFill">@color/p11_bright</item>
+        <item name="onAccentFill">@color/p11_on</item>
+        <item name="accentStroke">@color/p11_stroke</item>
+        <item name="accentHeading">@color/p11_heading</item>
+        <item name="colorPrimary">@color/p11_heading</item>
+    </style>
+
+    <style name="ThemeOverlay.TodoLock.P12" parent="">
+        <item name="accentFill">@color/p12_bright</item>
+        <item name="onAccentFill">@color/p12_on</item>
+        <item name="accentStroke">@color/p12_stroke</item>
+        <item name="accentHeading">@color/p12_heading</item>
+        <item name="colorPrimary">@color/p12_heading</item>
+    </style>
+
+    <style name="ThemeOverlay.TodoLock.P13" parent="">
+        <item name="accentFill">@color/p13_bright</item>
+        <item name="onAccentFill">@color/p13_on</item>
+        <item name="accentStroke">@color/p13_stroke</item>
+        <item name="accentHeading">@color/p13_heading</item>
+        <item name="colorPrimary">@color/p13_heading</item>
+    </style>
+
+    <style name="ThemeOverlay.TodoLock.P14" parent="">
+        <item name="accentFill">@color/p14_bright</item>
+        <item name="onAccentFill">@color/p14_on</item>
+        <item name="accentStroke">@color/p14_stroke</item>
+        <item name="accentHeading">@color/p14_heading</item>
+        <item name="colorPrimary">@color/p14_heading</item>
+    </style>
+
+    <style name="ThemeOverlay.TodoLock.P15" parent="">
+        <item name="accentFill">@color/p15_bright</item>
+        <item name="onAccentFill">@color/p15_on</item>
+        <item name="accentStroke">@color/p15_stroke</item>
+        <item name="accentHeading">@color/p15_heading</item>
+        <item name="colorPrimary">@color/p15_heading</item>
     </style>
 
     <!--
