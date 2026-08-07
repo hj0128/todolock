@@ -57,24 +57,22 @@ private class TodoWidgetFactory(
 
         // 왼쪽에는 기한만 둡니다. 미리 알림은 오른쪽 끝에 따로 붙어,
         // 기한 시각과 알림 시각이 한 줄에 나와도 섞여 읽히지 않습니다.
-        // 오늘 기한은 파란 굵은 글씨로 띄웁니다. 목록 화면과 같은 규칙입니다.
-        // 여기서는 '지남' 과 겹칠 일이 없어(지남이면 오늘 강조가 꺼집니다)
-        // 줄 전체에 그대로 입혀도 됩니다 — 미리 알림은 옆 칸(wRemind)에 따로 있습니다.
+        // 오늘 기한은 파란 굵은 글씨, 지난 기한은 빨간 글씨입니다(목록 화면과 같은 규칙).
+        // '지남' 이라는 말은 붙이지 않습니다 — 날짜와 색이 이미 같은 이야기를 합니다.
         val overdue = TodoStore.isOverdue(todo)
         val dueToday = TodoStore.isDueToday(todo)
-        val sb = StringBuilder(TodoStore.prettyDue(todo))
-        if (overdue) sb.append(" · 지남")
+        val due = TodoStore.prettyDue(todo)
 
         rv.setTextViewText(
             R.id.wSub,
             if (dueToday) {
-                SpannableString(sb).apply {
+                SpannableString(due).apply {
                     setSpan(
                         StyleSpan(Typeface.BOLD), 0, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                     )
                 }
             } else {
-                sb
+                due
             }
         )
         rv.setTextColor(

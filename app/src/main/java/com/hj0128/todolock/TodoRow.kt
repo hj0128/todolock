@@ -43,11 +43,12 @@ object TodoRow {
         }
         b.tvText.alpha = if (todo.done) 0.4f else 1f
 
-        // 아래 줄은 기한 · '지남' · 미리 알림을 이어 붙입니다.
+        // 아래 줄은 기한과 미리 알림을 이어 붙입니다.
+        // '지남' 이라는 말은 붙이지 않습니다 — 날짜가 이미 '어제' 라고 말하고 있고
+        // 빨간색이 지났다는 사실까지 말하고 있어, 같은 이야기를 세 번 하게 됩니다.
         val overdue = TodoStore.isOverdue(todo)
         val due = TodoStore.prettyDue(todo)
         val parts = mutableListOf(due)
-        if (overdue) parts.add("지남")
         if (todo.hasReminder) parts.add("🔔 " + TodoStore.prettyDateTime(todo.remindAt))
 
         // 오늘 기한은 눈에 띄어야 합니다 — '지남'(빨강)만 강조되고 정작 오늘 할 일이
