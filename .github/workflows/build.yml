@@ -96,7 +96,4 @@ jobs:
           name: TodoLock build ${{ github.run_number }}
           body: |
             폰에서 아래 TodoLock.apk 를 눌러 설치하세요.
-
-            ⚠️ build-43 이전 버전을 설치해 두셨다면 **먼저 앱을 삭제**해야 합니다.
-            서명 키가 바뀌어서 그 위에 덮어 설치되지 않습니다.
           files: out/TodoLock.apk
