@@ -72,29 +72,18 @@
                 android:ellipsize="end"
                 android:visibility="gone" />
 
-            <LinearLayout
+            <!--
+              버튼은 '닫기' 하나뿐입니다.
+              여기에 '완료' 를 두면 알림을 확인하려다 잘못 눌러 할 일이 사라집니다.
+              완료 처리는 알림창의 '완료' 버튼이나 목록·위젯에서 하면 됩니다.
+            -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLater"
+                style="@style/Widget.TodoLock.Button.Sky"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="20dp">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnLater"
-                    style="@style/Widget.Material3.Button.TextButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="닫기" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnDone"
-                    style="@style/Widget.TodoLock.Button.Sky"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    android:text="완료" />
-            </LinearLayout>
+                android:layout_marginTop="20dp"
+                android:text="닫기" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </FrameLayout>

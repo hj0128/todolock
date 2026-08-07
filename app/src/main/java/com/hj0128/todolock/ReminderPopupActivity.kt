@@ -1,8 +1,8 @@
 package com.hj0128.todolock
 
-import android.app.NotificationManager
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.hj0128.todolock.databinding.ActivityReminderPopupBinding
 
@@ -37,25 +37,19 @@ class ReminderPopupActivity : AppCompatActivity() {
         b.tvMemo.visibility = if (todo.hasMemo) View.VISIBLE else View.GONE
         b.tvMemo.text = todo.memo
 
-        b.btnDone.setOnClickListener {
-            todo.done = true
-            TodoStore.update(this, todo)
-            Reminders.cancel(this, todo.id)
-            clearNotification(todo.id)
-            finish()
-        }
+        // 닫는 길은 '닫기' 버튼 하나뿐입니다.
+        //
+        // 바깥(스크림)을 눌러도, 뒤로 가기를 해도 닫히지 않습니다. 이 창은 다른 일을
+        // 하는 도중에 갑자기 뜨기 때문에, 하던 동작이 그대로 이어져 눌리면 내용을
+        // 보지도 못한 채 사라집니다. 알림을 놓치지 않는 것이 이 창의 목적입니다.
+        //
+        // 갇히지는 않습니다 — '닫기' 는 항상 화면에 있고, 홈으로 나갈 수도 있습니다.
         b.btnLater.setOnClickListener { finish() }
-        b.scrim.setOnClickListener { finish() }
-    }
-
-    /** 팝업에서 처리했으면 알림창에 남은 같은 알림도 치웁니다. */
-    private fun clearNotification(todoId: Long) {
-        try {
-            getSystemService(NotificationManager::class.java)
-                ?.cancel(Notifications.reminderId(todoId))
-        } catch (e: Exception) {
-            // 알림 정리 실패가 완료 처리를 막지 않도록 무시합니다
-        }
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // 아무것도 하지 않습니다 (뒤로 가기로 닫히지 않게)
+            }
+        })
     }
 
     companion object {
