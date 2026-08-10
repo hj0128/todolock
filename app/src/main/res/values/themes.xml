@@ -204,6 +204,20 @@
         <item name="rippleColor">?attr/accentHeading</item>
     </style>
 
+    <!--
+      달력의 요일 머리글 한 칸. 일곱 개가 폭을 고르게 나눠 가져야 아래 날짜 칸과
+      세로줄이 맞으므로, 폭·무게까지 스타일에 넣어 일곱 번 되풀이하지 않습니다.
+    -->
+    <style name="TextAppearance.TodoLock.Weekday" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingBottom">2dp</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+    </style>
+
     <style name="Theme.TodoLock.Popup" parent="Theme.TodoLock">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>

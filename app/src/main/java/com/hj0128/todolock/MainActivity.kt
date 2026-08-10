@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,6 +36,9 @@ class MainActivity : AppCompatActivity() {
         b.recycler.adapter = adapter
 
         b.btnOpenAdd.setOnClickListener { openSheet() }
+        b.btnCalendar.setOnClickListener {
+            startActivity(Intent(this, CalendarActivity::class.java))
+        }
         b.btnSettings.setOnClickListener { openSettings() }
         b.cardWarn.setOnClickListener { openSettings() }
 
@@ -66,26 +68,9 @@ class MainActivity : AppCompatActivity() {
         AddTodoSheet(this, existing) { todo ->
             TodoStore.upsert(this, todo)
             // 기한·알림이 바뀌었을 수 있으므로 예약을 다시 세웁니다(내부에서 취소 먼저).
-            announceReminder(todo, Reminders.schedule(this, todo))
+            Reminders.announce(this, todo, Reminders.schedule(this, todo))
             refresh()
         }.show()
-    }
-
-    /** 실제로 알람이 걸렸을 때만 알려준다고 말합니다. 지난 시각은 예약되지 않습니다. */
-    private fun announceReminder(todo: Todo, scheduled: Boolean) {
-        if (!todo.hasReminder) return
-
-        val at = TodoStore.prettyDateTime(todo.remindAt)
-        val msg = if (!scheduled) {
-            at + " — 이미 지난 시각이라 알림을 걸지 않았습니다"
-        } else {
-            // 정확 알람 권한이 없으면 몇 분 늦으므로 그 사실을 같이 알려줍니다.
-            // 기한 뒤에 우는 알림도 그대로 걸되, 그렇다는 사실은 알려줍니다.
-            at + "에 알려드립니다" +
-                (if (Reminders.canBeExact(this)) "" else " (권한이 없어 몇 분 늦을 수 있음)") +
-                (if (TodoStore.isRemindAfterDue(todo)) " · 기한 뒤입니다" else "")
-        }
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
     }
 
     private fun refresh() {

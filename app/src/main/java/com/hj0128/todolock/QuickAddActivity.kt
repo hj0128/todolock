@@ -1,7 +1,6 @@
 package com.hj0128.todolock
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 /**
@@ -30,23 +29,8 @@ class QuickAddActivity : AppCompatActivity() {
 
         AddTodoSheet(this, existing) { todo ->
             TodoStore.upsert(this, todo)
-            announce(todo, Reminders.schedule(this, todo))
+            Reminders.announce(this, todo, Reminders.schedule(this, todo))
         }.show(onDismiss = { finish() })
-    }
-
-    /** 실제로 알람이 걸렸을 때만 알려준다고 말합니다. */
-    private fun announce(todo: Todo, scheduled: Boolean) {
-        if (!todo.hasReminder) return
-
-        val at = TodoStore.prettyDateTime(todo.remindAt)
-        val msg = if (!scheduled) {
-            at + " — 이미 지난 시각이라 알림을 걸지 않았습니다"
-        } else {
-            at + "에 알려드립니다" +
-                (if (Reminders.canBeExact(this)) "" else " (권한이 없어 몇 분 늦을 수 있음)") +
-                (if (TodoStore.isRemindAfterDue(todo)) " · 기한 뒤입니다" else "")
-        }
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
     }
 
     companion object {

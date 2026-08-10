@@ -124,18 +124,10 @@ object TodoRow {
      * 강조색을 테마에서 꺼내옵니다.
      * 사용자가 고른 팔레트가 오버레이로 얹혀 있으므로 @color 를 직접 읽으면 안 됩니다.
      */
-    private fun accentColor(ctx: Context): Int {
-        val ta = ctx.obtainStyledAttributes(intArrayOf(R.attr.accentHeading))
-        val c = ta.getColor(0, Color.BLUE)
-        ta.recycle()
-        return c
-    }
+    private fun accentColor(ctx: Context): Int =
+        ThemeConfig.attrColor(ctx, R.attr.accentHeading, Color.BLUE)
 
     /** 다크/라이트 어느 쪽에서도 맞는 보조 텍스트 색을 테마에서 꺼내옵니다. */
-    private fun secondaryColor(ctx: Context): Int {
-        val ta = ctx.obtainStyledAttributes(intArrayOf(android.R.attr.textColorSecondary))
-        val c = ta.getColor(0, Color.GRAY)
-        ta.recycle()
-        return c
-    }
+    private fun secondaryColor(ctx: Context): Int =
+        ThemeConfig.attrColor(ctx, android.R.attr.textColorSecondary)
 }

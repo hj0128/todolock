@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  달력에서 고른 날짜의 동그라미. 색은 코드에서 backgroundTintList 로 넣습니다
+  (팔레트 16색마다 XML 을 만들 수는 없습니다).
+
+  칸 전체가 아니라 숫자 둘레에만 씌웁니다 — 칸은 화면 높이를 나눠 가지므로
+  칸을 통째로 칠하면 달마다 길이가 다른 알약이 됩니다.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="#FFFFFF" />
+</shape>

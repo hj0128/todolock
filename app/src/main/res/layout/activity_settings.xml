@@ -199,7 +199,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="강조색"
+                    android:text="하이라이터 색"
                     android:textSize="15sp"
                     android:textStyle="bold" />
 

@@ -2,6 +2,7 @@ package com.hj0128.todolock
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Color
 import androidx.core.content.ContextCompat
 
 /**
@@ -86,6 +87,19 @@ object ThemeConfig {
     fun apply(activity: Activity) {
         val overlay = OVERLAY[palette(activity)]
         if (overlay != 0) activity.setTheme(overlay)
+    }
+
+    /**
+     * 지금 얹혀 있는 테마에서 색 하나를 꺼냅니다.
+     *
+     * 고른 팔레트가 오버레이로 덮여 있으므로 @color 를 직접 읽으면 언제나 하늘색이
+     * 나옵니다. 코드에서 색을 넣어야 하는 곳(어댑터)은 반드시 이쪽을 거쳐야 합니다.
+     */
+    fun attrColor(ctx: Context, attr: Int, fallback: Int = Color.GRAY): Int {
+        val ta = ctx.obtainStyledAttributes(intArrayOf(attr))
+        val c = ta.getColor(0, fallback)
+        ta.recycle()
+        return c
     }
 
     /** 제목·아이콘 색 (위젯과 색상표용) */

@@ -44,6 +44,13 @@
             android:exported="false"
             android:parentActivityName=".MainActivity" />
 
+        <!-- 한 달을 펼쳐 보는 화면. 목록 화면의 달력 버튼으로 엽니다. -->
+        <activity
+            android:name=".CalendarActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity"
+            android:windowSoftInputMode="adjustResize" />
+
         <!-- 위젯에서 앱을 열지 않고 그 자리에서 추가·수정하기 위한 투명 액티비티 -->
         <activity
             android:name=".QuickAddActivity"

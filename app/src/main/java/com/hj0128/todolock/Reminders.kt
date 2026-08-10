@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.widget.Toast
 
 /**
  * 할 일의 '미리 알림'을 AlarmManager 로 예약합니다.
@@ -104,6 +105,28 @@ object Reminders {
         todo.notified = true
         TodoStore.update(ctx, todo)
         TodoStore.appendLog(ctx, "놓친 알림 표시: " + todo.text)
+    }
+
+    /**
+     * 알림을 실제로 걸었는지 사용자에게 알립니다. 시트로 저장하는 화면이 모두 씁니다.
+     *
+     * 예약이 조용히 실패하면 사용자는 알 길이 없으므로, 걸리지 않은 이유(지난 시각)와
+     * 제 시각을 못 맞출 수 있다는 사실(정확 알람 권한 없음)까지 여기서 말합니다.
+     *
+     * @param scheduled schedule() 이 돌려준 값
+     */
+    fun announce(ctx: Context, todo: Todo, scheduled: Boolean) {
+        if (!todo.hasReminder) return
+
+        val at = TodoStore.prettyDateTime(todo.remindAt)
+        val msg = if (!scheduled) {
+            at + " — 이미 지난 시각이라 알림을 걸지 않았습니다"
+        } else {
+            at + "에 알려드립니다" +
+                (if (canBeExact(ctx)) "" else " (권한이 없어 몇 분 늦을 수 있음)") +
+                (if (TodoStore.isRemindAfterDue(todo)) " · 기한 뒤입니다" else "")
+        }
+        Toast.makeText(ctx, msg, Toast.LENGTH_LONG).show()
     }
 
     /** Android 12+ 는 정확 알람에 별도 권한이 필요합니다. */

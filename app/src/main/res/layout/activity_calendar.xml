@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  달력. 목록 화면은 날짜순 한 줄이라 '언제 몰려 있는지' 와 '빈 날' 이 보이지 않아
+  한 달을 펼쳐 보는 화면을 따로 뒀습니다.
+
+  들어오면 달력이 화면을 꽉 채웁니다. 날짜를 누르면 달력이 조금 줄어들고 그
+  아래에 그날 할 일이 붙습니다(덮는 것이 아니라 화면을 나눠 씁니다).
+
+  높이는 무게가 아니라 실제 px 로 나눕니다 — 손가락을 따라 조금씩 움직여야
+  하는데, 무게는 그런 중간값을 다루기에 맞지 않습니다. dayPanel 의 높이를
+  CalendarActivity 가 정하고, 남은 만큼을 calendarBox 가 가져갑니다.
+
+  아래 76dp 는 ＋ 의 자리입니다. 늘 비워 두므로 어느 상태에서도 ＋ 가 날짜나
+  할 일을 가리지 않고, 두 칸이 나눠 갖는 높이도 상태에 따라 흔들리지 않습니다.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:id="@+id/body"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="76dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="8dp"
+                android:src="@drawable/ic_back"
+                app:tint="?attr/colorPrimary"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="뒤로" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:text="달력"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- 누르면 연·월·일을 직접 고르는 판이 아래에서 올라옵니다 -->
+        <TextView
+            android:id="@+id/tvMonth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:padding="10dp"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="날짜 고르기" />
+
+        <!--
+          요일 머리글과 격자를 한 칸으로 묶습니다. 내역을 끝까지 올리면 이 칸이
+          통째로 0 이 되어 함께 사라집니다 — 격자 없이 요일만 남으면 무엇의
+          머리글인지 알 수 없습니다.
+        -->
+        <LinearLayout
+            android:id="@+id/calendarBox"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!--
+              일요일을 빨갛게 두지 않았습니다 — 이 앱에서 빨강은 이미 '기한 지남'
+              이고, 아래 칸의 글자가 그 색을 쓰고 있어 뜻이 겹칩니다.
+            -->
+            <LinearLayout
+                android:id="@+id/weekRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextAppearance.TodoLock.Weekday"
+                    android:text="일" />
+
+                <TextView
+                    style="@style/TextAppearance.TodoLock.Weekday"
+                    android:text="월" />
+
+                <TextView
+                    style="@style/TextAppearance.TodoLock.Weekday"
+                    android:text="화" />
+
+                <TextView
+                    style="@style/TextAppearance.TodoLock.Weekday"
+                    android:text="수" />
+
+                <TextView
+                    style="@style/TextAppearance.TodoLock.Weekday"
+                    android:text="목" />
+
+                <TextView
+                    style="@style/TextAppearance.TodoLock.Weekday"
+                    android:text="금" />
+
+                <TextView
+                    style="@style/TextAppearance.TodoLock.Weekday"
+                    android:text="토" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/grid"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:nestedScrollingEnabled="false" />
+        </LinearLayout>
+
+        <!-- 고른 날짜의 할 일. 높이는 코드가 정합니다(끄는 동안 손가락을 따라갑니다). -->
+        <LinearLayout
+            android:id="@+id/dayPanel"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <!--
+              위아래로 끌 수 있다는 표시. 선을 긋는 대신 이 막대를 두면 칸이
+              나뉜다는 것과 움직인다는 것을 한 번에 말할 수 있습니다.
+            -->
+            <View
+                android:layout_width="40dp"
+                android:layout_height="4dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:alpha="0.35"
+                android:background="@drawable/sheet_handle" />
+
+            <TextView
+                android:id="@+id/tvDayTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvEmpty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingTop="24dp"
+                android:paddingBottom="24dp"
+                android:alpha="0.55"
+                android:text="이 날짜에는 할 일이 없습니다."
+                android:visibility="gone" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginTop="2dp"
+                android:paddingBottom="8dp"
+                android:clipToPadding="false"
+                android:scrollbars="vertical" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!--
+      오늘이 아닌 달을 보고 있을 때만 뜨는 되돌아가기.
+      ＋ 를 위해 늘 비워 둔 아래 자리에 들어앉아 날짜 칸을 가리지 않습니다.
+    -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnToday"
+        style="@style/Widget.TodoLock.Button.SkyOutlined"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:minHeight="40dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:textSize="13sp"
+        android:text="오늘"
+        app:backgroundTint="?attr/colorSurface"
+        android:visibility="gone" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="18dp"
+        android:src="@drawable/ic_add"
+        app:backgroundTint="?attr/accentFill"
+        app:tint="?attr/onAccentFill"
+        android:contentDescription="할 일 추가" />
+</FrameLayout>

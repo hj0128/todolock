@@ -30,14 +30,23 @@ class AddTodoSheet(
     private val ctx: Context,
     private val existing: Todo? = null,
     /**
+     * 새 할 일의 기한 초기값 "yyyy-MM-dd". 달력에서 고른 날짜로 시트를 열기 위한 것입니다
+     * (8월 20일을 보고 있는데 오늘로 채워지면 매번 다시 골라야 합니다).
+     * 수정일 때는 그 항목이 이미 가진 기한이 이깁니다.
+     */
+    private val initialDate: String? = null,
+    /**
      * 고른 값을 담은 할 일을 돌려줍니다. 수정이면 넘겨준 그 객체이고, 추가면 새 객체입니다.
      * 값을 하나씩 넘기면 필드가 늘 때마다 시그니처와 호출부가 같이 바뀌므로 통째로 줍니다.
      */
     private val onSave: (Todo) -> Unit
 ) {
     /** 기한. 고르지 않으면 오늘입니다. */
-    private val due: Calendar =
-        if (existing != null) TodoStore.parseDate(existing.date) else Calendar.getInstance()
+    private val due: Calendar = when {
+        existing != null -> TodoStore.parseDate(existing.date)
+        initialDate != null -> TodoStore.parseDate(initialDate)
+        else -> Calendar.getInstance()
+    }
 
     /** 기한 시각. 기본은 '없음' 이고, 기한 메뉴에서 따로 골라야 붙습니다. */
     private var dueMinutes = existing?.dueMinutes ?: Todo.NO_TIME

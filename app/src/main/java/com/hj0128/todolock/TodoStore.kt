@@ -139,6 +139,12 @@ object TodoStore {
     fun forDate(ctx: Context, date: String): List<Todo> =
         load(ctx).filter { it.date == date }
 
+    /**
+     * 날짜별로 묶은 전체 목록. 달력이 한 달치를 한 번에 셀 때 씁니다.
+     * 칸마다 forDate 를 부르면 한 달을 그릴 때마다 저장소를 마흔 번 넘게 읽게 됩니다.
+     */
+    fun byDate(ctx: Context): Map<String, List<Todo>> = load(ctx).groupBy { it.date }
+
     fun pendingToday(ctx: Context): List<Todo> =
         load(ctx).filter { it.date == today() && !it.done }
 
@@ -272,6 +278,10 @@ object TodoStore {
         load(ctx).filter { it.done }.sortedWith(
             compareByDescending<Todo> { it.date }.thenByDescending { it.id }
         )
+
+    /** "2026년 8월". 달력 머리글용. */
+    fun prettyMonth(cal: Calendar): String =
+        SimpleDateFormat("yyyy년 M월", Locale.KOREA).format(cal.time)
 
     /** "8월 5일 (수)". 오늘·내일 같은 말을 붙이지 않은 날짜입니다. */
     fun plainDate(dateKey: String): String = try {
