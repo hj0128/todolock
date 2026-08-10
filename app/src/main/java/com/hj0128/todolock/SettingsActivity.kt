@@ -102,12 +102,14 @@ class SettingsActivity : AppCompatActivity() {
         b.btnHideOngoing.setOnClickListener { openServiceChannelSettings() }
         b.btnRemindSound.setOnClickListener { openRemindChannelSettings() }
 
+        // 오늘 남은 할 일이 없어도 예시를 채워 띄웁니다. 색을 바꾼 뒤 어떻게
+        // 보이는지 확인하려는 것인데, 할 일이 없다고 아무것도 안 보여주면
+        // 정작 궁금할 때 볼 수가 없습니다.
         b.btnTest.setOnClickListener {
-            if (TodoStore.pendingToday(this).isEmpty()) {
-                Toast.makeText(this, "오늘 남은 할 일이 없어 팝업이 뜨지 않습니다", Toast.LENGTH_SHORT).show()
-            } else {
-                startActivity(Intent(this, TodayPopupActivity::class.java))
-            }
+            startActivity(
+                Intent(this, TodayPopupActivity::class.java)
+                    .putExtra(TodayPopupActivity.EXTRA_PREVIEW, true)
+            )
         }
     }
 
