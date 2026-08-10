@@ -54,6 +54,13 @@
         <item name="accentStroke">@color/sky_stroke</item>
         <item name="accentHeading">@color/sky_heading</item>
 
+        <!--
+          기한·알림에서 여는 달력과 시계. 지정하지 않으면 이 테마가 아니라
+          플랫폼 기본 대화상자 테마로 떠서, 고른 날과 '오늘' 이 회색으로 나옵니다.
+        -->
+        <item name="android:datePickerDialogTheme">@style/Theme.TodoLock.PickerDialog</item>
+        <item name="android:timePickerDialogTheme">@style/Theme.TodoLock.PickerDialog</item>
+
         <!-- 넓은 면적은 밝은 강조색으로. 배경이 밝아지므로 상태바 아이콘은 어둡게. -->
         <item name="android:statusBarColor">?attr/accentFill</item>
         <item name="android:windowLightStatusBar">true</item>
@@ -252,6 +259,28 @@
         <item name="android:layout_height">0dp</item>
         <item name="android:layout_weight">1</item>
         <item name="android:orientation">horizontal</item>
+    </style>
+
+    <!--
+      기한·알림의 달력·시계 대화상자.
+      ContextThemeWrapper 는 바탕 테마를 복사한 뒤 이 스타일만 덮으므로,
+      ?attr/accentHeading 이 지금 고른 팔레트를 그대로 따라옵니다 — 16색마다
+      대화상자 테마를 만들 필요가 없습니다.
+
+      colorAccent 를 쓰는 이유: 달력의 '고른 날' 동그라미와 '오늘' 글자색이
+      모두 이 값에서 나옵니다.
+    -->
+    <style name="Theme.TodoLock.PickerDialog" parent="android:Theme.DeviceDefault.Light.Dialog.Alert">
+        <item name="android:colorAccent">?attr/accentHeading</item>
+        <item name="android:buttonBarButtonStyle">@style/Widget.TodoLock.PickerDialogButton</item>
+    </style>
+
+    <!--
+      대화상자 아래 버튼(시간 추가 · 취소 · 확인).
+      글자색을 직접 넣지 않으면 바탕 테마에서 흘러온 값과 섞여 흐릿해집니다.
+    -->
+    <style name="Widget.TodoLock.PickerDialogButton" parent="android:Widget.DeviceDefault.Button.Borderless.Colored">
+        <item name="android:textColor">?attr/accentHeading</item>
     </style>
 
     <style name="Theme.TodoLock.Popup" parent="Theme.TodoLock">

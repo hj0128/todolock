@@ -54,6 +54,12 @@
         <item name="android:navigationBarColor">@color/md_surface_dark</item>
     </style>
 
+    <!-- 다크에서는 달력·시계 대화상자도 어두운 바탕이어야 합니다. -->
+    <style name="Theme.TodoLock.PickerDialog" parent="android:Theme.DeviceDefault.Dialog.Alert">
+        <item name="android:colorAccent">?attr/accentHeading</item>
+        <item name="android:buttonBarButtonStyle">@style/Widget.TodoLock.PickerDialogButton</item>
+    </style>
+
     <style name="Theme.TodoLock.Popup" parent="Theme.TodoLock">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
