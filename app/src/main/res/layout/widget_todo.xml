@@ -60,6 +60,7 @@
               달은 탭으로 넘깁니다. 다음 달 화살표는 같은 그림을 좌우로 뒤집어 씁니다.
             -->
             <LinearLayout
+                android:id="@+id/wTitleBar"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

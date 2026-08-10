@@ -286,22 +286,62 @@ class TodoWidget : AppWidgetProvider() {
                 )
             )
 
-            // 헤더의 제목을 누르면 지금 보고 있는 것의 큰 화면으로 갑니다 —
+            // 헤더의 제목 쪽을 누르면 지금 보고 있는 것의 큰 화면으로 갑니다 —
             // 목록이면 앱 전체, 달력이면 달력 화면.
+            //
+            // 글자가 아니라 묶음 전체에 겁니다. 글자에만 걸면 제목이 짧은 날
+            // 누를 자리가 손톱만 해집니다. 화살표는 자기 몫을 먼저 가져가므로
+            // 달 넘기기와 부딪히지 않습니다.
             rv.setOnClickPendingIntent(
-                if (calendar) R.id.wMonth else R.id.wCount,
-                PendingIntent.getActivity(
-                    ctx, if (calendar) 5 else 0,
-                    Intent(ctx, if (calendar) CalendarActivity::class.java else MainActivity::class.java)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                )
+                R.id.wTitleBar,
+                if (calendar) openCalendar(ctx, 9, null) else openList(ctx)
             )
             return rv
         }
 
         private fun mutableFlag(): Int =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
+
+        /**
+         * 위젯에서 앱으로 들어갈 때 밑동이 되는 목록 화면.
+         *
+         * CLEAR_TASK 가 필요합니다. NEW_TASK 만 주면 앱의 화면 더미가 그대로
+         * 앞으로 나올 뿐이라, 지난번에 달력을 열어 둔 적이 있으면 목록 헤더를
+         * 눌러도 달력이 보입니다.
+         */
+        private fun homeIntent(ctx: Context): Intent =
+            Intent(ctx, MainActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+
+        private fun openList(ctx: Context): PendingIntent =
+            PendingIntent.getActivity(
+                ctx, 8,
+                homeIntent(ctx).setData(Uri.parse("todolock://list")),
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+
+        /**
+         * 달력 화면을 목록 위에 얹어 엽니다. 위젯에서 바로 들어가도 뒤로 가기가
+         * 목록으로 이어집니다.
+         *
+         * @param dateKey 날짜 칸에서 온 경우 그 날짜. 헤더에서 왔으면 null.
+         */
+        private fun openCalendar(ctx: Context, requestCode: Int, dateKey: String?): PendingIntent {
+            val intent = Intent(ctx, CalendarActivity::class.java)
+            // 칸마다 다른 곳으로 가야 하므로 data 로 구분합니다 — PendingIntent 는
+            // extra 로 구분되지 않아, 이것이 없으면 마흔두 칸이 하나로 뭉쳐집니다.
+            if (dateKey == null) {
+                intent.data = Uri.parse("todolock://calendar")
+            } else {
+                intent.data = Uri.parse("todolock://day/" + dateKey)
+                intent.putExtra(CalendarActivity.EXTRA_DATE, dateKey)
+            }
+            return PendingIntent.getActivities(
+                ctx, requestCode,
+                arrayOf(homeIntent(ctx), intent),
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+        }
 
         /**
          * 이번 달 날짜 칸을 채웁니다.
@@ -357,19 +397,8 @@ class TodoWidget : AppWidgetProvider() {
             for (i in days.indices) {
                 val day = days[i]
                 rv.setTextViewText(CELL_IDS[i], cellText(ctx, day, today, accent))
-                // 날짜를 누르면 그 날짜로 달력 화면이 열립니다. 위젯마다·날짜마다
-                // 다른 곳으로 가야 하므로 data 로 구분합니다.
-                rv.setOnClickPendingIntent(
-                    CELL_IDS[i],
-                    PendingIntent.getActivity(
-                        ctx, 6,
-                        Intent(ctx, CalendarActivity::class.java)
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            .setData(Uri.parse("todolock://day/" + day.key))
-                            .putExtra(CalendarActivity.EXTRA_DATE, day.key),
-                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                    )
-                )
+                // 날짜를 누르면 그 날짜로 달력 화면이 열립니다.
+                rv.setOnClickPendingIntent(CELL_IDS[i], openCalendar(ctx, 10, day.key))
             }
         }
 
