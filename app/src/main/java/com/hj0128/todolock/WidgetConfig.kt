@@ -15,6 +15,12 @@ object WidgetConfig {
     private const val KEY_OPACITY = "opacity"
     private const val KEY_TITLE_SP = "title_sp"
 
+    /**
+     * 위젯 안을 목록으로 볼지 달력으로 볼지. 위젯마다 따로 기억합니다 —
+     * 홈 화면에 둘을 나란히 두고 하나는 목록, 하나는 달력으로 쓸 수 있어야 합니다.
+     */
+    private const val KEY_CALENDAR = "calendar_"
+
     /** 3단계(작게·보통·크게)를 쓰던 시절의 키. 지금은 값을 이어받는 데만 씁니다. */
     private const val KEY_FONT_STEP = "font_step"
 
@@ -45,6 +51,16 @@ object WidgetConfig {
 
     private fun prefs(ctx: Context) =
         ctx.applicationContext.getSharedPreferences(PREF, Context.MODE_PRIVATE)
+
+    fun isCalendar(ctx: Context, widgetId: Int): Boolean =
+        prefs(ctx).getBoolean(KEY_CALENDAR + widgetId, false)
+
+    fun setCalendar(ctx: Context, widgetId: Int, on: Boolean) =
+        prefs(ctx).edit().putBoolean(KEY_CALENDAR + widgetId, on).apply()
+
+    /** 위젯이 지워지면 그 위젯의 모드 기억도 함께 지웁니다. */
+    fun forget(ctx: Context, widgetId: Int) =
+        prefs(ctx).edit().remove(KEY_CALENDAR + widgetId).apply()
 
     fun opacity(ctx: Context): Int =
         prefs(ctx).getInt(KEY_OPACITY, MAX_OPACITY).coerceIn(MIN_OPACITY, MAX_OPACITY)

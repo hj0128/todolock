@@ -109,6 +109,16 @@ class CalendarActivity : AppCompatActivity() {
         // 근거가 selected 쪽에 남지 않기 때문입니다.
         showMonthOf(savedInstanceState?.getString(STATE_MONTH) ?: TodoStore.today())
 
+        // 위젯의 날짜를 눌러 들어온 경우. 화면이 처음 만들어질 때만 봅니다 —
+        // 돌려서 다시 만들어질 때까지 따라오면 보던 자리를 덮어씁니다.
+        if (savedInstanceState == null) {
+            intent?.getStringExtra(EXTRA_DATE)?.let {
+                choose(it)
+                showMonthOf(it)
+                openOnFirstLayout = true
+            }
+        }
+
         // 다른 달 칸을 누르면 그 달로 넘어갑니다. 30일과 1일이 나란히 보이는데
         // 한쪽만 눌리지 않으면 이상합니다.
         grid = CalendarAdapter { day ->
@@ -210,8 +220,15 @@ class CalendarActivity : AppCompatActivity() {
             // 회전 등으로 되살아난 경우. 재기 전에는 넣을 수 없어 여기서 넣습니다.
             setPanelHeight((available * restoredPanelRatio).roundToInt())
             restoredPanelRatio = 0f
+        } else if (openOnFirstLayout) {
+            // 위젯에서 날짜를 눌러 들어온 경우. 그 날 내역을 바로 펴 줍니다.
+            setPanelHeight(smallHeight())
+            openOnFirstLayout = false
         }
     }
+
+    /** 위젯에서 날짜를 눌러 들어왔는지. 격자를 재고 나서 내역을 폅니다. */
+    private var openOnFirstLayout = false
 
     /** '조금' 자리. 달력이 6, 내역이 4 정도를 나눠 갖습니다. */
     private fun smallHeight(): Int = (available * PANEL_SMALL_RATIO).roundToInt()
@@ -566,8 +583,8 @@ class CalendarActivity : AppCompatActivity() {
         b.tvMonth.text = TodoStore.prettyMonth(month) + "  ▾"
         syncTodayButton()
 
-        val days = buildMonth(byDate)
-        monthRows = days.size / 7
+        val days = MonthGrid.build(month, byDate, MAX_CELL_ENTRIES)
+        monthRows = days.size / MonthGrid.COLUMNS
         val rowHeight = rowHeight()
         // 아직 격자를 재기 전이면 칸을 만들지 않습니다. 잘못된 높이로 만들어
         // 두면 곧바로 버리게 되고, 그 헛수고가 화면 여는 시간이 됩니다.
@@ -616,51 +633,10 @@ class CalendarActivity : AppCompatActivity() {
             (if (counts.isEmpty()) "" else " · " + counts.joinToString(" · "))
     }
 
-    /**
-     * 그 달의 격자를 만듭니다.
-     *
-     * 첫 줄을 채우려 앞 달 며칠을, 마지막 줄을 채우려 다음 달 며칠을 함께 넣습니다.
-     * 줄 수는 달마다 계산합니다 — 여섯 줄로 고정하면 다섯 줄이면 되는 달에 빈 줄이
-     * 하나 남습니다.
-     */
-    private fun buildMonth(byDate: Map<String, List<Todo>>): List<Day> {
-        val cur = Calendar.getInstance()
-        cur.time = month.time
-        val monthIndex = cur.get(Calendar.MONTH)
-        val daysInMonth = cur.getActualMaximum(Calendar.DAY_OF_MONTH)
-
-        // 1일이 무슨 요일인지 = 앞에 채워야 할 칸 수 (일요일이 0)
-        val lead = cur.get(Calendar.DAY_OF_WEEK) - Calendar.SUNDAY
-        val cells = ((lead + daysInMonth + 6) / 7) * 7
-        cur.add(Calendar.DAY_OF_MONTH, -lead)
-
-        val out = ArrayList<Day>(cells)
-        repeat(cells) {
-            val key = TodoStore.format(cur)
-            val items = byDate[key].orEmpty()
-            // 칸에 적는 차례도 아래 목록과 같습니다 — 남은 것 먼저, 완료는 뒤로.
-            val ordered = items.filter { !it.done }.sortedWith(TodoStore.pendingOrder) +
-                items.filter { it.done }
-            out.add(
-                Day(
-                    key = key,
-                    dayOfMonth = cur.get(Calendar.DAY_OF_MONTH),
-                    inMonth = cur.get(Calendar.MONTH) == monthIndex,
-                    pending = items.count { !it.done },
-                    done = items.count { it.done },
-                    overdue = items.any { TodoStore.isOverdue(it) },
-                    entries = ordered.take(MAX_CELL_ENTRIES).map {
-                        Day.Entry(it.text, it.done, TodoStore.isOverdue(it))
-                    },
-                    total = items.size
-                )
-            )
-            cur.add(Calendar.DAY_OF_MONTH, 1)
-        }
-        return out
-    }
-
     companion object {
+        /** 위젯에서 날짜를 눌러 들어올 때 그 날짜 "yyyy-MM-dd" */
+        const val EXTRA_DATE = "date"
+
         private const val STATE_SELECTED = "selected"
         private const val STATE_LAST_PICKED = "last_picked"
         private const val STATE_MONTH = "month"

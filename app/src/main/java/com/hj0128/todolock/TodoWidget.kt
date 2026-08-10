@@ -7,9 +7,18 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.graphics.Typeface
 import android.os.Build
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import android.text.style.RelativeSizeSpan
+import android.text.style.StyleSpan
 import android.util.TypedValue
+import android.view.View
 import android.widget.RemoteViews
+import androidx.core.content.ContextCompat
+import java.util.Calendar
 
 /**
  * 홈 화면 위젯.
@@ -29,7 +38,25 @@ class TodoWidget : AppWidgetProvider() {
         }
     }
 
+    /** 위젯이 홈에서 지워지면 그 위젯의 모드 기억도 함께 지웁니다. */
+    override fun onDeleted(context: Context, appWidgetIds: IntArray) {
+        for (id in appWidgetIds) WidgetConfig.forget(context, id)
+        super.onDeleted(context, appWidgetIds)
+    }
+
     override fun onReceive(context: Context, intent: Intent) {
+        if (intent.action == ACTION_MODE) {
+            val ctx = context.applicationContext
+            val id = intent.getIntExtra(
+                AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID
+            )
+            if (id != AppWidgetManager.INVALID_APPWIDGET_ID) {
+                WidgetConfig.setCalendar(ctx, id, !WidgetConfig.isCalendar(ctx, id))
+                AppWidgetManager.getInstance(ctx).updateAppWidget(id, build(ctx, id))
+            }
+            return
+        }
+
         if (intent.action == ACTION_ITEM) {
             val ctx = context.applicationContext
             val id = intent.getLongExtra(EXTRA_ID, 0L)
@@ -66,6 +93,10 @@ class TodoWidget : AppWidgetProvider() {
 
     companion object {
         const val ACTION_ITEM = "com.hj0128.todolock.WIDGET_ITEM"
+
+        /** 헤더의 달력 아이콘 — 위젯 안을 목록 ↔ 달력으로 바꿉니다 */
+        const val ACTION_MODE = "com.hj0128.todolock.WIDGET_MODE"
+
         const val EXTRA_ID = "todo_id"
         const val EXTRA_MODE = "mode"
         const val MODE_EDIT = 0
@@ -100,13 +131,33 @@ class TodoWidget : AppWidgetProvider() {
 
         private fun build(ctx: Context, widgetId: Int): RemoteViews {
             val rv = RemoteViews(ctx.packageName, R.layout.widget_todo)
+            val calendar = WidgetConfig.isCalendar(ctx, widgetId)
+
+            rv.setViewVisibility(R.id.wListBox, if (calendar) View.GONE else View.VISIBLE)
+            rv.setViewVisibility(R.id.wCalBox, if (calendar) View.VISIBLE else View.GONE)
+
+            // 아이콘은 '지금 무엇인지' 가 아니라 '누르면 어디로 가는지' 를 말합니다.
+            // 달력을 보고 있는데 달력 아이콘이 있으면 돌아갈 길이 안 보입니다.
+            rv.setImageViewResource(
+                R.id.wCalendar,
+                if (calendar) R.drawable.ic_list else R.drawable.ic_calendar
+            )
+            rv.setContentDescription(
+                R.id.wCalendar,
+                if (calendar) "목록으로 보기" else "달력으로 보기"
+            )
 
             val pending = TodoStore.pendingSorted(ctx)
             rv.setTextViewText(
                 R.id.wCount,
-                // 비어 있을 때는 개수를 붙이지 않습니다. 아래 빈 목록 자리에
-                // '할 일이 없습니다' 가 이미 뜨므로 헤더까지 거들 필요가 없습니다.
-                if (pending.isEmpty()) "할 일" else "할 일 " + pending.size + "개"
+                when {
+                    // 달력일 때는 무슨 달을 보고 있는지가 개수보다 먼저입니다.
+                    calendar -> TodoStore.prettyMonth(Calendar.getInstance())
+                    // 비어 있을 때는 개수를 붙이지 않습니다. 아래 빈 목록 자리에
+                    // '할 일이 없습니다' 가 이미 뜨므로 헤더까지 거들 필요가 없습니다.
+                    pending.isEmpty() -> "할 일"
+                    else -> "할 일 " + pending.size + "개"
+                }
             )
 
             // 겉모습 설정 적용. background 는 알파를 못 바꿔서 배경을 ImageView 로 깔았습니다.
@@ -122,6 +173,7 @@ class TodoWidget : AppWidgetProvider() {
             rv.setInt(R.id.wBg, "setColorFilter", panel)
             rv.setTextColor(R.id.wCount, accent)
             rv.setInt(R.id.wAdd, "setColorFilter", accent)
+            rv.setInt(R.id.wCalendar, "setColorFilter", accent)
             rv.setInt(R.id.wSettings, "setColorFilter", accent)
             rv.setTextViewTextSize(R.id.wCount, TypedValue.COMPLEX_UNIT_SP, WidgetConfig.headerSp(ctx))
             rv.setTextViewTextSize(R.id.wEmpty, TypedValue.COMPLEX_UNIT_SP, WidgetConfig.subSp(ctx))
@@ -132,6 +184,8 @@ class TodoWidget : AppWidgetProvider() {
             svc.data = Uri.parse(svc.toUri(Intent.URI_INTENT_SCHEME))
             rv.setRemoteAdapter(R.id.wList, svc)
             rv.setEmptyView(R.id.wList, R.id.wEmpty)
+
+            if (calendar) fillCalendar(ctx, rv, accent)
 
             // 행마다 다른 동작(수정/완료)을 fillInIntent 로 구분하므로 MUTABLE 이어야 합니다.
             rv.setPendingIntentTemplate(
@@ -163,12 +217,28 @@ class TodoWidget : AppWidgetProvider() {
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
             )
-            // 헤더(개수)를 누르면 앱 전체를 엽니다.
+            // 달력 아이콘 = 위젯 안을 목록 ↔ 달력으로. 위젯마다 따로 기억하므로
+            // 눌린 위젯이 어느 것인지 data 로 구분해 둡니다(같은 요청 코드라도
+            // data 가 다르면 다른 PendingIntent 입니다).
+            rv.setOnClickPendingIntent(
+                R.id.wCalendar,
+                PendingIntent.getBroadcast(
+                    ctx, 4,
+                    Intent(ctx, TodoWidget::class.java)
+                        .setAction(ACTION_MODE)
+                        .setData(Uri.parse("todolock://widget/" + widgetId))
+                        .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId),
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+            )
+
+            // 헤더를 누르면 지금 보고 있는 것의 큰 화면으로 갑니다 —
+            // 목록이면 앱 전체, 달력이면 달력 화면.
             rv.setOnClickPendingIntent(
                 R.id.wCount,
                 PendingIntent.getActivity(
-                    ctx, 0,
-                    Intent(ctx, MainActivity::class.java)
+                    ctx, if (calendar) 5 else 0,
+                    Intent(ctx, if (calendar) CalendarActivity::class.java else MainActivity::class.java)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
@@ -178,5 +248,111 @@ class TodoWidget : AppWidgetProvider() {
 
         private fun mutableFlag(): Int =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
+
+        /**
+         * 이번 달 날짜 칸을 채웁니다.
+         *
+         * 목록과 달리 컬렉션(어댑터)을 쓰지 않습니다. 컬렉션은 줄 높이를 내용에
+         * 맞춰 버려 바닥에 빈자리가 크게 남는데, 늘려 줄 방법이 없습니다.
+         * 여섯 줄을 레이아웃에 박아 두고 무게로 나누면 정확히 들어찹니다.
+         */
+        private fun fillCalendar(ctx: Context, rv: RemoteViews, accent: Int) {
+            val days = MonthGrid.build(ctx, Calendar.getInstance(), maxEntries = 0)
+            val today = TodoStore.today()
+            val rows = days.size / MonthGrid.COLUMNS
+
+            // 다섯 줄이면 되는 달은 마지막 줄을 빼고 나머지가 그만큼 늘어납니다.
+            for (r in ROW_IDS.indices) {
+                rv.setViewVisibility(ROW_IDS[r], if (r < rows) View.VISIBLE else View.GONE)
+            }
+
+            for (i in days.indices) {
+                val day = days[i]
+                rv.setTextViewText(CELL_IDS[i], cellText(ctx, day, today, accent))
+                // 날짜를 누르면 그 날짜로 달력 화면이 열립니다. 위젯마다·날짜마다
+                // 다른 곳으로 가야 하므로 data 로 구분합니다.
+                rv.setOnClickPendingIntent(
+                    CELL_IDS[i],
+                    PendingIntent.getActivity(
+                        ctx, 6,
+                        Intent(ctx, CalendarActivity::class.java)
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            .setData(Uri.parse("todolock://day/" + day.key))
+                            .putExtra(CalendarActivity.EXTRA_DATE, day.key),
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
+                )
+            }
+        }
+
+        /**
+         * 칸 하나에 들어갈 글. 윗줄은 날짜, 아랫줄은 남은 개수를 나타내는 점입니다.
+         *
+         * 한 TextView 에 두 줄로 넣고 색만 나눠 칠합니다 — 칸마다 뷰를 둘씩 두면
+         * 한 달에 여든넷이 되고, 그만큼을 통째로 런처에 실어 보내야 합니다.
+         */
+        private fun cellText(ctx: Context, day: Day, today: String, accent: Int): CharSequence {
+            val dots = when {
+                day.pending > 0 -> minOf(day.pending, MAX_DOTS)
+                day.done > 0 -> 1
+                else -> 0
+            }
+            val number = day.dayOfMonth.toString()
+            val text = SpannableString(number + "\n" + "●".repeat(dots))
+
+            val dim = ContextCompat.getColor(ctx, R.color.widget_text_dim)
+            text.setSpan(
+                ForegroundColorSpan(
+                    when {
+                        day.key == today -> accent
+                        !day.inMonth -> dim
+                        else -> ContextCompat.getColor(ctx, R.color.widget_text)
+                    }
+                ),
+                0, number.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            if (day.key == today) {
+                text.setSpan(
+                    StyleSpan(Typeface.BOLD), 0, number.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            }
+
+            if (dots > 0) {
+                val from = number.length + 1
+                text.setSpan(
+                    ForegroundColorSpan(
+                        when {
+                            day.overdue -> ContextCompat.getColor(ctx, R.color.overdue)
+                            day.pending == 0 -> dim
+                            else -> accent
+                        }
+                    ),
+                    from, text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                // 점은 날짜보다 작아야 숫자가 먼저 읽힙니다.
+                text.setSpan(
+                    RelativeSizeSpan(DOT_SCALE), from, text.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            }
+            return text
+        }
+
+        /** 칸이 좁아 점은 셋까지만 찍습니다. 그 이상은 눌러서 봐야 합니다. */
+        private const val MAX_DOTS = 3
+        private const val DOT_SCALE = 0.55f
+
+        private val ROW_IDS = intArrayOf(
+            R.id.wRow0, R.id.wRow1, R.id.wRow2, R.id.wRow3, R.id.wRow4, R.id.wRow5
+        )
+
+        private val CELL_IDS = intArrayOf(
+            R.id.wD0, R.id.wD1, R.id.wD2, R.id.wD3, R.id.wD4, R.id.wD5, R.id.wD6,
+            R.id.wD7, R.id.wD8, R.id.wD9, R.id.wD10, R.id.wD11, R.id.wD12, R.id.wD13,
+            R.id.wD14, R.id.wD15, R.id.wD16, R.id.wD17, R.id.wD18, R.id.wD19, R.id.wD20,
+            R.id.wD21, R.id.wD22, R.id.wD23, R.id.wD24, R.id.wD25, R.id.wD26, R.id.wD27,
+            R.id.wD28, R.id.wD29, R.id.wD30, R.id.wD31, R.id.wD32, R.id.wD33, R.id.wD34,
+            R.id.wD35, R.id.wD36, R.id.wD37, R.id.wD38, R.id.wD39, R.id.wD40, R.id.wD41
+        )
     }
 }
