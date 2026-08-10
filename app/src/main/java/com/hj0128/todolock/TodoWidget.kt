@@ -177,9 +177,11 @@ class TodoWidget : AppWidgetProvider() {
             )
 
             // 겉모습 설정 적용. background 는 알파를 못 바꿔서 배경을 ImageView 로 깔았습니다.
-            // 뒤쪽 목록 판은 옅게, 헤더는 진하게 해서 두 층이 구분됩니다.
+            // 뒤쪽 판은 옅게, 그 위에 얹는 판(행 · 달력)과 헤더는 진하게 해서
+            // 두 층이 구분됩니다.
             rv.setInt(R.id.wBg, "setImageAlpha", WidgetConfig.listAlpha(ctx))
             rv.setInt(R.id.wHeadBg, "setImageAlpha", WidgetConfig.panelAlpha(ctx))
+            rv.setInt(R.id.wCalBg, "setImageAlpha", WidgetConfig.panelAlpha(ctx))
 
             // 강조색 팔레트. 위젯 XML 은 런처가 그려서 ?attr 이 풀리지 않으므로
             // 색을 직접 넣습니다. 판 색은 알파와 함께 걸려도 서로 간섭하지 않습니다.

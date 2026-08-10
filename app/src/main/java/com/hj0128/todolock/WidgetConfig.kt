@@ -97,6 +97,9 @@ object WidgetConfig {
     /**
      * 뒤쪽 목록 판의 알파. 앞쪽 판보다 옅게 해서 두 층이 구분되도록 합니다.
      * 설정값에 비례하므로 불투명도를 낮추면 둘 다 함께 옅어집니다.
+     *
+     * 달력으로 볼 때는 쓰지 않습니다 — 그쪽은 행마다 얹히는 판이 없어,
+     * 이 값을 쓰면 배경이 비쳐 날짜가 묻힙니다(TodoWidget 참고).
      */
     fun listAlpha(ctx: Context): Int = (panelAlpha(ctx) * LIST_RATIO).toInt()
 
