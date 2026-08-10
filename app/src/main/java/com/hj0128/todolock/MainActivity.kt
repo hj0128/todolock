@@ -56,6 +56,7 @@ class MainActivity : AppCompatActivity() {
         // 재부팅·강제 종료로 알람이 날아갔을 수 있으므로 앱을 열 때마다 다시 세웁니다.
         Reminders.rescheduleAll(this)
         // 위젯이 빈 상태로 남아 있어도 앱을 열면 스스로 복구됩니다.
+        // 시간이 흘러 다시 그려야 할 알람도 여기서 함께 되살아납니다.
         TodoWidget.refresh(this)
         refresh()
     }

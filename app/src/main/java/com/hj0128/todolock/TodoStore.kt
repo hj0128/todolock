@@ -212,6 +212,14 @@ object TodoStore {
      */
     fun isRemindAfterDue(date: String, dueMinutes: Int, remindAt: Long): Boolean {
         if (remindAt <= Todo.NO_REMIND) return false
+        return remindAt > dueMillis(date, dueMinutes)
+    }
+
+    /**
+     * 기한의 절대 시각(밀리초).
+     * 시각을 정하지 않았으면 그날 끝입니다 — 날짜만 정한 기한은 '그날 안' 이라는 뜻입니다.
+     */
+    fun dueMillis(date: String, dueMinutes: Int): Long {
         val cal = parseDate(date)
         if (dueMinutes >= 0) {
             cal.set(Calendar.HOUR_OF_DAY, dueMinutes / 60)
@@ -224,7 +232,7 @@ object TodoStore {
             cal.set(Calendar.SECOND, 59)
             cal.set(Calendar.MILLISECOND, 999)
         }
-        return remindAt > cal.timeInMillis
+        return cal.timeInMillis
     }
 
     fun isRemindAfterDue(t: Todo): Boolean =

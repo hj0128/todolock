@@ -9,4 +9,12 @@
     android:previewLayout="@layout/widget_todo"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen"
-    android:updatePeriodMillis="1800000" />
+    android:updatePeriodMillis="0" />
+<!--
+  updatePeriodMillis 를 0 으로 둡니다(주기 갱신 없음).
+
+  30분마다 깨워 봐야 대부분은 바뀐 것이 없습니다. 데이터가 바뀔 때는
+  TodoStore.save 가 이미 위젯을 다시 그리고, 시간이 흘러 글자가 달라지는
+  순간(자정·오늘 기한 시각)에는 DayRollover 가 그 순간에 맞춰 깨웁니다.
+  하루 마흔여덟 번 대신 한두 번이면 됩니다.
+-->

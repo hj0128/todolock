@@ -122,6 +122,22 @@
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
+        <!--
+          날이 바뀌면 위젯의 '오늘/내일' 표기를 다시 맞춥니다.
+          평소에는 스스로 잡아 둔 자정 알람이 깨우고, 사용자가 시계나 시간대를
+          바꾼 경우에는 아래 시스템 알림으로 받습니다(모두 시스템만 보낼 수 있는
+          보호된 방송이라 exported 여도 남이 부를 수 없습니다).
+        -->
+        <receiver
+            android:name=".DayRollover"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.DATE_CHANGED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
         <receiver
             android:name=".BootReceiver"
             android:exported="true">

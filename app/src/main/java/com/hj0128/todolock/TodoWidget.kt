@@ -36,6 +36,18 @@ class TodoWidget : AppWidgetProvider() {
         for (id in appWidgetIds) {
             appWidgetManager.updateAppWidget(id, build(context, id))
         }
+        // 틀만 다시 그리면 목록 행은 예전 글자를 그대로 답니다. 행에는 '내일'
+        // 같은 오늘 기준 표기가 들어 있어, 날이 바뀌어도 어제 만든 글이 남습니다.
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.wList)
+
+        // 위젯을 막 놓은 참이면 아직 알람이 없습니다.
+        DayRollover.arm(context.applicationContext)
+    }
+
+    /** 마지막 위젯이 홈에서 사라지면 깨울 이유도 없습니다. */
+    override fun onDisabled(context: Context) {
+        DayRollover.cancel(context.applicationContext)
+        super.onDisabled(context)
     }
 
     /** 위젯이 홈에서 지워지면 그 위젯의 모드 기억도 함께 지웁니다. */
@@ -117,6 +129,10 @@ class TodoWidget : AppWidgetProvider() {
                 return
             }
             if (ids.isEmpty()) return
+
+            // 시간이 흘러 글자가 달라지는 순간(자정·오늘 기한 시각)에 다시 그리도록.
+            // 데이터가 바뀔 때마다 여기를 지나므로 늘 최신 상태로 다시 잡힙니다.
+            DayRollover.arm(ctx)
 
             // 헤더의 개수는 updateAppWidget 으로, 목록 내용은 notify 로 갱신됩니다.
             for (id in ids) {
