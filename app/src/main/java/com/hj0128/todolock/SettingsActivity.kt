@@ -11,6 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.hj0128.todolock.databinding.ActivitySettingsBinding
@@ -24,6 +26,23 @@ import com.hj0128.todolock.databinding.ActivitySettingsBinding
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var b: ActivitySettingsBinding
+
+    /**
+     * 백업 파일을 만들 자리를 고르게 합니다.
+     *
+     * 문서 고르기 화면을 쓰므로 저장소 권한이 필요 없고, 드라이브처럼 기기 밖에
+     * 두는 곳도 그대로 고를 수 있습니다 — 기기를 바꿀 때 옮겨야 하는 파일이라
+     * 그편이 낫습니다.
+     */
+    private val createBackup =
+        registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) {
+            if (it != null) writeBackup(it)
+        }
+
+    private val openBackup =
+        registerForActivityResult(ActivityResultContracts.OpenDocument()) {
+            if (it != null) readBackup(it)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -111,6 +130,66 @@ class SettingsActivity : AppCompatActivity() {
                     .putExtra(TodayPopupActivity.EXTRA_PREVIEW, true)
             )
         }
+
+        b.btnExport.setOnClickListener { createBackup.launch(Backup.suggestedName()) }
+        // json 만 걸러 두면 파일 관리자에 따라 백업 파일이 흐리게 보이는 일이
+        // 있어, 아무 파일이나 고를 수 있게 두고 읽을 때 판별합니다.
+        b.btnImport.setOnClickListener { openBackup.launch(arrayOf("*/*")) }
+    }
+
+    private fun writeBackup(uri: Uri) {
+        try {
+            contentResolver.openOutputStream(uri)?.use {
+                it.write(Backup.export(this).toByteArray())
+            } ?: throw IllegalStateException("열 수 없음")
+            Toast.makeText(this, "내보냈습니다", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Toast.makeText(this, "내보내지 못했습니다", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    /**
+     * 되돌리기 전에 몇 개인지 보여주고 물어봅니다.
+     *
+     * 합치기를 앞에 둔 이유: 기기를 옮기는 경우에는 두 선택의 결과가 같고,
+     * 쓰던 기기에서 잘못 눌렀을 때 합치기 쪽이 적어 둔 것을 지우지 않습니다.
+     */
+    private fun readBackup(uri: Uri) {
+        val text = try {
+            contentResolver.openInputStream(uri)?.use { it.readBytes().decodeToString() }
+        } catch (e: Exception) {
+            null
+        }
+        val parsed = text?.let { Backup.parse(it) }
+        if (parsed == null) {
+            Toast.makeText(this, "백업 파일이 아닙니다", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("가져오기")
+            .setMessage("할 일 " + parsed.todos.size + "개가 들어 있습니다.\n지금 것과 합칠까요, 모두 바꿀까요?")
+            .setPositiveButton("합치기") { _, _ -> applyBackup(parsed, replace = false) }
+            .setNegativeButton("모두 바꾸기") { _, _ -> applyBackup(parsed, replace = true) }
+            .setNeutralButton("취소", null)
+            .show()
+    }
+
+    private fun applyBackup(parsed: Backup.Parsed, replace: Boolean) {
+        val count = Backup.restore(this, parsed, replace)
+        Toast.makeText(this, "할 일 " + count + "개를 가져왔습니다", Toast.LENGTH_SHORT).show()
+
+        // 색이나 팝업 설정이 함께 바뀌었을 수 있어 화면을 다시 엽니다.
+        //
+        // recreate() 가 아닌 이유: 그쪽은 화면에 떠 있던 선택 상태(라디오 · 스위치)까지
+        // 되살리는데, 그 되살아난 값이 리스너를 타고 방금 되돌린 설정 위에 덮여
+        // 씌어집니다. 실제로 가져온 '알림 방식' 이 가져오기 직전 값으로 되돌아갔습니다.
+        // 새 화면으로 열면 저장된 값만 읽으므로 그런 일이 없습니다.
+        startActivity(
+            Intent(this, SettingsActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+        )
+        finish()
     }
 
     override fun onResume() {

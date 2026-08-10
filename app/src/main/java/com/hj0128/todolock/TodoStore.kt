@@ -84,8 +84,16 @@ object TodoStore {
      * 서로 다른 진입점이라 동시에 들어올 수 있습니다.
      */
     @Synchronized
-    fun load(ctx: Context): MutableList<Todo> {
-        val raw = prefs(ctx).getString(KEY_TODOS, "[]") ?: "[]"
+    fun load(ctx: Context): MutableList<Todo> =
+        decode(prefs(ctx).getString(KEY_TODOS, "[]") ?: "[]")
+
+    /**
+     * 저장 형식(JSON)과 Todo 사이의 변환.
+     *
+     * 백업 파일도 같은 형식을 씁니다 — 저장과 백업이 각자 필드를 나열하면
+     * 값이 하나 늘 때 한쪽만 고쳐 놓고 잊게 됩니다.
+     */
+    fun decode(raw: String): MutableList<Todo> {
         val out = mutableListOf<Todo>()
         try {
             val arr = JSONArray(raw)
@@ -113,8 +121,7 @@ object TodoStore {
         return out
     }
 
-    @Synchronized
-    fun save(ctx: Context, list: List<Todo>) {
+    fun encode(list: List<Todo>): JSONArray {
         val arr = JSONArray()
         for (t in list) {
             arr.put(
@@ -130,7 +137,12 @@ object TodoStore {
                     .put("notified", t.notified)
             )
         }
-        prefs(ctx).edit().putString(KEY_TODOS, arr.toString()).apply()
+        return arr
+    }
+
+    @Synchronized
+    fun save(ctx: Context, list: List<Todo>) {
+        prefs(ctx).edit().putString(KEY_TODOS, encode(list).toString()).apply()
 
         // 저장은 데이터가 바뀌는 유일한 지점이라, 홈 화면 위젯 갱신을 여기 한 곳에 둡니다.
         TodoWidget.refresh(ctx)
