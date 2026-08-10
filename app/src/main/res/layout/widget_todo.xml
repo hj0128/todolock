@@ -49,17 +49,68 @@
               헤더도 같이 늘어나야 글자가 잘리지 않습니다.
             -->
 
-            <TextView
-                android:id="@+id/wCount"
+            <!--
+              제목 묶음. 목록이면 '할 일 N개', 달력이면 '＜ 2026년 8월 ＞'.
+
+              이 묶음만 무게를 갖습니다. 그래야 화살표가 달 이름에 딱 붙어 있고
+              (안쪽은 wrap_content 라 서로 붙습니다), 자리가 모자랄 때는 오른쪽
+              아이콘이 잘리는 대신 달 이름이 줄임표로 줄어듭니다.
+
+              위젯은 스와이프를 받을 수 없어(RemoteViews 에는 터치 제스처가 없습니다)
+              달은 탭으로 넘깁니다. 다음 달 화살표는 같은 그림을 좌우로 뒤집어 씁니다.
+            -->
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                android:textColor="@color/sky_heading"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:text="@string/widget_name" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/wCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/sky_heading"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:text="@string/widget_name" />
+
+                <ImageView
+                    android:id="@+id/wPrev"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:padding="2dp"
+                    android:src="@drawable/ic_chevron"
+                    android:tint="@color/sky_heading"
+                    android:visibility="gone"
+                    android:contentDescription="지난 달" />
+
+                <TextView
+                    android:id="@+id/wMonth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="3dp"
+                    android:paddingEnd="3dp"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/sky_heading"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/wNext"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:padding="2dp"
+                    android:src="@drawable/ic_chevron"
+                    android:scaleX="-1"
+                    android:tint="@color/sky_heading"
+                    android:visibility="gone"
+                    android:contentDescription="다음 달" />
+            </LinearLayout>
 
             <!-- 위젯 안을 목록 ↔ 달력으로 바꿉니다. 앱을 열지 않습니다. -->
             <ImageView

@@ -64,6 +64,22 @@ class TodoWidget : AppWidgetProvider() {
             )
             if (id != AppWidgetManager.INVALID_APPWIDGET_ID) {
                 WidgetConfig.setCalendar(ctx, id, !WidgetConfig.isCalendar(ctx, id))
+                // 달력을 열 때는 늘 이번 달부터. 지난번에 넘겨 둔 자리에서
+                // 다시 열리면 오늘이 어디인지부터 찾아야 합니다.
+                WidgetConfig.setMonthOffset(ctx, id, 0)
+                AppWidgetManager.getInstance(ctx).updateAppWidget(id, build(ctx, id))
+            }
+            return
+        }
+
+        if (intent.action == ACTION_MONTH) {
+            val ctx = context.applicationContext
+            val id = intent.getIntExtra(
+                AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID
+            )
+            if (id != AppWidgetManager.INVALID_APPWIDGET_ID) {
+                val step = intent.getIntExtra(EXTRA_STEP, 0)
+                WidgetConfig.setMonthOffset(ctx, id, WidgetConfig.monthOffset(ctx, id) + step)
                 AppWidgetManager.getInstance(ctx).updateAppWidget(id, build(ctx, id))
             }
             return
@@ -109,8 +125,12 @@ class TodoWidget : AppWidgetProvider() {
         /** 헤더의 달력 아이콘 — 위젯 안을 목록 ↔ 달력으로 바꿉니다 */
         const val ACTION_MODE = "com.hj0128.todolock.WIDGET_MODE"
 
+        /** 헤더의 ◀ ▶ — 달력에서 달을 넘깁니다 */
+        const val ACTION_MONTH = "com.hj0128.todolock.WIDGET_MONTH"
+
         const val EXTRA_ID = "todo_id"
         const val EXTRA_MODE = "mode"
+        const val EXTRA_STEP = "step"
         const val MODE_EDIT = 0
         const val MODE_TOGGLE = 1
         const val MODE_STAR = 2
@@ -148,9 +168,16 @@ class TodoWidget : AppWidgetProvider() {
         private fun build(ctx: Context, widgetId: Int): RemoteViews {
             val rv = RemoteViews(ctx.packageName, R.layout.widget_todo)
             val calendar = WidgetConfig.isCalendar(ctx, widgetId)
+            val shown = shownMonth(ctx, widgetId, calendar)
 
             rv.setViewVisibility(R.id.wListBox, if (calendar) View.GONE else View.VISIBLE)
             rv.setViewVisibility(R.id.wCalBox, if (calendar) View.VISIBLE else View.GONE)
+
+            // 달 이름과 화살표는 달력일 때만, 목록 제목은 목록일 때만.
+            rv.setViewVisibility(R.id.wCount, if (calendar) View.GONE else View.VISIBLE)
+            rv.setViewVisibility(R.id.wMonth, if (calendar) View.VISIBLE else View.GONE)
+            rv.setViewVisibility(R.id.wPrev, if (calendar) View.VISIBLE else View.GONE)
+            rv.setViewVisibility(R.id.wNext, if (calendar) View.VISIBLE else View.GONE)
 
             // 아이콘은 '지금 무엇인지' 가 아니라 '누르면 어디로 가는지' 를 말합니다.
             // 달력을 보고 있는데 달력 아이콘이 있으면 돌아갈 길이 안 보입니다.
@@ -166,14 +193,15 @@ class TodoWidget : AppWidgetProvider() {
             val pending = TodoStore.pendingSorted(ctx)
             rv.setTextViewText(
                 R.id.wCount,
-                when {
-                    // 달력일 때는 무슨 달을 보고 있는지가 개수보다 먼저입니다.
-                    calendar -> TodoStore.prettyMonth(Calendar.getInstance())
-                    // 비어 있을 때는 개수를 붙이지 않습니다. 아래 빈 목록 자리에
-                    // '할 일이 없습니다' 가 이미 뜨므로 헤더까지 거들 필요가 없습니다.
-                    pending.isEmpty() -> "할 일"
-                    else -> "할 일 " + pending.size + "개"
-                }
+                // 비어 있을 때는 개수를 붙이지 않습니다. 아래 빈 목록 자리에
+                // '할 일이 없습니다' 가 이미 뜨므로 헤더까지 거들 필요가 없습니다.
+                if (pending.isEmpty()) "할 일" else "할 일 " + pending.size + "개"
+            )
+            // 화살표까지 들어가 좁아지므로, 작은 위젯에서는 연도를 뺍니다.
+            rv.setTextViewText(
+                R.id.wMonth,
+                if (widthDp(ctx, widgetId) >= WIDE_DP) TodoStore.prettyMonth(shown)
+                else TodoStore.shortMonth(shown)
             )
 
             // 겉모습 설정 적용. background 는 알파를 못 바꿔서 배경을 ImageView 로 깔았습니다.
@@ -190,10 +218,14 @@ class TodoWidget : AppWidgetProvider() {
             rv.setInt(R.id.wHeadBg, "setColorFilter", panel)
             rv.setInt(R.id.wBg, "setColorFilter", panel)
             rv.setTextColor(R.id.wCount, accent)
+            rv.setTextColor(R.id.wMonth, accent)
             rv.setInt(R.id.wAdd, "setColorFilter", accent)
             rv.setInt(R.id.wCalendar, "setColorFilter", accent)
             rv.setInt(R.id.wSettings, "setColorFilter", accent)
+            rv.setInt(R.id.wPrev, "setColorFilter", accent)
+            rv.setInt(R.id.wNext, "setColorFilter", accent)
             rv.setTextViewTextSize(R.id.wCount, TypedValue.COMPLEX_UNIT_SP, WidgetConfig.headerSp(ctx))
+            rv.setTextViewTextSize(R.id.wMonth, TypedValue.COMPLEX_UNIT_SP, WidgetConfig.headerSp(ctx))
             rv.setTextViewTextSize(R.id.wEmpty, TypedValue.COMPLEX_UNIT_SP, WidgetConfig.subSp(ctx))
 
             // 위젯이 여러 개 있어도 서로 다른 Intent 로 인식되도록 data 에 위젯 id 를 담습니다.
@@ -203,7 +235,11 @@ class TodoWidget : AppWidgetProvider() {
             rv.setRemoteAdapter(R.id.wList, svc)
             rv.setEmptyView(R.id.wList, R.id.wEmpty)
 
-            if (calendar) fillCalendar(ctx, rv, accent)
+            if (calendar) {
+                fillCalendar(ctx, rv, accent, shown)
+                rv.setOnClickPendingIntent(R.id.wPrev, monthStep(ctx, widgetId, -1))
+                rv.setOnClickPendingIntent(R.id.wNext, monthStep(ctx, widgetId, 1))
+            }
 
             // 행마다 다른 동작(수정/완료)을 fillInIntent 로 구분하므로 MUTABLE 이어야 합니다.
             rv.setPendingIntentTemplate(
@@ -250,10 +286,10 @@ class TodoWidget : AppWidgetProvider() {
                 )
             )
 
-            // 헤더를 누르면 지금 보고 있는 것의 큰 화면으로 갑니다 —
+            // 헤더의 제목을 누르면 지금 보고 있는 것의 큰 화면으로 갑니다 —
             // 목록이면 앱 전체, 달력이면 달력 화면.
             rv.setOnClickPendingIntent(
-                R.id.wCount,
+                if (calendar) R.id.wMonth else R.id.wCount,
                 PendingIntent.getActivity(
                     ctx, if (calendar) 5 else 0,
                     Intent(ctx, if (calendar) CalendarActivity::class.java else MainActivity::class.java)
@@ -274,8 +310,42 @@ class TodoWidget : AppWidgetProvider() {
          * 맞춰 버려 바닥에 빈자리가 크게 남는데, 늘려 줄 방법이 없습니다.
          * 여섯 줄을 레이아웃에 박아 두고 무게로 나누면 정확히 들어찹니다.
          */
-        private fun fillCalendar(ctx: Context, rv: RemoteViews, accent: Int) {
-            val days = MonthGrid.build(ctx, Calendar.getInstance(), maxEntries = 0)
+        /** 지금 위젯이 보여 줄 달. 목록일 때는 쓰이지 않지만 계산은 같습니다. */
+        private fun shownMonth(ctx: Context, widgetId: Int, calendar: Boolean): Calendar {
+            val cal = Calendar.getInstance()
+            if (calendar) cal.add(Calendar.MONTH, WidgetConfig.monthOffset(ctx, widgetId))
+            return cal
+        }
+
+        /** ◀ ▶. 위젯마다 다른 곳을 넘겨야 하므로 data 로 구분합니다. */
+        private fun monthStep(ctx: Context, widgetId: Int, step: Int): PendingIntent =
+            PendingIntent.getBroadcast(
+                ctx, 7,
+                Intent(ctx, TodoWidget::class.java)
+                    .setAction(ACTION_MONTH)
+                    .setData(Uri.parse("todolock://month/" + widgetId + "/" + step))
+                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
+                    .putExtra(EXTRA_STEP, step),
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+
+        /**
+         * 위젯의 가로 폭(dp). 런처가 알려준 값이 없으면 좁은 쪽으로 봅니다 —
+         * 넉넉하다고 봤다가 글자가 잘리는 쪽이 나쁩니다.
+         */
+        private fun widthDp(ctx: Context, widgetId: Int): Int {
+            if (widgetId == AppWidgetManager.INVALID_APPWIDGET_ID) return 0
+            return try {
+                AppWidgetManager.getInstance(ctx)
+                    .getAppWidgetOptions(widgetId)
+                    ?.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0) ?: 0
+            } catch (e: Exception) {
+                0
+            }
+        }
+
+        private fun fillCalendar(ctx: Context, rv: RemoteViews, accent: Int, month: Calendar) {
+            val days = MonthGrid.build(ctx, month, maxEntries = 0)
             val today = TodoStore.today()
             val rows = days.size / MonthGrid.COLUMNS
 
@@ -359,6 +429,9 @@ class TodoWidget : AppWidgetProvider() {
         /** 칸이 좁아 점은 셋까지만 찍습니다. 그 이상은 눌러서 봐야 합니다. */
         private const val MAX_DOTS = 3
         private const val DOT_SCALE = 0.55f
+
+        /** 이 폭(dp)부터는 헤더에 연도까지 들어갑니다 */
+        private const val WIDE_DP = 250
 
         private val ROW_IDS = intArrayOf(
             R.id.wRow0, R.id.wRow1, R.id.wRow2, R.id.wRow3, R.id.wRow4, R.id.wRow5

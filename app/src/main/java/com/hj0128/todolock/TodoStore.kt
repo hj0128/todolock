@@ -291,6 +291,10 @@ object TodoStore {
     fun prettyMonth(cal: Calendar): String =
         SimpleDateFormat("yyyy년 M월", Locale.KOREA).format(cal.time)
 
+    /** "8월". 위젯처럼 폭이 좁아 연도까지 넣을 수 없을 때. */
+    fun shortMonth(cal: Calendar): String =
+        SimpleDateFormat("M월", Locale.KOREA).format(cal.time)
+
     /** "8월 5일 (수)". 오늘·내일 같은 말을 붙이지 않은 날짜입니다. */
     fun plainDate(dateKey: String): String = try {
         val d = keyFormat().parse(dateKey)

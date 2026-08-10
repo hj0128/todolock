@@ -21,6 +21,12 @@ object WidgetConfig {
      */
     private const val KEY_CALENDAR = "calendar_"
 
+    /** 달력으로 볼 때 이번 달에서 몇 달 떨어진 곳을 보고 있는지. 0 이면 이번 달. */
+    private const val KEY_MONTH = "month_"
+
+    /** 넘길 수 있는 범위. 위젯에서 몇 년씩 뒤적일 일은 없고, 그럴 땐 앱이 낫습니다. */
+    private const val MONTH_SPAN = 24
+
     /** 3단계(작게·보통·크게)를 쓰던 시절의 키. 지금은 값을 이어받는 데만 씁니다. */
     private const val KEY_FONT_STEP = "font_step"
 
@@ -58,9 +64,20 @@ object WidgetConfig {
     fun setCalendar(ctx: Context, widgetId: Int, on: Boolean) =
         prefs(ctx).edit().putBoolean(KEY_CALENDAR + widgetId, on).apply()
 
-    /** 위젯이 지워지면 그 위젯의 모드 기억도 함께 지웁니다. */
+    fun monthOffset(ctx: Context, widgetId: Int): Int =
+        prefs(ctx).getInt(KEY_MONTH + widgetId, 0).coerceIn(-MONTH_SPAN, MONTH_SPAN)
+
+    fun setMonthOffset(ctx: Context, widgetId: Int, months: Int) =
+        prefs(ctx).edit()
+            .putInt(KEY_MONTH + widgetId, months.coerceIn(-MONTH_SPAN, MONTH_SPAN))
+            .apply()
+
+    /** 위젯이 지워지면 그 위젯의 기억도 함께 지웁니다. */
     fun forget(ctx: Context, widgetId: Int) =
-        prefs(ctx).edit().remove(KEY_CALENDAR + widgetId).apply()
+        prefs(ctx).edit()
+            .remove(KEY_CALENDAR + widgetId)
+            .remove(KEY_MONTH + widgetId)
+            .apply()
 
     fun opacity(ctx: Context): Int =
         prefs(ctx).getInt(KEY_OPACITY, MAX_OPACITY).coerceIn(MIN_OPACITY, MAX_OPACITY)

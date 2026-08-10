@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  달 넘기기 화살표. 왼쪽을 가리키고, 오른쪽은 같은 그림을 좌우로 뒤집어 씁니다.
+
+  꼬리 없는 홑화살표라 달 이름 양옆에 붙어도 글자를 누르지 않습니다 —
+  뒤로 가기(ic_back)를 쓰면 화면을 떠나는 것처럼 읽힙니다.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M15.41,7.41 L14,6l-6,6 6,6 1.41,-1.41L10.83,12z" />
+</vector>
