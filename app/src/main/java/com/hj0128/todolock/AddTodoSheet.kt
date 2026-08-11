@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
@@ -101,7 +102,7 @@ class AddTodoSheet(
     private fun save(b: SheetAddTodoBinding, dialog: BottomSheetDialog) {
         val text = b.etText.text.toString().trim()
         if (text.isEmpty()) {
-            b.etText.error = "할 일을 입력하세요"
+            b.etText.error = ctx.getString(R.string.toast_enter_todo)
             return
         }
         // 수정이면 원래 객체를 그대로 고칩니다. id 와 done 처럼 시트가 다루지 않는
@@ -138,16 +139,17 @@ class AddTodoSheet(
 
     /** 세 컨트롤의 표시를 현재 선택 상태와 맞춥니다. */
     private fun sync(b: SheetAddTodoBinding) {
-        val dueLabel = TodoStore.prettyDate(TodoStore.format(due)) +
-            (if (dueMinutes >= 0) " " + TodoStore.formatMinutes(dueMinutes) else "")
+        val dueLabel = TodoStore.prettyDate(ctx, TodoStore.format(due)) +
+            (if (dueMinutes >= 0) " " + TodoStore.formatMinutes(ctx, dueMinutes) else "")
         b.btnDue.text = dueLabel
         b.btnRemind.text =
-            if (remindAt > Todo.NO_REMIND) TodoStore.prettyDateTime(remindAt) else "미리 알림"
+            if (remindAt > Todo.NO_REMIND) TodoStore.prettyDateTime(ctx, remindAt)
+            else ctx.getString(R.string.remind)
 
         // 기한 뒤에 울리는 알림은 십중팔구 잘못 고른 것입니다. 막지는 않고 알립니다.
         val late = TodoStore.isRemindAfterDue(TodoStore.format(due), dueMinutes, remindAt)
         b.tvWarn.visibility = if (late) View.VISIBLE else View.GONE
-        if (late) b.tvWarn.text = "⚠ 기한(" + dueLabel + ") 보다 늦은 알림입니다"
+        if (late) b.tvWarn.text = ctx.getString(R.string.remind_after_due, dueLabel)
 
         b.btnStar.setImageResource(
             if (important) R.drawable.ic_star else R.drawable.ic_star_border
@@ -178,13 +180,13 @@ class AddTodoSheet(
             },
             due.get(Calendar.YEAR), due.get(Calendar.MONTH), due.get(Calendar.DAY_OF_MONTH)
         )
-        // 기본 동작(onDateSet)은 그대로 두고 이름만 우리말로 고정합니다.
+        // 기본 동작(onDateSet)은 그대로 두고 이름만 우리가 정합니다.
         // DatePickerDialog 자신이 OnClickListener 라 그대로 넘기면 됩니다.
-        picker.setButton(DialogInterface.BUTTON_POSITIVE, "확인", picker)
-        picker.setButton(DialogInterface.BUTTON_NEGATIVE, "취소", picker)
+        picker.setButton(DialogInterface.BUTTON_POSITIVE, ctx.getString(R.string.ok), picker)
+        picker.setButton(DialogInterface.BUTTON_NEGATIVE, ctx.getString(R.string.cancel), picker)
         picker.setButton(
             DialogInterface.BUTTON_NEUTRAL,
-            if (dueMinutes >= 0) "시간 변경" else "시간 추가"
+            ctx.getString(if (dueMinutes >= 0) R.string.time_change else R.string.time_add)
         ) { _, _ ->
             val dp = picker.datePicker
             // 스피너 모드에서는 편집 중인 값이 아직 반영되지 않을 수 있습니다.
@@ -209,10 +211,12 @@ class AddTodoSheet(
                 dueMinutes = h * 60 + min
                 sync(b)
             },
-            start / 60, start % 60, true
+            start / 60, start % 60, DateFormat.is24HourFormat(ctx)
         )
-        picker.setButton(DialogInterface.BUTTON_POSITIVE, "확인", picker)
-        picker.setButton(DialogInterface.BUTTON_NEGATIVE, "시간 없음") { _, _ ->
+        picker.setButton(DialogInterface.BUTTON_POSITIVE, ctx.getString(R.string.ok), picker)
+        picker.setButton(
+            DialogInterface.BUTTON_NEGATIVE, ctx.getString(R.string.time_none)
+        ) { _, _ ->
             dueMinutes = Todo.NO_TIME
             sync(b)
         }
@@ -236,8 +240,8 @@ class AddTodoSheet(
             { _, y, m, d -> pickRemindTime(b, y, m, d, base) },
             base.get(Calendar.YEAR), base.get(Calendar.MONTH), base.get(Calendar.DAY_OF_MONTH)
         )
-        picker.setButton(DialogInterface.BUTTON_POSITIVE, "확인", picker)
-        picker.setButton(DialogInterface.BUTTON_NEGATIVE, "취소", picker)
+        picker.setButton(DialogInterface.BUTTON_POSITIVE, ctx.getString(R.string.ok), picker)
+        picker.setButton(DialogInterface.BUTTON_NEGATIVE, ctx.getString(R.string.cancel), picker)
         picker.setOnCancelListener { restoreIme(b) }
         showKeepingIme(picker)
     }
@@ -257,10 +261,12 @@ class AddTodoSheet(
                 remindAt = c.timeInMillis
                 sync(b)
             },
-            startH, startM, true
+            startH, startM, DateFormat.is24HourFormat(ctx)
         )
-        picker.setButton(DialogInterface.BUTTON_POSITIVE, "확인", picker)
-        picker.setButton(DialogInterface.BUTTON_NEGATIVE, "알림 없음") { _, _ ->
+        picker.setButton(DialogInterface.BUTTON_POSITIVE, ctx.getString(R.string.ok), picker)
+        picker.setButton(
+            DialogInterface.BUTTON_NEGATIVE, ctx.getString(R.string.remind_none)
+        ) { _, _ ->
             remindAt = Todo.NO_REMIND
             sync(b)
         }

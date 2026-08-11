@@ -29,12 +29,6 @@ object ThemeConfig {
     /** 기본값(하늘색)은 테마에 이미 들어 있어 오버레이가 필요 없습니다. */
     const val DEFAULT = 0
 
-    /** 색상표에 보여줄 순서 그대로. 접근성 설명에도 씁니다. */
-    val NAMES = arrayOf(
-        "하늘", "파랑", "남색", "보라", "자주", "분홍", "장미", "빨강",
-        "주황", "호박", "노랑", "라임", "초록", "에메랄드", "청록", "회색"
-    )
-
     /** 색상표에 찍을 동그라미 색 (= 제목·아이콘 색) */
     private val HEADING = intArrayOf(
         R.color.p0_heading, R.color.p1_heading, R.color.p2_heading, R.color.p3_heading,
@@ -70,7 +64,11 @@ object ThemeConfig {
         R.style.ThemeOverlay_TodoLock_P15
     )
 
-    val COUNT = NAMES.size
+    val COUNT = HEADING.size
+
+    /** 색상표에 보여줄 순서 그대로. 화면 낭독기가 읽어 주는 이름입니다. */
+    fun names(ctx: Context): Array<String> =
+        ctx.resources.getStringArray(R.array.palette_names)
 
     private fun prefs(ctx: Context) =
         ctx.applicationContext.getSharedPreferences(PREF, Context.MODE_PRIVATE)

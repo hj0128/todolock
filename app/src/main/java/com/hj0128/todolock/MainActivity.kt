@@ -81,11 +81,13 @@ class MainActivity : AppCompatActivity() {
 
         val rows = mutableListOf<Row>()
         if (pending.isNotEmpty()) {
-            rows.add(Row.Header("할 일 " + pending.size + "개"))
+            rows.add(Row.Header(resources.getQuantityString(
+                R.plurals.task_count, pending.size, pending.size)))
             pending.forEach { rows.add(Row.Item(it)) }
         }
         if (done.isNotEmpty()) {
-            rows.add(Row.Header("완료 " + done.size + "개"))
+            rows.add(Row.Header(resources.getQuantityString(
+                R.plurals.done_count, done.size, done.size)))
             done.forEach { rows.add(Row.Item(it)) }
         }
 

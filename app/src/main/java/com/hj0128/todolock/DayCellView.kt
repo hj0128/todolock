@@ -120,7 +120,7 @@ class DayCellView(context: Context, private val style: DayCellStyle) : View(cont
         this.day = day
         this.isSelected = selected
         this.isToday = today
-        contentDescription = TodoStore.plainDate(day.key)
+        contentDescription = TodoStore.plainDate(context, day.key)
         invalidate()
     }
 

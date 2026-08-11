@@ -23,7 +23,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="＋ 할 일 추가" />
+            android:text="@string/add_todo" />
 
         <ImageButton
             android:id="@+id/btnCalendar"
@@ -34,7 +34,7 @@
             android:src="@drawable/ic_calendar"
             app:tint="?attr/colorPrimary"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="달력" />
+            android:contentDescription="@string/cd_calendar" />
 
         <ImageButton
             android:id="@+id/btnSettings"
@@ -45,7 +45,7 @@
             android:src="@drawable/ic_settings"
             app:tint="?attr/colorPrimary"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="설정" />
+            android:contentDescription="@string/cd_settings" />
     </LinearLayout>
 
     <!--
@@ -82,7 +82,7 @@
         android:paddingTop="32dp"
         android:paddingBottom="32dp"
         android:alpha="0.55"
-        android:text="할 일이 없습니다.\n오늘 할 일이 없으면 잠금해제 시 팝업도 뜨지 않아요."
+        android:text="@string/empty_list"
         android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView

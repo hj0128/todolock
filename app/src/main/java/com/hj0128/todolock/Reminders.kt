@@ -118,13 +118,15 @@ object Reminders {
     fun announce(ctx: Context, todo: Todo, scheduled: Boolean) {
         if (!todo.hasReminder) return
 
-        val at = TodoStore.prettyDateTime(todo.remindAt)
+        val at = TodoStore.prettyDateTime(ctx, todo.remindAt)
         val msg = if (!scheduled) {
-            at + " — 이미 지난 시각이라 알림을 걸지 않았습니다"
+            ctx.getString(R.string.remind_past, at)
         } else {
-            at + "에 알려드립니다" +
-                (if (canBeExact(ctx)) "" else " (권한이 없어 몇 분 늦을 수 있음)") +
-                (if (TodoStore.isRemindAfterDue(todo)) " · 기한 뒤입니다" else "")
+            ctx.getString(R.string.remind_scheduled, at) +
+                (if (canBeExact(ctx)) "" else ctx.getString(R.string.remind_inexact)) +
+                (if (TodoStore.isRemindAfterDue(todo)) {
+                    ctx.getString(R.string.remind_after_due_suffix)
+                } else "")
         }
         Toast.makeText(ctx, msg, Toast.LENGTH_LONG).show()
     }

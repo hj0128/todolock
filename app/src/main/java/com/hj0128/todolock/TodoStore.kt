@@ -1,6 +1,7 @@
 package com.hj0128.todolock
 
 import android.content.Context
+import android.text.format.DateFormat
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat
@@ -256,9 +257,28 @@ object TodoStore {
         return c.get(Calendar.HOUR_OF_DAY) * 60 + c.get(Calendar.MINUTE)
     }
 
-    /** 기한 시각을 "14:00" 으로. */
-    fun formatMinutes(minutes: Int): String =
-        String.format(Locale.KOREA, "%02d:%02d", minutes / 60, minutes % 60)
+    /**
+     * 기한 시각을 "14:00" 또는 "2:00 PM" 으로.
+     *
+     * 12시간제로 볼지는 폰의 시계 설정을 따릅니다. 언어로 정하지 않는 이유는,
+     * 같은 영어권에서도 나라마다 다르고 무엇보다 쓰는 사람이 직접 고른 값이기
+     * 때문입니다.
+     */
+    fun formatMinutes(ctx: Context, minutes: Int): String {
+        val cal = Calendar.getInstance()
+        cal.set(Calendar.HOUR_OF_DAY, minutes / 60)
+        cal.set(Calendar.MINUTE, minutes % 60)
+        val pattern =
+            if (DateFormat.is24HourFormat(ctx)) R.string.fmt_time else R.string.fmt_time_12
+        return dateFormat(ctx, pattern).format(cal.time)
+    }
+
+    /**
+     * 언어마다 순서가 달라(8월 5일 / Aug 5) 형식 자체를 문자열 자원에 둡니다.
+     * 요일·달 이름은 Locale 이 채우므로 폰 언어를 그대로 따라갑니다.
+     */
+    private fun dateFormat(ctx: Context, pattern: Int): SimpleDateFormat =
+        SimpleDateFormat(ctx.getString(pattern), Locale.getDefault())
 
     /**
      * 목록·팝업·위젯에 한 줄로 넣을 메모 미리보기.
@@ -271,9 +291,9 @@ object TodoStore {
      * 목록·위젯·알림에 쓰는 기한 표기.
      * 시각을 정하지 않았으면 지금까지와 똑같이 날짜만 나옵니다.
      */
-    fun prettyDue(t: Todo): String =
-        if (t.hasDueTime) prettyDate(t.date) + " " + formatMinutes(t.dueMinutes)
-        else prettyDate(t.date)
+    fun prettyDue(ctx: Context, t: Todo): String =
+        if (t.hasDueTime) prettyDate(ctx, t.date) + " " + formatMinutes(ctx, t.dueMinutes)
+        else prettyDate(ctx, t.date)
 
     /**
      * 미리 알림 표기. 목록·위젯·팝업·시트·토스트가 모두 이 한 가지 형식을 씁니다.
@@ -285,12 +305,12 @@ object TodoStore {
      * 날짜에는 '오늘/내일/어제' 를 붙이지 않습니다 — 같은 줄에서 기한이 이미 그 말을
      * 쓰고 있어, 양쪽에 나오면 어느 쪽 이야기인지 헷갈립니다.
      */
-    fun prettyDateTime(ms: Long): String {
+    fun prettyDateTime(ctx: Context, ms: Long): String {
         if (ms <= 0L) return ""
         val cal = Calendar.getInstance()
         cal.timeInMillis = ms
-        return plainDate(format(cal)) + " " +
-            SimpleDateFormat("HH:mm", Locale.KOREA).format(Date(ms))
+        val minutes = cal.get(Calendar.HOUR_OF_DAY) * 60 + cal.get(Calendar.MINUTE)
+        return plainDate(ctx, format(cal)) + " " + formatMinutes(ctx, minutes)
     }
 
     /** 완료: 최근 완료된 것이 위로. */
@@ -299,18 +319,18 @@ object TodoStore {
             compareByDescending<Todo> { it.date }.thenByDescending { it.id }
         )
 
-    /** "2026년 8월". 달력 머리글용. */
-    fun prettyMonth(cal: Calendar): String =
-        SimpleDateFormat("yyyy년 M월", Locale.KOREA).format(cal.time)
+    /** "2026년 8월" · "August 2026". 달력 머리글용. */
+    fun prettyMonth(ctx: Context, cal: Calendar): String =
+        dateFormat(ctx, R.string.fmt_month).format(cal.time)
 
-    /** "8월". 위젯처럼 폭이 좁아 연도까지 넣을 수 없을 때. */
-    fun shortMonth(cal: Calendar): String =
-        SimpleDateFormat("M월", Locale.KOREA).format(cal.time)
+    /** "8월" · "Aug". 위젯처럼 폭이 좁아 연도까지 넣을 수 없을 때. */
+    fun shortMonth(ctx: Context, cal: Calendar): String =
+        dateFormat(ctx, R.string.fmt_month_short).format(cal.time)
 
-    /** "8월 5일 (수)". 오늘·내일 같은 말을 붙이지 않은 날짜입니다. */
-    fun plainDate(dateKey: String): String = try {
+    /** "8월 5일 (수)" · "Aug 5 (Wed)". 오늘·내일 같은 말을 붙이지 않은 날짜입니다. */
+    fun plainDate(ctx: Context, dateKey: String): String = try {
         val d = keyFormat().parse(dateKey)
-        if (d != null) SimpleDateFormat("M월 d일 (E)", Locale.KOREA).format(d) else dateKey
+        if (d != null) dateFormat(ctx, R.string.fmt_date).format(d) else dateKey
     } catch (e: Exception) {
         dateKey
     }
@@ -319,7 +339,7 @@ object TodoStore {
      * "오늘 · 8월 5일 (수)" 처럼 사람이 읽는 날짜. 목록에서 날짜를 행마다 보여주므로 필요합니다.
      * 기한 쪽에만 씁니다 — 알림 쪽은 plainDate 입니다.
      */
-    fun prettyDate(dateKey: String): String {
+    fun prettyDate(ctx: Context, dateKey: String): String {
         val cal = Calendar.getInstance()
         val today = format(cal)
         cal.add(Calendar.DAY_OF_YEAR, 1)
@@ -327,11 +347,11 @@ object TodoStore {
         cal.add(Calendar.DAY_OF_YEAR, -2)
         val yesterday = format(cal)
 
-        val base = plainDate(dateKey)
+        val base = plainDate(ctx, dateKey)
         return when (dateKey) {
-            today -> "오늘 · " + base
-            tomorrow -> "내일 · " + base
-            yesterday -> "어제 · " + base
+            today -> ctx.getString(R.string.date_today, base)
+            tomorrow -> ctx.getString(R.string.date_tomorrow, base)
+            yesterday -> ctx.getString(R.string.date_yesterday, base)
             else -> base
         }
     }

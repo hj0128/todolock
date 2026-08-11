@@ -36,29 +36,29 @@ object Notifications {
 
         val service = NotificationChannel(
             CHANNEL_SERVICE,
-            "잠금해제 감지",
+            ctx.getString(R.string.ch_unlock),
             NotificationManager.IMPORTANCE_MIN
         ).apply {
-            description = "잠금해제를 감지하기 위해 실행 중인 상태 표시"
+            description = ctx.getString(R.string.ch_unlock_desc)
             setShowBadge(false)
         }
         nm.createNotificationChannel(service)
 
         val alert = NotificationChannel(
             CHANNEL_ALERT,
-            "오늘의 할 일 알림",
+            ctx.getString(R.string.ch_today),
             NotificationManager.IMPORTANCE_HIGH
         ).apply {
-            description = "잠금해제 시 오늘 할 일을 알려줍니다"
+            description = ctx.getString(R.string.ch_today_desc)
         }
         nm.createNotificationChannel(alert)
 
         val remind = NotificationChannel(
             CHANNEL_REMIND,
-            "할 일 미리 알림",
+            ctx.getString(R.string.ch_remind),
             NotificationManager.IMPORTANCE_HIGH
         ).apply {
-            description = "설정한 기한보다 미리 알려줍니다"
+            description = ctx.getString(R.string.ch_remind_desc)
         }
         nm.createNotificationChannel(remind)
 
@@ -67,10 +67,10 @@ object Notifications {
         // 특정 방식 이름을 붙이지 않고 성질(헤드업 없음)로 표현합니다.
         val remindQuiet = NotificationChannel(
             CHANNEL_REMIND_QUIET,
-            "할 일 미리 알림 (조용히)",
+            ctx.getString(R.string.ch_remind_quiet),
             NotificationManager.IMPORTANCE_DEFAULT
         ).apply {
-            description = "화면 위에 배너로 띄우지 않습니다"
+            description = ctx.getString(R.string.ch_remind_quiet_desc)
         }
         nm.createNotificationChannel(remindQuiet)
     }
@@ -85,7 +85,7 @@ object Notifications {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val due = TodoStore.prettyDue(todo) + " 기한"
+        val due = ctx.getString(R.string.due_label, TodoStore.prettyDue(ctx, todo))
 
         // 헤드업은 '헤드업' 방식에서만 띄웁니다.
         // '전체 팝업' 은 팝업이 주역이라 헤드업까지 뜨면 같은 알림이 두 번 보입니다.
@@ -118,7 +118,7 @@ object Notifications {
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .setAutoCancel(true)
             .setContentIntent(open)
-            .addAction(0, "완료", Reminders.donePending(ctx, todo.id))
+            .addAction(0, ctx.getString(R.string.done), Reminders.donePending(ctx, todo.id))
             .build()
         try {
             ctx.getSystemService(NotificationManager::class.java)?.notify(reminderId(todo.id), n)
@@ -135,8 +135,8 @@ object Notifications {
         )
         return NotificationCompat.Builder(ctx, CHANNEL_SERVICE)
             .setSmallIcon(R.drawable.ic_check)
-            .setContentTitle("TodoLock 실행 중")
-            .setContentText("잠금해제하면 오늘 할 일을 보여줍니다")
+            .setContentTitle(ctx.getString(R.string.ongoing_title))
+            .setContentText(ctx.getString(R.string.ongoing_text))
             .setPriority(NotificationCompat.PRIORITY_MIN)
             .setOngoing(true)
             .setShowWhen(false)
@@ -164,8 +164,10 @@ object Notifications {
         )
         val n = NotificationCompat.Builder(ctx, CHANNEL_ALERT)
             .setSmallIcon(R.drawable.ic_check)
-            .setContentTitle("오늘 할 일 " + remaining + "개 남았어요")
-            .setContentText("눌러서 확인하기")
+            .setContentTitle(
+                ctx.resources.getQuantityString(R.plurals.notif_remaining, remaining, remaining)
+            )
+            .setContentText(ctx.getString(R.string.notif_tap))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .setAutoCancel(true)

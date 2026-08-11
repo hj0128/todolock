@@ -35,7 +35,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="🔔 미리 알림"
+                android:text="@string/reminder_heading"
                 android:textSize="15sp"
                 android:textStyle="bold"
                 android:textColor="?attr/accentHeading" />
@@ -83,7 +83,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="닫기" />
+                android:text="@string/close" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </FrameLayout>

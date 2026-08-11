@@ -511,13 +511,21 @@ class CalendarActivity : AppCompatActivity() {
         // 한 번 바뀌기 전까지 가운데 칸에 맨 숫자를 보여주는 오래된 문제가 있습니다.
         sb.pickYear.minValue = thisYear - YEAR_SPAN
         sb.pickYear.maxValue = thisYear + YEAR_SPAN
-        sb.pickYear.displayedValues =
-            Array(YEAR_SPAN * 2 + 1) { (thisYear - YEAR_SPAN + it).toString() + "년" }
+        sb.pickYear.displayedValues = Array(YEAR_SPAN * 2 + 1) {
+            getString(R.string.picker_year, thisYear - YEAR_SPAN + it)
+        }
         sb.pickYear.value = start.get(Calendar.YEAR)
 
         sb.pickMonth.minValue = 1
         sb.pickMonth.maxValue = 12
-        sb.pickMonth.displayedValues = Array(12) { (it + 1).toString() + "월" }
+        // 달 이름은 직접 짓지 않고 날짜 형식에 맡깁니다 — 한국어는 "8월",
+        // 영어는 "Aug" 처럼 언어마다 부르는 법이 달라서입니다.
+        val monthName = Calendar.getInstance()
+        sb.pickMonth.displayedValues = Array(12) {
+            monthName.set(Calendar.DAY_OF_MONTH, 1)
+            monthName.set(Calendar.MONTH, it)
+            TodoStore.shortMonth(this, monthName)
+        }
         sb.pickMonth.value = start.get(Calendar.MONTH) + 1
 
         sb.pickDay.minValue = 1
@@ -554,7 +562,7 @@ class CalendarActivity : AppCompatActivity() {
         // 글자 배열이 남아 있으면 길이가 맞지 않아 범위를 넓힐 수 없습니다.
         sb.pickDay.displayedValues = null
         sb.pickDay.maxValue = last
-        sb.pickDay.displayedValues = Array(last) { (it + 1).toString() + "일" }
+        sb.pickDay.displayedValues = Array(last) { getString(R.string.picker_day, it + 1) }
     }
 
     // ---------- 할 일 ----------
@@ -580,7 +588,7 @@ class CalendarActivity : AppCompatActivity() {
     private fun refresh() {
         val byDate = TodoStore.byDate(this)
 
-        b.tvMonth.text = TodoStore.prettyMonth(month) + "  ▾"
+        b.tvMonth.text = TodoStore.prettyMonth(this, month) + "  ▾"
         syncTodayButton()
 
         val days = MonthGrid.build(month, byDate, MAX_CELL_ENTRIES)
@@ -627,9 +635,13 @@ class CalendarActivity : AppCompatActivity() {
     /** "오늘 · 8월 9일 (일) · 할 일 2개" */
     private fun dayTitle(key: String, pending: Int, done: Int): String {
         val counts = mutableListOf<String>()
-        if (pending > 0) counts.add("할 일 " + pending + "개")
-        if (done > 0) counts.add("완료 " + done + "개")
-        return TodoStore.prettyDate(key) +
+        if (pending > 0) {
+            counts.add(resources.getQuantityString(R.plurals.task_count, pending, pending))
+        }
+        if (done > 0) {
+            counts.add(resources.getQuantityString(R.plurals.done_count, done, done))
+        }
+        return TodoStore.prettyDate(this, key) +
             (if (counts.isEmpty()) "" else " · " + counts.joinToString(" · "))
     }
 

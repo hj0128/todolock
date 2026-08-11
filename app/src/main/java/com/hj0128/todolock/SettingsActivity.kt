@@ -141,10 +141,10 @@ class SettingsActivity : AppCompatActivity() {
         try {
             contentResolver.openOutputStream(uri)?.use {
                 it.write(Backup.export(this).toByteArray())
-            } ?: throw IllegalStateException("열 수 없음")
-            Toast.makeText(this, "내보냈습니다", Toast.LENGTH_SHORT).show()
+            } ?: throw IllegalStateException("cannot open " + uri)
+            Toast.makeText(this, R.string.backup_exported, Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
-            Toast.makeText(this, "내보내지 못했습니다", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, R.string.backup_export_failed, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -162,22 +162,33 @@ class SettingsActivity : AppCompatActivity() {
         }
         val parsed = text?.let { Backup.parse(it) }
         if (parsed == null) {
-            Toast.makeText(this, "백업 파일이 아닙니다", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, R.string.backup_not_a_backup, Toast.LENGTH_LONG).show()
             return
         }
 
+        val count = resources.getQuantityString(
+            R.plurals.task_count, parsed.todos.size, parsed.todos.size
+        )
         AlertDialog.Builder(this)
-            .setTitle("가져오기")
-            .setMessage("할 일 " + parsed.todos.size + "개가 들어 있습니다.\n지금 것과 합칠까요, 모두 바꿀까요?")
-            .setPositiveButton("합치기") { _, _ -> applyBackup(parsed, replace = false) }
-            .setNegativeButton("모두 바꾸기") { _, _ -> applyBackup(parsed, replace = true) }
-            .setNeutralButton("취소", null)
+            .setTitle(R.string.backup_import_title)
+            .setMessage(getString(R.string.backup_import_msg, count))
+            .setPositiveButton(R.string.backup_merge) { _, _ ->
+                applyBackup(parsed, replace = false)
+            }
+            .setNegativeButton(R.string.backup_replace) { _, _ ->
+                applyBackup(parsed, replace = true)
+            }
+            .setNeutralButton(R.string.cancel, null)
             .show()
     }
 
     private fun applyBackup(parsed: Backup.Parsed, replace: Boolean) {
         val count = Backup.restore(this, parsed, replace)
-        Toast.makeText(this, "할 일 " + count + "개를 가져왔습니다", Toast.LENGTH_SHORT).show()
+        Toast.makeText(
+            this,
+            resources.getQuantityString(R.plurals.backup_imported, count, count),
+            Toast.LENGTH_SHORT
+        ).show()
 
         // 색이나 팝업 설정이 함께 바뀌었을 수 있어 화면을 다시 엽니다.
         //
@@ -204,6 +215,7 @@ class SettingsActivity : AppCompatActivity() {
      */
     private fun buildPalette() {
         val selected = ThemeConfig.palette(this)
+        val names = ThemeConfig.names(this)
         // 한 줄에 8개가 들어가야 합니다. 36+2+2 = 40dp × 8 = 320dp 로 카드 안에 맞습니다.
         val dp = resources.displayMetrics.density
         val size = (36 * dp).toInt()
@@ -226,7 +238,7 @@ class SettingsActivity : AppCompatActivity() {
             dot.imageAlpha = if (i == selected) 255 else 0
             // 이름은 화면에 적지 않습니다 — 색을 보고 고르는 것이라 글자가 거들 게
             // 없습니다. 다만 화면 낭독기에는 필요해서 contentDescription 으로 남깁니다.
-            dot.contentDescription = ThemeConfig.NAMES[i]
+            dot.contentDescription = names[i]
             dot.setOnClickListener { pickPalette(i) }
             b.gridPalette.addView(dot)
         }
@@ -244,14 +256,16 @@ class SettingsActivity : AppCompatActivity() {
     private fun syncPermissionStates() {
         val overlayOk = Permissions.canShowPopup(this)
         b.tvPermWarn.visibility = if (overlayOk) View.GONE else View.VISIBLE
-        b.btnOverlay.text =
-            if (overlayOk) "다른 앱 위에 표시 · 허용됨" else "다른 앱 위에 표시 권한 주기"
+        b.btnOverlay.setText(
+            if (overlayOk) R.string.perm_overlay_ok else R.string.perm_overlay_grant
+        )
 
         // 경고는 아직 허용되지 않았을 때만 띄웁니다. 다 해둔 사람에게는 잔소리가 됩니다.
         val batteryOk = Permissions.isBatteryExempt(this)
         b.tvBatteryWarn.visibility = if (batteryOk) View.GONE else View.VISIBLE
-        b.btnBattery.text =
-            if (batteryOk) "앱 정보 열기 · 절전 예외 완료" else "앱 정보 열기 (배터리 → 제한 없음)"
+        b.btnBattery.setText(
+            if (batteryOk) R.string.perm_battery_ok else R.string.perm_battery_open
+        )
     }
 
     /**
@@ -272,11 +286,9 @@ class SettingsActivity : AppCompatActivity() {
      */
     private fun openBatterySettings() {
         val exempt = Permissions.isBatteryExempt(this)
-        val hint = if (exempt) {
-            "절전 예외는 이미 완료 상태입니다"
-        } else {
-            "'배터리' 로 들어가 '제한 없음' 을 고르세요"
-        }
+        val hint = getString(
+            if (exempt) R.string.toast_battery_done else R.string.toast_battery_how
+        )
         try {
             startActivity(
                 Intent(
@@ -289,8 +301,7 @@ class SettingsActivity : AppCompatActivity() {
             // 앱 정보 화면이 막힌 기기를 위한 대체 경로 (목록에서 직접 찾아야 합니다)
             try {
                 startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
-                Toast.makeText(this, "목록에서 TodoLock 을 찾아 허용하세요", Toast.LENGTH_LONG)
-                    .show()
+                Toast.makeText(this, R.string.toast_overlay_how, Toast.LENGTH_LONG).show()
             } catch (e2: Exception) {
                 startActivity(Intent(Settings.ACTION_SETTINGS))
             }
@@ -306,8 +317,8 @@ class SettingsActivity : AppCompatActivity() {
      */
     private fun openServiceChannelSettings() = openChannelSettings(
         Notifications.CHANNEL_SERVICE,
-        "이 화면에서 알림을 끄면 상단 표시가 사라집니다",
-        "'잠금해제 감지' 항목을 끄세요"
+        getString(R.string.toast_ongoing_how),
+        getString(R.string.toast_ongoing_which)
     )
 
     /**
@@ -329,8 +340,8 @@ class SettingsActivity : AppCompatActivity() {
         }
         openChannelSettings(
             channel,
-            "이 화면에서 소리·진동을 고를 수 있습니다",
-            "'할 일 미리 알림' 항목에서 소리·진동을 고르세요"
+            getString(R.string.toast_sound_how),
+            getString(R.string.toast_sound_which)
         )
     }
 

@@ -23,7 +23,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="할 일 입력"
+            android:hint="@string/hint_todo"
             android:inputType="text"
             android:imeOptions="actionDone"
             android:maxLines="1"
@@ -38,7 +38,7 @@
             android:src="@drawable/ic_star_border"
             android:tint="?attr/accentHeading"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="중요 표시" />
+            android:contentDescription="@string/cd_mark_important" />
 
         <ImageButton
             android:id="@+id/btnSave"
@@ -47,7 +47,7 @@
             android:src="@drawable/ic_check"
             android:tint="?attr/accentHeading"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="저장" />
+            android:contentDescription="@string/cd_save" />
     </LinearLayout>
 
     <LinearLayout
@@ -72,7 +72,7 @@
             android:paddingEnd="6dp"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:text="기한 설정" />
+            android:text="@string/due_set" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRemind"
@@ -91,7 +91,7 @@
             android:paddingEnd="6dp"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:text="미리 알림" />
+            android:text="@string/remind" />
 
         <!--
           메모는 폭을 나눠 갖지 않습니다(weight 없음). 기한 버튼에는 날짜에 시각까지
@@ -114,7 +114,7 @@
             android:paddingEnd="10dp"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:text="메모" />
+            android:text="@string/memo" />
     </LinearLayout>
 
     <!--
@@ -141,7 +141,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:hint="메모"
+        android:hint="@string/hint_memo"
         android:inputType="textMultiLine|textCapSentences"
         android:gravity="top|start"
         android:minLines="3"

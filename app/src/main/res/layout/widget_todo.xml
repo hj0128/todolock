@@ -86,7 +86,7 @@
                     android:src="@drawable/ic_chevron"
                     android:tint="@color/sky_heading"
                     android:visibility="gone"
-                    android:contentDescription="지난 달" />
+                    android:contentDescription="@string/cd_prev_month" />
 
                 <TextView
                     android:id="@+id/wMonth"
@@ -110,7 +110,7 @@
                     android:scaleX="-1"
                     android:tint="@color/sky_heading"
                     android:visibility="gone"
-                    android:contentDescription="다음 달" />
+                    android:contentDescription="@string/cd_next_month" />
             </LinearLayout>
 
             <!-- 위젯 안을 목록 ↔ 달력으로 바꿉니다. 앱을 열지 않습니다. -->
@@ -121,7 +121,7 @@
                 android:padding="5dp"
                 android:src="@drawable/ic_calendar"
                 android:tint="@color/sky_heading"
-                android:contentDescription="달력으로 보기" />
+                android:contentDescription="@string/cd_show_calendar" />
 
             <ImageView
                 android:id="@+id/wAdd"
@@ -131,7 +131,7 @@
                 android:padding="3dp"
                 android:src="@drawable/ic_add"
                 android:tint="@color/sky_heading"
-                android:contentDescription="할 일 추가" />
+                android:contentDescription="@string/cd_add_todo" />
 
             <ImageView
                 android:id="@+id/wSettings"
@@ -141,7 +141,7 @@
                 android:padding="5dp"
                 android:src="@drawable/ic_settings"
                 android:tint="@color/sky_heading"
-                android:contentDescription="위젯 설정" />
+                android:contentDescription="@string/cd_widget_settings" />
         </LinearLayout>
     </FrameLayout>
 
@@ -176,7 +176,7 @@
                 android:gravity="center"
                 android:textSize="14sp"
                 android:textColor="@color/widget_text_dim"
-                android:text="할 일이 없습니다" />
+                android:text="@string/widget_empty" />
 
             <ListView
                 android:id="@+id/wList"
@@ -224,31 +224,31 @@
 
                 <TextView
                     style="@style/TextAppearance.TodoLock.WidgetWeekday"
-                    android:text="일" />
+                    android:text="@string/wd_sun" />
 
                 <TextView
                     style="@style/TextAppearance.TodoLock.WidgetWeekday"
-                    android:text="월" />
+                    android:text="@string/wd_mon" />
 
                 <TextView
                     style="@style/TextAppearance.TodoLock.WidgetWeekday"
-                    android:text="화" />
+                    android:text="@string/wd_tue" />
 
                 <TextView
                     style="@style/TextAppearance.TodoLock.WidgetWeekday"
-                    android:text="수" />
+                    android:text="@string/wd_wed" />
 
                 <TextView
                     style="@style/TextAppearance.TodoLock.WidgetWeekday"
-                    android:text="목" />
+                    android:text="@string/wd_thu" />
 
                 <TextView
                     style="@style/TextAppearance.TodoLock.WidgetWeekday"
-                    android:text="금" />
+                    android:text="@string/wd_fri" />
 
                 <TextView
                     style="@style/TextAppearance.TodoLock.WidgetWeekday"
-                    android:text="토" />
+                    android:text="@string/wd_sat" />
             </LinearLayout>
 
             <!--

@@ -74,7 +74,7 @@ private class TodoWidgetFactory(
         // '지남' 이라는 말은 붙이지 않습니다 — 날짜와 색이 이미 같은 이야기를 합니다.
         val overdue = TodoStore.isOverdue(todo)
         val dueToday = TodoStore.isDueToday(todo)
-        val due = TodoStore.prettyDue(todo)
+        val due = TodoStore.prettyDue(ctx, todo)
 
         rv.setTextViewText(
             R.id.wSub,
@@ -99,7 +99,8 @@ private class TodoWidgetFactory(
 
         // 알림은 자리가 되면 기한과 같은 줄 오른쪽 끝에, 모자라면 아랫줄에 놓습니다.
         // 색은 기한이 지나도 바꾸지 않습니다 — 지난 것은 기한의 사정입니다.
-        val remind = if (todo.hasReminder) "🔔 " + TodoStore.prettyDateTime(todo.remindAt) else ""
+        val remind =
+            if (todo.hasReminder) "🔔 " + TodoStore.prettyDateTime(ctx, todo.remindAt) else ""
         val inline = todo.hasReminder && fitsOnOneLine(due, remind, dueToday)
 
         rv.setTextViewText(R.id.wRemind, remind)

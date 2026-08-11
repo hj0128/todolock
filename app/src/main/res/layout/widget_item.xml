@@ -36,7 +36,7 @@
             android:padding="6dp"
             android:src="@drawable/ic_circle_outline"
             android:tint="@color/sky_heading"
-            android:contentDescription="완료로 표시" />
+            android:contentDescription="@string/cd_mark_done" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -124,6 +124,6 @@
             android:padding="6dp"
             android:src="@drawable/ic_star_border"
             android:tint="@color/sky_heading"
-            android:contentDescription="중요 표시" />
+            android:contentDescription="@string/cd_mark_important" />
     </LinearLayout>
 </FrameLayout>

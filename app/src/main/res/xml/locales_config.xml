@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    이 앱이 가진 언어. Android 13+ 는 이 목록을 보고 시스템 설정에
+    '앱 언어' 항목을 만들어 줍니다.
+
+    폰 전체를 영어로 쓰면서 이 앱만 한국어로 두고 싶은 경우가 있어
+    (또는 그 반대) 넣어 둡니다. 목록에 없는 언어는 en 으로 뜹니다.
+-->
+<!--
+    ko 가 아니라 ko-KR 인 이유: ko 만 적으면 시스템이 한국어를 쓰는 지역을
+    모두 펼쳐서 '조선민주주의인민공화국' 까지 고르라고 내놓습니다.
+    지역이 하나로 정해져 있으면 '한국어' 한 줄로 끝납니다.
+-->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="ko-KR" />
+    <locale android:name="en-US" />
+</locale-config>

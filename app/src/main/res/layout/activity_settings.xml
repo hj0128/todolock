@@ -33,14 +33,14 @@
                 android:src="@drawable/ic_back"
                 app:tint="?attr/colorPrimary"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="뒤로" />
+                android:contentDescription="@string/cd_back" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="6dp"
-                android:text="설정"
+                android:text="@string/title_settings"
                 android:textSize="22sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -64,14 +64,14 @@
                     android:id="@+id/swEnabled"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="잠금해제하면 오늘 할 일 띄우기"
+                    android:text="@string/sw_enable"
                     android:textSize="15sp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="표시 빈도"
+                    android:text="@string/freq_title"
                     android:textSize="12sp"
                     android:textColor="?android:attr/textColorSecondary" />
 
@@ -87,7 +87,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textSize="13sp"
-                        android:text="매번" />
+                        android:text="@string/freq_always" />
 
                     <RadioButton
                         android:id="@+id/rbHourly"
@@ -95,7 +95,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textSize="13sp"
-                        android:text="1시간마다" />
+                        android:text="@string/freq_hourly" />
 
                     <RadioButton
                         android:id="@+id/rbOnce"
@@ -103,7 +103,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textSize="13sp"
-                        android:text="하루 1번" />
+                        android:text="@string/freq_daily" />
                 </RadioGroup>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -126,7 +126,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="미리 알림 방식"
+                    android:text="@string/remind_title"
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
@@ -143,7 +143,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textSize="13sp"
-                        android:text="알림창" />
+                        android:text="@string/remind_shade" />
 
                     <RadioButton
                         android:id="@+id/rbHeadsUp"
@@ -151,7 +151,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textSize="13sp"
-                        android:text="헤드업" />
+                        android:text="@string/remind_headsup" />
 
                     <RadioButton
                         android:id="@+id/rbPopup"
@@ -159,7 +159,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textSize="13sp"
-                        android:text="전체 팝업" />
+                        android:text="@string/remind_popup" />
                 </RadioGroup>
 
                 <TextView
@@ -168,7 +168,7 @@
                     android:layout_marginTop="2dp"
                     android:textSize="11sp"
                     android:alpha="0.6"
-                    android:text="헤드업·전체 팝업도 알림창에는 항상 남습니다." />
+                    android:text="@string/remind_note" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnRemindSound"
@@ -177,7 +177,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:textSize="12sp"
-                    android:text="소리 · 진동 설정" />
+                    android:text="@string/sound_settings" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -199,7 +199,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="하이라이터 색"
+                    android:text="@string/color_title"
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
@@ -209,7 +209,7 @@
                     android:layout_marginTop="2dp"
                     android:textSize="11sp"
                     android:alpha="0.7"
-                    android:text="앱 화면과 위젯에 함께 적용됩니다. 다크 모드에서는 같은 색의 어두운 톤이 쓰입니다." />
+                    android:text="@string/color_desc" />
 
                 <!--
                   색상표. 동그라미 16개는 코드에서 채웁니다(SettingsActivity).
@@ -243,7 +243,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="권한 · 도구"
+                    android:text="@string/perm_title"
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
@@ -258,7 +258,7 @@
                     android:textSize="11sp"
                     android:alpha="0.7"
                     android:lineSpacingExtra="2dp"
-                    android:text="잠금해제시 팝업이 뜨려면 아래 두 가지가 필요합니다. 되어 있으면 버튼에 '허용됨 / 완료' 가 표시됩니다. 절전 예외는 앱이 대신 켤 수 없어, 앱 정보 화면에서 '배터리 → 제한 없음' 을 직접 골라야 합니다." />
+                    android:text="@string/perm_desc" />
 
                 <TextView
                     android:id="@+id/tvPermWarn"
@@ -267,7 +267,7 @@
                     android:layout_marginTop="4dp"
                     android:textSize="12sp"
                     android:textColor="?attr/colorError"
-                    android:text="⚠ '다른 앱 위에 표시' 권한이 없으면 팝업 대신 알림으로만 표시됩니다."
+                    android:text="@string/perm_overlay_warn"
                     android:visibility="gone" />
 
                 <com.google.android.material.button.MaterialButton
@@ -277,7 +277,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:textSize="12sp"
-                    android:text="권한 주기" />
+                    android:text="@string/perm_overlay_grant" />
 
                 <TextView
                     android:id="@+id/tvBatteryWarn"
@@ -286,7 +286,7 @@
                     android:layout_marginTop="4dp"
                     android:textSize="12sp"
                     android:textColor="?attr/colorError"
-                    android:text="⚠ 절전 예외가 없으면 절전 기능이 감지 서비스를 종료해, 팝업이 안 뜨는 날이 생깁니다."
+                    android:text="@string/perm_battery_warn"
                     android:visibility="gone" />
 
                 <!--
@@ -302,7 +302,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
-                    android:text="앱 정보 열기 (배터리 → 제한 없음)" />
+                    android:text="@string/perm_battery_open" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnHideOngoing"
@@ -310,7 +310,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
-                    android:text="상단 'TodoLock 실행 중' 알림 숨기기" />
+                    android:text="@string/hide_ongoing" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnTest"
@@ -318,7 +318,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
-                    android:text="팝업 미리보기" />
+                    android:text="@string/popup_preview" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -340,7 +340,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="백업"
+                    android:text="@string/backup_title"
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
@@ -350,7 +350,7 @@
                     android:layout_marginTop="2dp"
                     android:textSize="11sp"
                     android:alpha="0.7"
-                    android:text="할 일과 설정을 파일 하나로 내보내고, 새 기기에서 그 파일로 되돌립니다. 저장 위치는 고르는 대로이고(드라이브·내 파일 등) 앱이 따로 어디에 보내지 않습니다." />
+                    android:text="@string/backup_desc" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnExport"
@@ -359,7 +359,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:textSize="12sp"
-                    android:text="내보내기" />
+                    android:text="@string/backup_export" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnImport"
@@ -367,7 +367,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
-                    android:text="가져오기" />
+                    android:text="@string/backup_import" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>

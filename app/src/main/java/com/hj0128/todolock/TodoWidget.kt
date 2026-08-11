@@ -187,7 +187,9 @@ class TodoWidget : AppWidgetProvider() {
             )
             rv.setContentDescription(
                 R.id.wCalendar,
-                if (calendar) "목록으로 보기" else "달력으로 보기"
+                ctx.getString(
+                    if (calendar) R.string.cd_show_list else R.string.cd_show_calendar
+                )
             )
 
             val pending = TodoStore.pendingSorted(ctx)
@@ -195,13 +197,16 @@ class TodoWidget : AppWidgetProvider() {
                 R.id.wCount,
                 // 비어 있을 때는 개수를 붙이지 않습니다. 아래 빈 목록 자리에
                 // '할 일이 없습니다' 가 이미 뜨므로 헤더까지 거들 필요가 없습니다.
-                if (pending.isEmpty()) "할 일" else "할 일 " + pending.size + "개"
+                if (pending.isEmpty()) ctx.getString(R.string.widget_name)
+                else ctx.resources.getQuantityString(
+                    R.plurals.task_count, pending.size, pending.size
+                )
             )
             // 화살표까지 들어가 좁아지므로, 작은 위젯에서는 연도를 뺍니다.
             rv.setTextViewText(
                 R.id.wMonth,
-                if (widthDp(ctx, widgetId) >= WIDE_DP) TodoStore.prettyMonth(shown)
-                else TodoStore.shortMonth(shown)
+                if (widthDp(ctx, widgetId) >= WIDE_DP) TodoStore.prettyMonth(ctx, shown)
+                else TodoStore.shortMonth(ctx, shown)
             )
 
             // 겉모습 설정 적용. background 는 알파를 못 바꿔서 배경을 ImageView 로 깔았습니다.

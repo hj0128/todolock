@@ -47,9 +47,10 @@ object TodoRow {
         // '지남' 이라는 말은 붙이지 않습니다 — 날짜가 이미 '어제' 라고 말하고 있고
         // 빨간색이 지났다는 사실까지 말하고 있어, 같은 이야기를 세 번 하게 됩니다.
         val overdue = TodoStore.isOverdue(todo)
-        val due = TodoStore.prettyDue(todo)
+        val ctx = b.root.context
+        val due = TodoStore.prettyDue(ctx, todo)
         val parts = mutableListOf(due)
-        if (todo.hasReminder) parts.add("🔔 " + TodoStore.prettyDateTime(todo.remindAt))
+        if (todo.hasReminder) parts.add("🔔 " + TodoStore.prettyDateTime(ctx, todo.remindAt))
 
         // 오늘 기한은 눈에 띄어야 합니다 — '지남'(빨강)만 강조되고 정작 오늘 할 일이
         // 어제·모레와 같은 회색이면, 목록에서 가장 급한 줄이 가장 안 보입니다.
@@ -57,9 +58,7 @@ object TodoRow {
         // 같은 무게로 읽혀 오히려 초점이 흐려집니다.
         val line = parts.joinToString(" · ")
         b.tvDate.text = if (TodoStore.isDueToday(todo)) emphasize(b, line, due.length) else line
-        b.tvDate.setTextColor(
-            if (overdue) overdueColor(b.root.context) else secondaryColor(b.root.context)
-        )
+        b.tvDate.setTextColor(if (overdue) overdueColor(ctx) else secondaryColor(ctx))
 
         // 메모는 첫 줄만. 열어보지 않아도 무슨 내용인지 알 수 있으면 충분합니다.
         if (todo.hasMemo) {
@@ -96,7 +95,9 @@ object TodoRow {
                 if (todo.important) R.drawable.ic_star else R.drawable.ic_star_border
             )
             b.btnStar.alpha = if (todo.important) 1f else 0.45f
-            b.btnStar.contentDescription = if (todo.important) "중요 해제" else "중요로 표시"
+            b.btnStar.contentDescription = ctx.getString(
+                if (todo.important) R.string.cd_unmark_important else R.string.cd_mark_important
+            )
             b.btnStar.setOnClickListener {
                 todo.important = !todo.important
                 onStar.invoke(todo)

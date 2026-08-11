@@ -75,6 +75,6 @@
         android:layout_marginStart="8dp"
         android:src="@drawable/ic_star"
         app:tint="?attr/accentHeading"
-        android:contentDescription="중요"
+        android:contentDescription="@string/cd_important"
         android:visibility="invisible" />
 </LinearLayout>

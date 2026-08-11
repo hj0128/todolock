@@ -66,7 +66,7 @@
             android:src="@drawable/ic_star_border"
             android:tint="?attr/accentHeading"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="중요 표시" />
+            android:contentDescription="@string/cd_mark_important" />
 
         <ImageButton
             android:id="@+id/btnDelete"
@@ -75,7 +75,7 @@
             android:src="@drawable/ic_close"
             android:tint="?attr/colorOutline"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="삭제"
+            android:contentDescription="@string/cd_delete"
             android:alpha="0.7" />
     </LinearLayout>
 </LinearLayout>

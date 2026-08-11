@@ -41,7 +41,7 @@ object Backup {
 
         return JSONObject()
             .put("version", VERSION)
-            .put("exportedAt", TodoStore.prettyDateTime(System.currentTimeMillis()))
+            .put("exportedAt", TodoStore.prettyDateTime(ctx, System.currentTimeMillis()))
             .put("todos", TodoStore.encode(TodoStore.load(ctx)))
             .put("settings", settings)
             .toString(2)

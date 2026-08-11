@@ -60,7 +60,8 @@ class TodayPopupActivity : AppCompatActivity() {
         val items = if (sample) sampleItems() else real
 
         b.tvCount.text =
-            if (sample) "미리보기 · 아래는 예시입니다" else "남은 할 일 " + items.size + "개"
+            if (sample) getString(R.string.popup_preview_title)
+            else resources.getQuantityString(R.plurals.remaining_count, items.size, items.size)
 
         b.container.removeAllViews()
         for (todo in items) {
@@ -72,8 +73,10 @@ class TodayPopupActivity : AppCompatActivity() {
             // 시각을 정했으면 그것만 남기고(잠금해제 직후에 가장 급한 정보입니다),
             // 미리 알림이 있으면 뒤에 붙입니다.
             val sub = mutableListOf<String>()
-            if (todo.hasDueTime) sub.add(TodoStore.formatMinutes(todo.dueMinutes) + "까지")
-            if (todo.hasReminder) sub.add("🔔 " + TodoStore.prettyDateTime(todo.remindAt))
+            if (todo.hasDueTime) {
+                sub.add(getString(R.string.until, TodoStore.formatMinutes(this, todo.dueMinutes)))
+            }
+            if (todo.hasReminder) sub.add("🔔 " + TodoStore.prettyDateTime(this, todo.remindAt))
 
             if (sub.isEmpty()) {
                 row.pSub.visibility = View.GONE
@@ -109,16 +112,16 @@ class TodayPopupActivity : AppCompatActivity() {
         val today = TodoStore.today()
         return listOf(
             Todo(
-                id = 0L, text = "장 보러 가기", date = today,
+                id = 0L, text = getString(R.string.sample_1), date = today,
                 dueMinutes = 18 * 60, important = true
             ),
             Todo(
-                id = 0L, text = "약 먹기", date = today,
+                id = 0L, text = getString(R.string.sample_2), date = today,
                 remindAt = TodoStore.dueMillis(today, 21 * 60)
             ),
             Todo(
-                id = 0L, text = "전기요금 내기", date = today,
-                memo = "지난달 고지서 확인"
+                id = 0L, text = getString(R.string.sample_3), date = today,
+                memo = getString(R.string.sample_3_memo)
             )
         )
     }

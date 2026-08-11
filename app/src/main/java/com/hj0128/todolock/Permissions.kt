@@ -35,10 +35,8 @@ object Permissions {
      * 더 심각한 쪽(팝업 자체가 불가능)을 먼저 알립니다.
      */
     fun warning(ctx: Context): String? = when {
-        !canShowPopup(ctx) ->
-            "⚠ 잠금해제 팝업이 뜨지 않습니다 · 눌러서 권한 허용"
-        !isBatteryExempt(ctx) ->
-            "⚠ 절전 때문에 잠금해제 팝업이 멈출 수 있습니다 · 눌러서 설정"
+        !canShowPopup(ctx) -> ctx.getString(R.string.banner_overlay)
+        !isBatteryExempt(ctx) -> ctx.getString(R.string.banner_battery)
         else -> null
     }
 }

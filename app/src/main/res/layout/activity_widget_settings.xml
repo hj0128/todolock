@@ -33,7 +33,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="위젯 설정"
+                android:text="@string/title_widget_settings"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -41,7 +41,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
-                android:text="불투명도"
+                android:text="@string/widget_opacity"
                 android:textSize="12sp"
                 android:textColor="?android:attr/textColorSecondary" />
 
@@ -72,7 +72,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="글꼴 크기"
+                android:text="@string/widget_font_size"
                 android:textSize="12sp"
                 android:textColor="?android:attr/textColorSecondary" />
 
@@ -110,7 +110,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
-                android:text="완료" />
+                android:text="@string/done" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </FrameLayout>

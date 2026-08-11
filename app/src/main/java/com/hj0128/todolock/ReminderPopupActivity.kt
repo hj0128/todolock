@@ -33,7 +33,7 @@ class ReminderPopupActivity : AppCompatActivity() {
         setContentView(b.root)
 
         b.tvText.text = todo.text
-        b.tvWhen.text = TodoStore.prettyDue(todo) + " 기한"
+        b.tvWhen.text = getString(R.string.due_label, TodoStore.prettyDue(this, todo))
 
         // 메모는 첫 줄만이 아니라 전문을 보여줍니다. 화면을 덮는 창이라 자리가 있습니다.
         b.tvMemo.visibility = if (todo.hasMemo) View.VISIBLE else View.GONE

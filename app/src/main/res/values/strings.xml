@@ -1,6 +1,206 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    한국어 문구이자 기본값입니다.
+
+    values 가 기본값이므로, 우리가 넣지 않은 언어로 맞춰 둔 폰(프랑스어 등)은
+    여기 있는 한국어를 보게 됩니다. 영어는 values-en 에 있습니다.
+
+    날짜·시각 형식(fmt_*)도 여기 둡니다. 읽는 글은 아니지만 언어마다 순서가
+    달라서, 다른 문구와 똑같이 번역 대상입니다.
+-->
 <resources>
     <string name="app_name">TodoLock</string>
     <string name="widget_name">할 일</string>
     <string name="widget_desc">할 일을 홈 화면에서 보고 탭으로 완료 처리합니다</string>
+
+    <!-- ===== 공통 ===== -->
+    <string name="ok">확인</string>
+    <string name="cancel">취소</string>
+    <string name="close">닫기</string>
+    <string name="done">완료</string>
+    <string name="today">오늘</string>
+    <string name="cd_back">뒤로</string>
+
+    <string name="wd_sun">일</string>
+    <string name="wd_mon">월</string>
+    <string name="wd_tue">화</string>
+    <string name="wd_wed">수</string>
+    <string name="wd_thu">목</string>
+    <string name="wd_fri">금</string>
+    <string name="wd_sat">토</string>
+
+    <!-- ===== 날짜 · 시각 형식 ===== -->
+    <string name="fmt_date">M월 d일 (E)</string>
+    <string name="fmt_month">yyyy년 M월</string>
+    <string name="fmt_month_short">M월</string>
+    <string name="fmt_time">HH:mm</string>
+    <string name="fmt_time_12">a h:mm</string>
+
+    <string name="date_today">오늘 · %1$s</string>
+    <string name="date_tomorrow">내일 · %1$s</string>
+    <string name="date_yesterday">어제 · %1$s</string>
+
+    <!-- ===== 할 일 목록 ===== -->
+    <string name="add_todo">＋ 할 일 추가</string>
+    <string name="cd_calendar">달력</string>
+    <string name="cd_settings">설정</string>
+    <string name="empty_list">할 일이 없습니다.\n오늘 할 일이 없으면 잠금해제 시 팝업도 뜨지 않아요.</string>
+    <string name="cd_mark_important">중요로 표시</string>
+    <string name="cd_unmark_important">중요 해제</string>
+    <string name="cd_important">중요</string>
+    <string name="cd_delete">삭제</string>
+    <string name="cd_mark_done">완료로 표시</string>
+
+    <plurals name="task_count">
+        <item quantity="other">할 일 %d개</item>
+    </plurals>
+    <plurals name="done_count">
+        <item quantity="other">완료 %d개</item>
+    </plurals>
+
+    <!-- ===== 달력 ===== -->
+    <string name="title_calendar">달력</string>
+    <string name="cd_pick_date">날짜 고르기</string>
+    <string name="empty_day">이 날짜에는 할 일이 없습니다.</string>
+    <string name="cd_add_todo">할 일 추가</string>
+    <string name="picker_year">%d년</string>
+    <string name="picker_month">%s</string>
+    <string name="picker_day">%d일</string>
+    <string name="pick_date_title">날짜 고르기</string>
+    <string name="go">이동</string>
+
+    <!-- ===== 추가 · 수정 시트 ===== -->
+    <string name="hint_todo">할 일 입력</string>
+    <string name="hint_memo">메모</string>
+    <string name="memo">메모</string>
+    <string name="cd_save">저장</string>
+    <string name="due_set">기한 설정</string>
+    <string name="remind">미리 알림</string>
+    <string name="toast_enter_todo">할 일을 입력하세요</string>
+    <string name="remind_after_due">⚠ 기한(%1$s) 보다 늦은 알림입니다</string>
+    <string name="time_change">시간 변경</string>
+    <string name="time_add">시간 추가</string>
+    <string name="time_none">시간 없음</string>
+    <string name="remind_none">알림 없음</string>
+
+    <!-- ===== 잠금해제 팝업 ===== -->
+    <string name="popup_hey">잠깐!</string>
+    <string name="popup_ask">오늘 할 일 확인하셨나요?</string>
+    <string name="open_app">앱 열기</string>
+    <string name="popup_preview_title">미리보기 · 아래는 예시입니다</string>
+    <plurals name="remaining_count">
+        <item quantity="other">남은 할 일 %d개</item>
+    </plurals>
+    <string name="until">%1$s까지</string>
+    <string name="sample_1">장 보러 가기</string>
+    <string name="sample_2">약 먹기</string>
+    <string name="sample_3">전기요금 내기</string>
+    <string name="sample_3_memo">지난달 고지서 확인</string>
+
+    <!-- ===== 미리 알림 ===== -->
+    <string name="reminder_heading">🔔 미리 알림</string>
+    <string name="due_label">%1$s 기한</string>
+    <string name="remind_scheduled">%1$s에 알려드립니다</string>
+    <string name="remind_inexact"> (권한이 없어 몇 분 늦을 수 있음)</string>
+    <string name="remind_past">%1$s — 이미 지난 시각이라 알림을 걸지 않았습니다</string>
+    <string name="remind_after_due_suffix"> · 기한 뒤입니다</string>
+
+    <!-- ===== 알림 ===== -->
+    <string name="ch_unlock">잠금해제 감지</string>
+    <string name="ch_unlock_desc">잠금해제를 감지하기 위해 실행 중인 상태 표시</string>
+    <string name="ch_today">오늘의 할 일 알림</string>
+    <string name="ch_today_desc">잠금해제 시 오늘 할 일을 알려줍니다</string>
+    <string name="ch_remind">할 일 미리 알림</string>
+    <string name="ch_remind_desc">설정한 기한보다 미리 알려줍니다</string>
+    <string name="ch_remind_quiet">할 일 미리 알림 (조용히)</string>
+    <string name="ch_remind_quiet_desc">화면 위에 배너로 띄우지 않습니다</string>
+    <string name="ongoing_title">TodoLock 실행 중</string>
+    <string name="ongoing_text">잠금해제하면 오늘 할 일을 보여줍니다</string>
+    <plurals name="notif_remaining">
+        <item quantity="other">오늘 할 일 %d개 남았어요</item>
+    </plurals>
+    <string name="notif_tap">눌러서 확인하기</string>
+
+    <!-- ===== 권한 안내 띠 ===== -->
+    <string name="banner_overlay">⚠ 잠금해제 팝업이 뜨지 않습니다 · 눌러서 권한 허용</string>
+    <string name="banner_battery">⚠ 절전 때문에 잠금해제 팝업이 멈출 수 있습니다 · 눌러서 설정</string>
+
+    <!-- ===== 설정 ===== -->
+    <string name="title_settings">설정</string>
+    <string name="sw_enable">잠금해제하면 오늘 할 일 띄우기</string>
+    <string name="freq_title">표시 빈도</string>
+    <string name="freq_always">매번</string>
+    <string name="freq_hourly">1시간마다</string>
+    <string name="freq_daily">하루 1번</string>
+    <string name="remind_title">미리 알림 방식</string>
+    <string name="remind_shade">알림창</string>
+    <string name="remind_headsup">헤드업</string>
+    <string name="remind_popup">전체 팝업</string>
+    <string name="remind_note">헤드업·전체 팝업도 알림창에는 항상 남습니다.</string>
+    <string name="sound_settings">소리 · 진동 설정</string>
+    <string name="color_title">하이라이터 색</string>
+    <string name="color_desc">앱 화면과 위젯에 함께 적용됩니다. 다크 모드에서는 같은 색의 어두운 톤이 쓰입니다.</string>
+    <string name="perm_title">권한 · 도구</string>
+    <string name="perm_desc">잠금해제시 팝업이 뜨려면 아래 두 가지가 필요합니다. 되어 있으면 버튼에 \'허용됨 / 완료\' 가 표시됩니다. 절전 예외는 앱이 대신 켤 수 없어, 앱 정보 화면에서 \'배터리 → 제한 없음\' 을 직접 골라야 합니다.</string>
+    <string name="perm_overlay_warn">⚠ \'다른 앱 위에 표시\' 권한이 없으면 팝업 대신 알림으로만 표시됩니다.</string>
+    <string name="perm_overlay_grant">다른 앱 위에 표시 권한 주기</string>
+    <string name="perm_overlay_ok">다른 앱 위에 표시 · 허용됨</string>
+    <string name="perm_battery_warn">⚠ 절전 예외가 없으면 절전 기능이 감지 서비스를 종료해, 팝업이 안 뜨는 날이 생깁니다.</string>
+    <string name="perm_battery_open">앱 정보 열기 (배터리 → 제한 없음)</string>
+    <string name="perm_battery_ok">앱 정보 열기 · 절전 예외 완료</string>
+    <string name="hide_ongoing">상단 \'TodoLock 실행 중\' 알림 숨기기</string>
+    <string name="popup_preview">팝업 미리보기</string>
+    <string name="toast_battery_done">절전 예외는 이미 완료 상태입니다</string>
+    <string name="toast_battery_how">\'배터리\' 로 들어가 \'제한 없음\' 을 고르세요</string>
+    <string name="toast_overlay_how">목록에서 TodoLock 을 찾아 허용하세요</string>
+    <string name="toast_ongoing_how">이 화면에서 알림을 끄면 상단 표시가 사라집니다</string>
+    <string name="toast_ongoing_which">\'잠금해제 감지\' 항목을 끄세요</string>
+    <string name="toast_sound_how">이 화면에서 소리·진동을 고를 수 있습니다</string>
+    <string name="toast_sound_which">\'할 일 미리 알림\' 항목에서 소리·진동을 고르세요</string>
+
+    <!-- ===== 백업 ===== -->
+    <string name="backup_title">백업</string>
+    <string name="backup_desc">할 일과 설정을 파일 하나로 내보내고, 새 기기에서 그 파일로 되돌립니다. 저장 위치는 고르는 대로이고(드라이브·내 파일 등) 앱이 따로 어디에 보내지 않습니다.</string>
+    <string name="backup_export">내보내기</string>
+    <string name="backup_import">가져오기</string>
+    <string name="backup_exported">내보냈습니다</string>
+    <string name="backup_export_failed">내보내지 못했습니다</string>
+    <string name="backup_not_a_backup">백업 파일이 아닙니다</string>
+    <string name="backup_import_title">가져오기</string>
+    <string name="backup_import_msg">%1$s가 들어 있습니다.\n지금 것과 합칠까요, 모두 바꿀까요?</string>
+    <string name="backup_merge">합치기</string>
+    <string name="backup_replace">모두 바꾸기</string>
+    <plurals name="backup_imported">
+        <item quantity="other">할 일 %d개를 가져왔습니다</item>
+    </plurals>
+
+    <!-- ===== 위젯 ===== -->
+    <string name="title_widget_settings">위젯 설정</string>
+    <string name="widget_opacity">불투명도</string>
+    <string name="widget_font_size">글꼴 크기</string>
+    <string name="widget_empty">할 일이 없습니다</string>
+    <string name="cd_prev_month">지난 달</string>
+    <string name="cd_next_month">다음 달</string>
+    <string name="cd_show_calendar">달력으로 보기</string>
+    <string name="cd_show_list">목록으로 보기</string>
+    <string name="cd_widget_settings">위젯 설정</string>
+
+    <string-array name="palette_names">
+        <item>하늘</item>
+        <item>파랑</item>
+        <item>남색</item>
+        <item>보라</item>
+        <item>자주</item>
+        <item>분홍</item>
+        <item>장미</item>
+        <item>빨강</item>
+        <item>주황</item>
+        <item>호박</item>
+        <item>노랑</item>
+        <item>라임</item>
+        <item>초록</item>
+        <item>에메랄드</item>
+        <item>청록</item>
+        <item>회색</item>
+    </string-array>
 </resources>
