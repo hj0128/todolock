@@ -1,5 +1,6 @@
 package com.hj0128.todolock
 
+import android.app.NotificationManager
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
@@ -39,19 +40,45 @@ class ReminderPopupActivity : AppCompatActivity() {
         b.tvMemo.visibility = if (todo.hasMemo) View.VISIBLE else View.GONE
         b.tvMemo.text = todo.memo
 
-        // 닫는 길은 '닫기' 버튼 하나뿐입니다.
+        // '확인할 때까지' 로 두면 소리가 이어지므로, 이 창이 곧 알람 화면입니다.
+        // 그때만 미루기 버튼을 보여줍니다.
+        val rings = TodoStore.ringsUntilChecked(this)
+        b.btnSnooze.visibility = if (rings) View.VISIBLE else View.GONE
+        b.btnSnooze.setOnClickListener {
+            Reminders.cancelHush(this, id)
+            stopRinging(id)
+            Reminders.snooze(this, todo)
+            finish()
+        }
+
+        // 닫는 길은 '닫기' 버튼입니다.
         //
         // 바깥(스크림)을 눌러도, 뒤로 가기를 해도 닫히지 않습니다. 이 창은 다른 일을
         // 하는 도중에 갑자기 뜨기 때문에, 하던 동작이 그대로 이어져 눌리면 내용을
         // 보지도 못한 채 사라집니다. 알림을 놓치지 않는 것이 이 창의 목적입니다.
         //
         // 갇히지는 않습니다 — '닫기' 는 항상 화면에 있고, 홈으로 나갈 수도 있습니다.
-        b.btnLater.setOnClickListener { finish() }
+        //
+        // 닫으면 소리도 멈춥니다. 이 창을 본 것이 곧 '확인' 이라, 창을 닫았는데도
+        // 계속 울리면 어디서 멈추는지 알 수 없게 됩니다. 대신 알림창에는 그대로
+        // 남겨서, 닫았다고 할 일을 잊지는 않게 합니다.
+        b.btnLater.setOnClickListener {
+            if (rings) {
+                Reminders.cancelHush(this, id)
+                Notifications.hushReminder(this, todo)
+            }
+            finish()
+        }
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 // 아무것도 하지 않습니다 (뒤로 가기로 닫히지 않게)
             }
         })
+    }
+
+    /** 미루기는 알림 자체를 걷습니다 — 5분 뒤에 새로 뜹니다. */
+    private fun stopRinging(id: Long) {
+        getSystemService(NotificationManager::class.java)?.cancel(Notifications.reminderId(id))
     }
 
     companion object {

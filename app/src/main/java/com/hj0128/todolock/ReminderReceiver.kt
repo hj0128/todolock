@@ -20,16 +20,35 @@ class ReminderReceiver : BroadcastReceiver() {
             todo.done = true
             TodoStore.update(ctx, todo)
             Reminders.cancel(ctx, id)
+            Reminders.cancelHush(ctx, id)
             ctx.getSystemService(NotificationManager::class.java)
                 ?.cancel(Notifications.reminderId(id))
             TodoStore.appendLog(ctx, "알림에서 완료: " + todo.text)
             return
         }
 
+        // '5분 뒤 다시'. 지금 울리는 것을 걷고 알림 시각만 뒤로 미룹니다.
+        if (intent.action == Reminders.ACTION_SNOOZE) {
+            Reminders.cancelHush(ctx, id)
+            ctx.getSystemService(NotificationManager::class.java)
+                ?.cancel(Notifications.reminderId(id))
+            Reminders.snooze(ctx, todo)
+            TodoStore.appendLog(ctx, "알림 미룸: " + todo.text)
+            return
+        }
+
+        // 아무도 누르지 않아 스스로 멈추는 시각. 소리만 멈추고 알림은 남깁니다.
+        if (intent.action == Reminders.ACTION_HUSH) {
+            if (!todo.done) Notifications.hushReminder(ctx, todo)
+            return
+        }
+
         if (todo.done) return
 
         // 알림창 항목은 어느 방식이든 남깁니다. 전체 팝업이 막혀도 놓치지 않도록.
-        Notifications.showReminder(ctx, todo)
+        val rings = TodoStore.ringsUntilChecked(ctx)
+        Notifications.showReminder(ctx, todo, insistent = rings)
+        if (rings) Reminders.scheduleHush(ctx, id)
 
         if (TodoStore.getRemindStyle(ctx) == TodoStore.REMIND_POPUP) {
             try {

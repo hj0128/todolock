@@ -18,10 +18,29 @@ object Reminders {
 
     const val ACTION_FIRE = "com.hj0128.todolock.REMIND"
     const val ACTION_DONE = "com.hj0128.todolock.REMIND_DONE"
+    const val ACTION_SNOOZE = "com.hj0128.todolock.REMIND_SNOOZE"
+
+    /** 계속 울리던 것을 스스로 멈추는 시각에 옵니다. 알림은 그대로 남습니다. */
+    const val ACTION_HUSH = "com.hj0128.todolock.REMIND_HUSH"
+
     const val EXTRA_ID = "todo_id"
 
     private const val REQ_FIRE = 3000
     private const val REQ_DONE = 4000
+    private const val REQ_SNOOZE = 5000
+    private const val REQ_HUSH = 6000
+
+    /**
+     * '확인할 때까지' 라도 이만큼 지나면 소리를 멈춥니다.
+     *
+     * 폰을 가방에 두고 나가면 아무도 누를 수 없는데, 그때까지 계속 울리면
+     * 배터리를 태우고 주변 사람에게 민폐입니다. 알람 시계들이 쓰는 길이와
+     * 같습니다. 소리만 멈추고 알림은 남으므로 나중에 봐도 사라지지 않습니다.
+     */
+    private const val RING_MS = 2L * 60L * 1000L
+
+    /** '5분 뒤 다시' 의 5분. */
+    private const val SNOOZE_MS = 5L * 60L * 1000L
 
     /**
      * 놓친 알림을 따라잡는 한도. 밤새 꺼져 있던 기기도 아침에 알려주되,
@@ -46,6 +65,52 @@ object Reminders {
 
     fun donePending(ctx: Context, id: Long): PendingIntent =
         pending(ctx, id, ACTION_DONE, REQ_DONE)
+
+    fun snoozePending(ctx: Context, id: Long): PendingIntent =
+        pending(ctx, id, ACTION_SNOOZE, REQ_SNOOZE)
+
+    private fun hushPending(ctx: Context, id: Long): PendingIntent =
+        pending(ctx, id, ACTION_HUSH, REQ_HUSH)
+
+    /**
+     * 소리를 스스로 멈출 시각을 예약합니다. 계속 울리는 알림에만 씁니다.
+     *
+     * 정확 알람으로 걸지 않습니다 — 몇 분 늦게 멈춰도 손해가 없고, 이런 것까지
+     * 정확 알람을 쓰면 시스템이 앱에 주는 몫을 알림 쪽에서 축내게 됩니다.
+     */
+    fun scheduleHush(ctx: Context, id: Long) {
+        val am = ctx.getSystemService(AlarmManager::class.java) ?: return
+        try {
+            am.setAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + RING_MS, hushPending(ctx, id)
+            )
+        } catch (e: Exception) {
+            TodoStore.appendLog(ctx, "멈춤 예약 실패 " + e.javaClass.simpleName)
+        }
+    }
+
+    fun cancelHush(ctx: Context, id: Long) {
+        val am = ctx.getSystemService(AlarmManager::class.java) ?: return
+        try {
+            am.cancel(hushPending(ctx, id))
+        } catch (e: Exception) {
+            // 취소 실패는 무해합니다
+        }
+    }
+
+    /**
+     * '5분 뒤 다시'. 알림 시각 자체를 뒤로 미뤄 예약을 다시 겁니다.
+     *
+     * 따로 미루기용 알람을 두지 않는 이유: 그러면 할 일에 적힌 알림 시각과
+     * 실제로 울릴 시각이 어긋나, 앱에서 본 시각과 울리는 시각이 달라집니다.
+     */
+    fun snooze(ctx: Context, todo: Todo) {
+        todo.remindAt = System.currentTimeMillis() + SNOOZE_MS
+        // 다시 울려야 하므로 '이미 알렸음' 을 지웁니다.
+        todo.notified = false
+        TodoStore.update(ctx, todo)
+        schedule(ctx, todo)
+    }
 
     /**
      * 예약을 항상 먼저 취소하므로, 완료 처리나 알림 해제에도 같은 함수를 쓸 수 있습니다.

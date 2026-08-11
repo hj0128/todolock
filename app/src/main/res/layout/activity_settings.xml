@@ -167,8 +167,60 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:textSize="11sp"
-                    android:alpha="0.6"
-                    android:text="@string/remind_note" />
+                    android:alpha="0.6" />
+
+                <!--
+                  울리는 길이는 '전체 팝업' 일 때만 고르게 합니다. 다른 방식에서는
+                  소리를 멈출 버튼이 화면에 보이지 않아, 계속 울리는 선택이
+                  성립하지 않습니다(TodoStore.ringsUntilChecked 참고).
+                -->
+                <LinearLayout
+                    android:id="@+id/boxRepeat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="14dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:alpha="0.75"
+                        android:text="@string/repeat_title" />
+
+                    <RadioGroup
+                        android:id="@+id/rgRepeat"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="4dp">
+
+                        <RadioButton
+                            android:id="@+id/rbRingOnce"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textSize="13sp"
+                            android:text="@string/repeat_once" />
+
+                        <RadioButton
+                            android:id="@+id/rbUntilChecked"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textSize="13sp"
+                            android:text="@string/repeat_until" />
+                    </RadioGroup>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textSize="11sp"
+                        android:alpha="0.6"
+                        android:text="@string/repeat_note" />
+                </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnRemindSound"
@@ -208,8 +260,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:textSize="11sp"
-                    android:alpha="0.7"
-                    android:text="@string/color_desc" />
+                    android:alpha="0.7" />
 
                 <!--
                   색상표. 동그라미 16개는 코드에서 채웁니다(SettingsActivity).

@@ -100,7 +100,21 @@ class SettingsActivity : AppCompatActivity() {
                     else -> TodoStore.REMIND_HEADS_UP
                 }
             )
+            syncRepeatVisible()
+            // 방식이 바뀌면 쓰는 채널도 바뀝니다. 여기서 다시 만들어야
+            // 시스템 알림 설정에 쓰지 않는 채널이 남아 있지 않습니다.
+            Notifications.ensureChannels(this)
         }
+
+        // 울리는 길이는 '전체 팝업' 일 때만 고를 수 있습니다. 다른 방식에서는
+        // 소리를 멈출 버튼이 화면에 보이지 않아 선택 자체가 성립하지 않습니다.
+        b.rgRepeat.check(
+            if (TodoStore.getRemindRepeat(this)) R.id.rbUntilChecked else R.id.rbRingOnce
+        )
+        b.rgRepeat.setOnCheckedChangeListener { _, id ->
+            TodoStore.setRemindRepeat(this, id == R.id.rbUntilChecked)
+        }
+        syncRepeatVisible()
 
         buildPalette()
 
@@ -251,6 +265,12 @@ class SettingsActivity : AppCompatActivity() {
         // 테마는 화면을 만들 때 정해지므로 지금 보이는 화면은 다시 만들어야 바뀝니다.
         // 다른 화면은 다음에 열릴 때 새 색으로 뜹니다.
         recreate()
+    }
+
+    private fun syncRepeatVisible() {
+        b.boxRepeat.visibility =
+            if (TodoStore.getRemindStyle(this) == TodoStore.REMIND_POPUP) View.VISIBLE
+            else View.GONE
     }
 
     private fun syncPermissionStates() {

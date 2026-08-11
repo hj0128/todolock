@@ -117,14 +117,14 @@
     <string name="remind_after_due_suffix"> · after the due time</string>
 
     <!-- ===== Notifications ===== -->
-    <string name="ch_unlock">Unlock detection</string>
-    <string name="ch_unlock_desc">Shows that the app is running so it can detect unlocks</string>
+    <string name="ch_unlock">\'Running\' notice</string>
+    <string name="ch_unlock_desc">Turn this off to hide the \'TodoLock is running\' notice. Reminders and the unlock popup keep working.</string>
     <string name="ch_today">Today\'s to-dos</string>
     <string name="ch_today_desc">Tells you today\'s to-dos when you unlock</string>
     <string name="ch_remind">To-do reminders</string>
-    <string name="ch_remind_desc">Tells you ahead of the due time you set</string>
-    <string name="ch_remind_quiet">To-do reminders (quiet)</string>
-    <string name="ch_remind_quiet_desc">Does not show a banner over the screen</string>
+    <string name="ch_remind_desc">Tells you before the due time. Pick the sound and vibration here.</string>
+    <string name="ch_remind_quiet">To-do reminders</string>
+    <string name="ch_remind_quiet_desc">Tells you before the due time. Pick the sound and vibration here.</string>
     <string name="ongoing_title">TodoLock is running</string>
     <string name="ongoing_text">Unlock your phone to see today\'s to-dos</string>
     <plurals name="notif_remaining">
@@ -148,10 +148,13 @@
     <string name="remind_shade">Notification</string>
     <string name="remind_headsup">Heads-up</string>
     <string name="remind_popup">Full screen</string>
-    <string name="remind_note">Heads-up and full-screen reminders always stay in the notification shade too.</string>
+    <string name="repeat_title">How long it rings</string>
+    <string name="repeat_once">Once</string>
+    <string name="repeat_until">Until you check it</string>
+    <string name="repeat_note">Sound and vibration keep going until you check it. If you do not, only the sound and vibration stop after 2 minutes — the notification stays.</string>
+    <string name="snooze">Remind in 5 min</string>
     <string name="sound_settings">Sound · vibration</string>
-    <string name="color_title">Highlighter color</string>
-    <string name="color_desc">Applies to both the app and the widget. In dark mode a darker tone of the same color is used.</string>
+    <string name="color_title">Highlight color</string>
     <string name="perm_title">Permissions · tools</string>
     <string name="perm_desc">The unlock popup needs the two below. Once they are set, the buttons say \'Allowed / Done\'. The app cannot turn off battery optimization for you — pick \'Battery → Unrestricted\' yourself on the app info screen.</string>
     <string name="perm_overlay_warn">⚠ Without \'Display over other apps\', reminders appear only as notifications instead of a popup.</string>
@@ -165,8 +168,8 @@
     <string name="toast_battery_done">The battery exception is already set</string>
     <string name="toast_battery_how">Open \'Battery\' and pick \'Unrestricted\'</string>
     <string name="toast_overlay_how">Find TodoLock in the list and allow it</string>
-    <string name="toast_ongoing_how">Turning off notifications here removes the status bar entry</string>
-    <string name="toast_ongoing_which">Turn off \'Unlock detection\'</string>
+    <string name="toast_ongoing_how">Turn the switch off on this screen to hide the notice</string>
+    <string name="toast_ongoing_which">Turn off \'Running\' notice</string>
     <string name="toast_sound_how">You can pick the sound and vibration here</string>
     <string name="toast_sound_which">Pick sound and vibration under \'To-do reminders\'</string>
 

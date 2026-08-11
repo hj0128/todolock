@@ -53,30 +53,45 @@ object Notifications {
         }
         nm.createNotificationChannel(alert)
 
-        val remind = NotificationChannel(
-            CHANNEL_REMIND,
-            ctx.getString(R.string.ch_remind),
-            NotificationManager.IMPORTANCE_HIGH
-        ).apply {
-            description = ctx.getString(R.string.ch_remind_desc)
+        // 미리 알림 채널은 둘을 만들어 두고 하나만 씁니다. 헤드업으로 띄울지는
+        // 채널 중요도로만 정할 수 있는데, 중요도는 채널을 만든 뒤에 바꿀 수
+        // 없기 때문입니다.
+        //
+        // 다만 지금 쓰지 않는 쪽은 지웁니다. 둘 다 두면 시스템 알림 설정에
+        // 같은 이름이 두 줄 보이는데, 그건 앱의 사정이지 사용자가 알 바가
+        // 아닙니다. 지운 채널을 나중에 같은 id 로 다시 만들면 그때 고쳐둔
+        // 소리·진동이 그대로 살아나므로, 방식을 오가도 설정을 잃지 않습니다.
+        val headsUp = TodoStore.getRemindStyle(ctx) == TodoStore.REMIND_HEADS_UP
+        if (headsUp) {
+            nm.deleteNotificationChannel(CHANNEL_REMIND_QUIET)
+            nm.createNotificationChannel(
+                NotificationChannel(
+                    CHANNEL_REMIND,
+                    ctx.getString(R.string.ch_remind),
+                    NotificationManager.IMPORTANCE_HIGH
+                ).apply { description = ctx.getString(R.string.ch_remind_desc) }
+            )
+        } else {
+            nm.deleteNotificationChannel(CHANNEL_REMIND)
+            nm.createNotificationChannel(
+                NotificationChannel(
+                    CHANNEL_REMIND_QUIET,
+                    ctx.getString(R.string.ch_remind_quiet),
+                    NotificationManager.IMPORTANCE_DEFAULT
+                ).apply { description = ctx.getString(R.string.ch_remind_quiet_desc) }
+            )
         }
-        nm.createNotificationChannel(remind)
-
-        // 이름·설명은 생성 후에도 바꿀 수 있습니다(중요도만 고정).
-        // '알림창' 과 '전체 팝업' 두 방식이 이 채널을 공유하므로,
-        // 특정 방식 이름을 붙이지 않고 성질(헤드업 없음)로 표현합니다.
-        val remindQuiet = NotificationChannel(
-            CHANNEL_REMIND_QUIET,
-            ctx.getString(R.string.ch_remind_quiet),
-            NotificationManager.IMPORTANCE_DEFAULT
-        ).apply {
-            description = ctx.getString(R.string.ch_remind_quiet_desc)
-        }
-        nm.createNotificationChannel(remindQuiet)
     }
 
-    /** 기한 전에 울리는 개별 할 일 알림. '완료' 를 누르면 앱을 열지 않고 바로 처리됩니다. */
-    fun showReminder(ctx: Context, todo: Todo) {
+    /**
+     * 기한 전에 울리는 개별 할 일 알림. '완료' 를 누르면 앱을 열지 않고 바로 처리됩니다.
+     *
+     * @param insistent 확인할 때까지 소리 · 진동을 이어갈지.
+     *   FLAG_INSISTENT 는 알림이 사라질 때까지 채널의 소리를 되풀이해 달라고
+     *   시스템에 맡기는 것입니다. 앱이 직접 소리를 물고 있지 않으므로,
+     *   사용자가 '소리 · 진동 설정' 에서 고른 값이 그대로 지켜집니다.
+     */
+    fun showReminder(ctx: Context, todo: Todo, insistent: Boolean = false) {
         ensureChannels(ctx)
 
         val open = PendingIntent.getActivity(
@@ -119,12 +134,41 @@ object Notifications {
             .setAutoCancel(true)
             .setContentIntent(open)
             .addAction(0, ctx.getString(R.string.done), Reminders.donePending(ctx, todo.id))
+            // 울리는 동안에는 미룰 길을 함께 둡니다. 멈추는 방법이 '완료' 뿐이면
+            // 지금 못 하는 일을 끝냈다고 표시하게 됩니다.
+            .apply {
+                if (insistent) {
+                    addAction(
+                        0, ctx.getString(R.string.snooze), Reminders.snoozePending(ctx, todo.id)
+                    )
+                    // 쓸어서 지울 수 없게 합니다. 지워 놓고 왜 안 멈추나 하는 일이
+                    // 없도록, 멈추는 길을 버튼 쪽으로 모읍니다.
+                    setOngoing(true)
+                }
+            }
             .build()
+
+        // 소리를 되풀이할지는 만들어진 뒤에야 붙일 수 있습니다(NotificationCompat 에
+        // 해당하는 설정이 없습니다).
+        if (insistent) n.flags = n.flags or Notification.FLAG_INSISTENT
+
         try {
             ctx.getSystemService(NotificationManager::class.java)?.notify(reminderId(todo.id), n)
         } catch (e: SecurityException) {
             // 알림 권한 없음
         }
+    }
+
+    /**
+     * 울리던 것을 멈추되 알림은 남깁니다.
+     *
+     * 취소하고 다시 띄웁니다 — 같은 알림을 고쳐 올리는 것만으로는 이미 돌고 있는
+     * 소리가 멈추지 않습니다. 다시 띄울 때는 소리를 내지 않습니다.
+     */
+    fun hushReminder(ctx: Context, todo: Todo) {
+        val nm = ctx.getSystemService(NotificationManager::class.java) ?: return
+        nm.cancel(reminderId(todo.id))
+        showReminder(ctx, todo, insistent = false)
     }
 
     fun serviceNotification(ctx: Context): Notification {

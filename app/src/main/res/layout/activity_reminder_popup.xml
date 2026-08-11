@@ -73,17 +73,42 @@
                 android:visibility="gone" />
 
             <!--
-              버튼은 '닫기' 하나뿐입니다.
-              여기에 '완료' 를 두면 알림을 확인하려다 잘못 눌러 할 일이 사라집니다.
-              완료 처리는 알림창의 '완료' 버튼이나 목록·위젯에서 하면 됩니다.
+              '완료' 는 두지 않습니다. 알림을 확인하려다 잘못 눌러 할 일이
+              사라지면 곤란합니다. 완료 처리는 알림창의 '완료' 버튼이나
+              목록 · 위젯에서 하면 됩니다.
+
+              '5분 뒤 다시' 는 계속 울리는 설정일 때만 나타납니다. 한 번만
+              울리는 경우에는 닫아도 다시 볼 길이 알림창에 남아 있어,
+              굳이 미루기를 고를 일이 없습니다.
             -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnLater"
-                style="@style/Widget.TodoLock.Button.Sky"
+            <!--
+              한 줄에 나란히 둡니다. 미루기가 없을 때는 '닫기' 가 혼자
+              줄 전체를 차지하도록 무게로 나눕니다.
+            -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="@string/close" />
+                android:orientation="horizontal"
+                android:layout_marginTop="20dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSnooze"
+                    style="@style/Widget.TodoLock.Button.SkyOutlined"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/snooze"
+                    android:visibility="gone" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnLater"
+                    style="@style/Widget.TodoLock.Button.Sky"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/close" />
+            </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </FrameLayout>

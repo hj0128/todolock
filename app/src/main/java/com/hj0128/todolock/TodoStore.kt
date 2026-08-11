@@ -20,6 +20,7 @@ object TodoStore {
     private const val KEY_MODE = "popup_mode"            // 0=매번, 1=1시간 간격, 2=하루 1번
     private const val KEY_ENABLED = "enabled"
     private const val KEY_REMIND_STYLE = "remind_style"
+    private const val KEY_REMIND_REPEAT = "remind_repeat"
     private const val KEY_LAST_SHOWN_MS = "last_shown_ms"
     private const val KEY_LAST_SHOWN_DAY = "last_shown_day"
 
@@ -394,6 +395,32 @@ object TodoStore {
 
     fun setRemindStyle(ctx: Context, v: Int) =
         prefs(ctx).edit().putInt(KEY_REMIND_STYLE, v).apply()
+
+    /**
+     * 미리 알림이 울릴 때 한 번만 알릴지, 확인할 때까지 이어서 울릴지.
+     *
+     * 기본값은 '한 번' 입니다. 계속 울리는 쪽은 알람에 가까워서, 고르지 않은
+     * 사람에게 갑자기 그러면 놀랍니다.
+     */
+    fun getRemindRepeat(ctx: Context): Boolean =
+        prefs(ctx).getBoolean(KEY_REMIND_REPEAT, false)
+
+    fun setRemindRepeat(ctx: Context, v: Boolean) =
+        prefs(ctx).edit().putBoolean(KEY_REMIND_REPEAT, v).apply()
+
+    /**
+     * 지금 설정에서 실제로 '확인할 때까지' 울리는지.
+     *
+     * '전체 팝업' 일 때만 참입니다. 알림창 · 헤드업은 소리를 멈출 버튼이 화면에
+     * 보이지 않습니다 — 배너는 몇 초 뒤 시스템이 걷어가는데 소리만 계속 나면,
+     * 어디를 눌러야 멈추는지 알 수 없는 상태가 됩니다. 전체 팝업은 멈추는
+     * 버튼이 화면에 남아 있어 알람과 같은 꼴이 됩니다.
+     *
+     * 방식을 바꿔도 이 값 자체는 지우지 않습니다. 전체 팝업으로 돌아오면
+     * 예전에 고른 대로 돌아옵니다.
+     */
+    fun ringsUntilChecked(ctx: Context): Boolean =
+        getRemindStyle(ctx) == REMIND_POPUP && getRemindRepeat(ctx)
 
     /**
      * 팝업을 띄울지, 아니면 왜 안 띄우는지를 판단합니다.

@@ -35,6 +35,7 @@ object Backup {
             .put("enabled", TodoStore.isEnabled(ctx))
             .put("popupMode", TodoStore.getMode(ctx))
             .put("remindStyle", TodoStore.getRemindStyle(ctx))
+            .put("remindRepeat", TodoStore.getRemindRepeat(ctx))
             .put("palette", ThemeConfig.palette(ctx))
             .put("widgetOpacity", WidgetConfig.opacity(ctx))
             .put("widgetTitleSp", WidgetConfig.titleSp(ctx).toDouble())
@@ -86,6 +87,7 @@ object Backup {
             if (s.has("enabled")) TodoStore.setEnabled(ctx, s.optBoolean("enabled", true))
             if (s.has("popupMode")) TodoStore.setMode(ctx, s.optInt("popupMode"))
             if (s.has("remindStyle")) TodoStore.setRemindStyle(ctx, s.optInt("remindStyle"))
+            if (s.has("remindRepeat")) TodoStore.setRemindRepeat(ctx, s.optBoolean("remindRepeat"))
             if (s.has("palette")) ThemeConfig.setPalette(ctx, s.optInt("palette"))
             if (s.has("widgetOpacity")) WidgetConfig.setOpacity(ctx, s.optInt("widgetOpacity"))
             if (s.has("widgetTitleSp")) {
