@@ -110,15 +110,20 @@ jobs:
       #
       # 태그를 붙인 커밋에서만, 그리고 서명된 빌드만 올립니다. 그냥 푸시한
       # 것은 위의 artifact 로만 남으므로 릴리즈 목록이 배포본으로만 채워집니다.
+      #
+      # 바깥 액션(softprops/action-gh-release) 대신 gh 를 쓰는 이유:
+      # 그 액션이 러너의 Node 24 에서 인증서 검증에 걸려 죽었습니다
+      # ("self-signed certificate"). gh 는 러너에 기본으로 깔려 있어
+      # 의존성도 하나 줄어듭니다.
       - name: Publish to Releases
         if: env.IS_TAG == 'true' && env.HAS_KEY == 'true'
-        uses: softprops/action-gh-release@v2
-        with:
-          name: TodoLock ${{ github.ref_name }}
-          body: |
-            폰에서 아래 TodoLock.apk 를 눌러 설치하세요.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" out/TodoLock.apk \
+            --title "TodoLock $GITHUB_REF_NAME" \
+            --notes "폰에서 아래 TodoLock.apk 를 눌러 설치하세요.
 
-            처음 설치할 때는 '이 출처의 앱 설치 허용' 을 한 번 눌러야 하고,
-            설치 뒤에는 앱 안의 ⚙ → `권한 · 도구` 에서 두 가지를 켜야
-            잠금해제 팝업이 뜹니다.
-          files: out/TodoLock.apk
+          처음 설치할 때는 '이 출처의 앱 설치 허용' 을 한 번 눌러야 하고,
+          설치 뒤에는 앱 안의 ⚙ → \`권한 · 도구\` 에서 두 가지를 켜야
+          잠금해제 팝업이 뜹니다."
