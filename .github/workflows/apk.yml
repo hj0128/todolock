@@ -1,8 +1,14 @@
 name: Build APK
 
+# 푸시마다 '빌드가 되는지' 는 확인하되, 릴리즈는 태그를 붙였을 때만 만듭니다.
+# 리드미만 고쳐도 릴리즈가 하나씩 쌓여, 어느 것이 실제 배포본인지 알 수 없게
+# 되었기 때문입니다.
+#
+#   git tag v1.4 && git push origin v1.4
 on:
   push:
     branches: [ "**" ]
+    tags: [ "v*" ]
   workflow_dispatch:
 
 permissions:
@@ -17,9 +23,23 @@ jobs:
     # '빌드가 되는지' 만 검증합니다.
     env:
       HAS_KEY: ${{ secrets.KEYSTORE_BASE64 != '' }}
+      IS_TAG: ${{ startsWith(github.ref, 'refs/tags/v') }}
 
     steps:
       - uses: actions/checkout@v4
+
+      # 태그만 올리고 버전 올리는 것을 잊으면, 1.4 가 1.5 라는 이름으로
+      # 배포됩니다. 나중에는 어느 apk 가 무엇인지 알 수 없게 되므로 여기서 막습니다.
+      - name: 태그와 versionName 이 같은지 확인
+        if: env.IS_TAG == 'true'
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          VER=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts)
+          echo "태그 $TAG / versionName $VER"
+          if [ "$TAG" != "$VER" ]; then
+            echo "::error::태그(v$TAG)와 versionName($VER)이 다릅니다."
+            exit 1
+          fi
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -86,14 +106,19 @@ jobs:
           path: out/TodoLock.apk
           if-no-files-found: error
 
-      # 폰에서 바로 눌러 설치할 수 있도록 Release 로도 올립니다.
-      # 서명된 빌드만 올립니다 — 포크의 debug 산출물은 artifact 로만 남습니다.
+      # 폰에서 바로 눌러 설치할 수 있도록 Release 로 올립니다.
+      #
+      # 태그를 붙인 커밋에서만, 그리고 서명된 빌드만 올립니다. 그냥 푸시한
+      # 것은 위의 artifact 로만 남으므로 릴리즈 목록이 배포본으로만 채워집니다.
       - name: Publish to Releases
-        if: env.HAS_KEY == 'true'
+        if: env.IS_TAG == 'true' && env.HAS_KEY == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: build-${{ github.run_number }}
-          name: TodoLock build ${{ github.run_number }}
+          name: TodoLock ${{ github.ref_name }}
           body: |
             폰에서 아래 TodoLock.apk 를 눌러 설치하세요.
+
+            처음 설치할 때는 '이 출처의 앱 설치 허용' 을 한 번 눌러야 하고,
+            설치 뒤에는 앱 안의 ⚙ → `권한 · 도구` 에서 두 가지를 켜야
+            잠금해제 팝업이 뜹니다.
           files: out/TodoLock.apk
