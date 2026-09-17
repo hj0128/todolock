@@ -31,8 +31,8 @@ android {
         // 깔리지 않습니다). versionName 은 사람이 보는 이름이라 자유롭게 정합니다.
         // 1.4 까지는 공개하지 않고 내 컴퓨터에서만 돌던 번호라, 처음 배포하는
         // 이번 것을 1.0 으로 둡니다.
-        versionCode = 6
-        versionName = "1.0"
+        versionCode = 7
+        versionName = "1.0.1"
     }
 
     signingConfigs {
