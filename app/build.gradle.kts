@@ -21,18 +21,18 @@ val hasUploadKey = keystoreProps.getProperty("storeFile") != null
 
 android {
     namespace = "com.hj0128.todolock"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.hj0128.todolock"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 36
         // versionCode 는 시스템이 보는 번호라 절대 낮추지 않습니다(낮추면 업데이트가
         // 깔리지 않습니다). versionName 은 사람이 보는 이름이라 자유롭게 정합니다.
         // 1.4 까지는 공개하지 않고 내 컴퓨터에서만 돌던 번호라, 처음 배포하는
         // 이번 것을 1.0 으로 둡니다.
-        versionCode = 7
-        versionName = "1.0.1"
+        versionCode = 8
+        versionName = "1.0.2"
     }
 
     signingConfigs {

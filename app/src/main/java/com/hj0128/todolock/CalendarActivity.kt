@@ -99,6 +99,7 @@ class CalendarActivity : AppCompatActivity() {
         ThemeConfig.apply(this)
         b = ActivityCalendarBinding.inflate(layoutInflater)
         setContentView(b.root)
+        b.root.applySystemBarInsets()
 
         touchSlop = ViewConfiguration.get(this).scaledTouchSlop
 

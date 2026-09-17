@@ -50,6 +50,7 @@ class SettingsActivity : AppCompatActivity() {
         ThemeConfig.apply(this)
         b = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(b.root)
+        b.root.applySystemBarInsets()
 
         b.btnBack.setOnClickListener { finish() }
 

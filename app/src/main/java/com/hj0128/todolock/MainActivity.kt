@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity() {
         ThemeConfig.apply(this)
         b = ActivityMainBinding.inflate(layoutInflater)
         setContentView(b.root)
+        b.root.applySystemBarInsets()
 
         adapter = TodoAdapter(
             mutableListOf(),
