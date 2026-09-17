@@ -47,8 +47,14 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      # packages 를 지정하지 않으면 기본값인 "tools platform-tools" 를 설치하는데,
+      # 레거시 "tools" 패키지가 구글 저장소에서 빠져 sdkmanager 가 곧바로 실패합니다.
+      # 우리는 platform-tools 만 있으면 되므로(build-tools·platform 은 Gradle 이
+      # compileSdk 에 맞춰 알아서 받습니다) 그것만 지정해 기본값을 덮어씁니다.
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools'
 
       # 버전을 지정하지 않으면 래퍼(gradle-wrapper.properties)의 버전을 씁니다.
       # 로컬과 CI 가 같은 Gradle 로 빌드되도록 래퍼에 맡깁니다.
