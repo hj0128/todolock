@@ -58,6 +58,8 @@
     <style name="Theme.TodoLock.PickerDialog" parent="android:Theme.DeviceDefault.Dialog.Alert">
         <item name="android:colorAccent">?attr/accentHeading</item>
         <item name="android:buttonBarButtonStyle">@style/Widget.TodoLock.PickerDialogButton</item>
+        <item name="android:windowMinWidthMajor">0%</item>
+        <item name="android:windowMinWidthMinor">0%</item>
     </style>
 
     <style name="Theme.TodoLock.Popup" parent="Theme.TodoLock">

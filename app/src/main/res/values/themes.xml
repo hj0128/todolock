@@ -273,6 +273,14 @@
     <style name="Theme.TodoLock.PickerDialog" parent="android:Theme.DeviceDefault.Light.Dialog.Alert">
         <item name="android:colorAccent">?attr/accentHeading</item>
         <item name="android:buttonBarButtonStyle">@style/Widget.TodoLock.PickerDialogButton</item>
+        <!--
+          기본 대화상자 테마는 창 너비를 화면의 95% 로 강제합니다(windowMinWidthMinor).
+          삼성 기기의 달력 위젯은 그보다 좁은 고정 너비만 채우고 늘어나지 않아,
+          강제한 만큼 오른쪽에 빈 여백이 남습니다. 최소 너비 강제를 없애 내용물
+          크기에 맞춰 줄어들게 합니다.
+        -->
+        <item name="android:windowMinWidthMajor">0%</item>
+        <item name="android:windowMinWidthMinor">0%</item>
     </style>
 
     <!--

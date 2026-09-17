@@ -42,26 +42,44 @@
         android:orientation="horizontal"
         android:gravity="center">
 
-        <NumberPicker
-            android:id="@+id/pickYear"
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1.3"
-            android:descendantFocusability="blocksDescendants" />
+            android:layout_weight="1.3">
 
-        <NumberPicker
-            android:id="@+id/pickMonth"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:descendantFocusability="blocksDescendants" />
+            <NumberPicker
+                android:id="@+id/pickYear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:descendantFocusability="blocksDescendants" />
+        </FrameLayout>
 
-        <NumberPicker
-            android:id="@+id/pickDay"
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:descendantFocusability="blocksDescendants" />
+            android:layout_weight="1">
+
+            <NumberPicker
+                android:id="@+id/pickMonth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:descendantFocusability="blocksDescendants" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <NumberPicker
+                android:id="@+id/pickDay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:descendantFocusability="blocksDescendants" />
+        </FrameLayout>
     </LinearLayout>
 
     <LinearLayout
